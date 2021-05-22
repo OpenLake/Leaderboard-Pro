@@ -24,3 +24,28 @@ _Mention and tag the people_
 ## Screenshots of relevant screens 📸
 
 _Add screenshots of relevant screens_
+
+## Developer's checklist 📃
+- Are the [coding guidelines](https://google.github.io/styleguide/jsguide.html) followed?
+  - [ ] Yes
+  - [ ] No
+- Is the code properly commented?
+  - [ ] Yes
+  - [ ] No
+- Are there any print statements in the code?
+  - [ ] Yes
+  - [ ] No
+- Are all the functionalities working properly?
+  - [ ] Yes
+  - [ ] No
+- Are the changes made breaking any other part of the project?
+  - [ ] Yes
+  - [ ] No
+- Are there any UI/UX issues present?
+  - [ ] Yes
+  - [ ] No
+- Are relevant screenshots added in the PR?
+  - [ ] Yes
+  - [ ] No
+
+
