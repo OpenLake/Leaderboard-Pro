@@ -1,16 +1,21 @@
-# Contributors-Leaderboard
-LeaderBoard for OpenLake Contributors. Ranking will be given to each contributor based on their contributions, activeness and their github profile (commits/stars etc.). Email notification will be sent when rank of a contributor goes up or down. Metrics will promote consistent work instead of bulk work done at once.
+<h1 align="center">Welcome to the Leaderboard project 👋</h1>
 
-## Tech Stack
-- ReactJS
-- Django
-- PostgreSQL
+## 🤔 Problem
+How do people become good at something ? By doing it regurly, right ? That's why this project aims to help all the students in practicing programming reguarly by maintaining a leaderboard. The website will be have **4 different leaderboards**
 
-## Contributions
-
-As a community developed and maintained repository, we welcome new quality contributions. Please read our [Contribution Guidelines](https://github.com/OpenLake/Contributors-Leaderboard/blob/main/.github/CONTRIBUTING.md).
+## ✨ Features
+- LeaderBoard Website + Django backend to collect data from different sources( APIs and web scraping )
+- Leaderboard type 1 : Github profile activeness (based on commits/stars etc.)
+- Leaderboard type 2 : OpenLake contributions (based on commits/pull requests etc.)
+- Leaderboard type 3 : Codechef ranking
+- Leaderboard type 4 : Codeforces ranking
+- Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
+- Our metrics will promote consistent work instead of bulk work at once.
+- Tech Stack : React, Django, PostgreSQL
 
 ## Maintainers
-> Maintainers are your friends forever. They are vastly different from moderators.
 - [Gopal Ramesh Dahale](https://github.com/Gopal-Dahale)
+- [Kumar Shivendu](https://github.com/KShivendu)
+
+## Idea credits:
 - [Kumar Shivendu](https://github.com/KShivendu)
