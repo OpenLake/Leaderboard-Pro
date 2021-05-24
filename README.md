@@ -6,6 +6,10 @@ LeaderBoard for OpenLake Contributors. Ranking will be given to each contributor
 - Django
 - PostgreSQL
 
+## Contributions
+
+As a community developed and maintained repository, we welcome new quality contributions. Please read our [Contribution Guidelines](https://github.com/OpenLake/Contributors-Leaderboard/blob/main/.github/CONTRIBUTING.md).
+
 ## Maintainers
 > Maintainers are your friends forever. They are vastly different from moderators.
 - [Gopal Ramesh Dahale](https://github.com/Gopal-Dahale)
