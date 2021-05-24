@@ -38,7 +38,8 @@ Checkout the [PR Format Guidelines](https://github.com/OpenLake/Contributors-Lea
   - `"python.linting.enabled": true`
   - `"python.formatting.provider": "yapf"`
   - `"python.formatting.yapfArgs": "based_on_style: google"`
-- Use [pylint](https://pypi.org/project/pylint/) as the linter
+- Set tab spacing size to 2 in your editor.
+- Use [pylint](https://pypi.org/project/pylint/) as the linter.
 - Try to avoid platform-specific code as much as possible.
 - Always make sure that the code behaves in a responsive manner for different screen sizes.
 - Check for prettier, ESLint errors and correct them.
