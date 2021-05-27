@@ -1,34 +1,34 @@
 ## Purpose ✨
 
-_Mention the purpose of the PR_
+<!--- Mention the purpose of the PR --->
 
 ## Details 📝
 
-_Mention the details in bullets as follows:_
+<!--- Mention the details. If the details sections is large enough, then mention the details in bullets as follows: --->
 
-- _Update 1_
-- _Update 2_
+- <!--- Update 1 --->
+- <!--- Update 2 --->
 
 ## Dependencies 🔗
 
-_Mention any dependencies/packages used_
+<!--- Mention any dependencies/packages used. If no dependency/package is used, write None. --->
 
 ## Future Improvements 🔭
 
-_Mention any improvements to be done in future related to any file/feature_
+<!--- Mention any improvements to be done in future related to any file/feature. If you believe that there are no further improvements, write None --->
 
 ## Mentions 👀
 
-_Mention and tag the people_
+<!--- Mention and tag the people. Type '@' and you will automatically get suggestions. Usually the mentions are for the person(s) by whom you wanted your PR to get reviewed. --->
 
 ## Screenshots of relevant screens 📸
 
-_Add screenshots of relevant screens_
-
+<!--- Add screenshots of relevant screens. If no screenshots are needed for your PR then write None --->
+<!-- Make sure to check all the items in Developer's checklist. If some box is left unchecked then mention the reason in front of the item -->
 ## Developer's checklist 📃
 - [ ] Are the [coding guidelines](https://google.github.io/styleguide/jsguide.html) followed?
 - [ ] Is the code properly commented?
-- [ ] Are there any print statements in the code?
+- [ ] Are there any print statements in the code? <!-- If you have some print statements in the code then mention the reason here. -->
 - [ ] Are all the functionalities working properly?
 - [ ] Are the changes made breaking any other part of the project?
 - [ ] Are there any UI/UX issues present?
