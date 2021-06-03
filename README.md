@@ -1,7 +1,7 @@
 <h1 align="center">Welcome to the Leaderboard project 👋</h1>
 
 ## 🤔 Problem
-How do people become good at something ? By doing it regularly, right ? That's why this project aims to help all the students in practicing programming reguarly by maintaining a leaderboard. The website will be have **4 different leaderboards**
+How do people become good at something ? By doing it regularly, right ? That's why this project aims to help all the students in practicing programming regularly by maintaining a leaderboard. The website will be have **4 different leaderboards**
 
 ## ✨ Features
 - LeaderBoard Website + Django backend to collect data from different sources( APIs and web scraping )
