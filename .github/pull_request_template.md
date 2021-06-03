@@ -26,10 +26,11 @@
 <!--- Add screenshots of relevant screens. If no screenshots are needed for your PR then write None --->
 <!-- Make sure to check all the items in Developer's checklist. If some box is left unchecked then mention the reason in front of the item -->
 ## Developer's checklist 📃
-- [ ] Are the [coding guidelines](https://google.github.io/styleguide/jsguide.html) followed?
-- [ ] Is the code properly commented?
-- [ ] Are there any print statements in the code? <!-- If you have some print statements in the code then mention the reason here. -->
-- [ ] Are all the functionalities working properly?
-- [ ] Are the changes made breaking any other part of the project?
-- [ ] Are there any UI/UX issues present?
-- [ ] Are relevant screenshots added in the PR?
+- [ ] Followed the [coding guidelines](https://google.github.io/styleguide/jsguide.html).
+- [ ] Properly commented the code.
+- [ ] No print statements in the code. <!-- If you have some print statements in the code then mention the reason here. -->
+- [ ] All the functionalities are working properly.
+- [ ] Changes made are not breaking any other part of the project.
+- [ ] No UI/UX issues are present.
+- [ ] Relevant screenshots are added in the PR.
+- [ ] Followed the PR guidelines
