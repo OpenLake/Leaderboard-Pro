@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from leaderboard import views
+
 urlpatterns = [
+    path('github/user', views.GithubUserAPI.as_view()),
+    path('github/organisation', views.GithubOrganisationAPI.as_view()),
     path('admin/', admin.site.urls),
 ]
