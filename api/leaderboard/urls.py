@@ -14,14 +14,50 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth.models import User, Group
+
+from rest_framework import serializers, viewsets, routers, permissions
 
 from leaderboard import views
 
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ["url", "username", "email", "is_staff", "groups"]
+
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ["url", "name"]
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by("-date_joined")
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+router = routers.DefaultRouter()
+router.register(r"users", UserViewSet)
+router.register(r"groups", GroupViewSet)
+
+
 urlpatterns = [
-    path('github/user', views.GithubUserAPI.as_view()),
-    path('github/organisation', views.GithubOrganisationAPI.as_view()),
-    path('codeforces/', views.CodeforcesAPI.as_view()),
-    path('codechef/', views.CodechefAPI.as_view()),
-    path('admin/', admin.site.urls),
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("github/user", views.GithubUserAPI.as_view()),
+    path("github/organisation", views.GithubOrganisationAPI.as_view()),
+    path("codeforces/", views.CodeforcesLeaderboard.as_view()),
+    path("codeforces/<int:pk>", views.CodeforcesUserAPI.as_view()),
+    path("codechef/", views.CodechefAPI.as_view()),
+    path("admin/", admin.site.urls),
 ]

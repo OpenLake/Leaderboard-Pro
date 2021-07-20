@@ -2,11 +2,11 @@ from leaderboard.models import CodeforcesUser
 from leaderboard.serializers import Cf_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics, status
 
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
-import json
 
 
 class GithubUserAPI(APIView):
@@ -54,7 +54,6 @@ class GithubOrganisationAPI(APIView):
         """
 
         repos = requests.get("https://api.github.com/users/OpenLake/repos").json()
-
         return [
             {
                 "username": f"gh_user_{i}",
@@ -72,68 +71,59 @@ class GithubOrganisationAPI(APIView):
         return Response(gh_users)
 
 
-class CodeforcesAPI(APIView):
+class CodeforcesLeaderboard(APIView):
     """
     Collects data from codeforces API
     """
-
-    REGISTERED_CF_USERS = [
-        "DmitriyH",
-        "Fefer_Ivan",
-        "tourist",
-        # Contributors may add their Github username here
-    ]
 
     def _check_for_updates(self, cf_users):
         cf_outdated_users = []
         for cf_user in cf_users:
             if cf_user.is_outdated:
                 cf_outdated_users.append(cf_user.username)
-        
-        url = f"https://codeforces.com/api/user.info?handles={';'.join(cf_outdated_users)}"
-        cf_api_response = requests.get(url).json()["result"]
-        
+
+        cf_api_response = {}
+
+        if len(cf_outdated_users) > 0:
+            url = f"https://codeforces.com/api/user.info?handles={';'.join(cf_outdated_users)}"
+            cf_api_response = requests.get(url).json()
+            cf_api_response = cf_api_response["result"]
+
         outdated_counter = 0
         for i, cf_user in enumerate(cf_users):
-            
+
             if cf_user.is_outdated:
                 user_info = cf_api_response[outdated_counter]
                 outdated_counter += 1
 
                 # TODO: Use serialier for saving data from codeforces API
-                cf_user.max_rating = user_info.get('max_rating',0)
-                cf_user.rating = user_info.get('rating', 0)
-                cf_user.last_activity = user_info.get('lastOnlineTimeSeconds', datetime.max.timestamp())
+                cf_user.max_rating = user_info.get("max_rating", 0)
+                cf_user.rating = user_info.get("rating", 0)
+                cf_user.last_activity = user_info.get(
+                    "lastOnlineTimeSeconds", datetime.max.timestamp()
+                )
                 cf_user.save()
 
-   
-
-    def get(self, request, format=None):
+    def get(self, request, *args, **kwargs):
         cf_users = CodeforcesUser.objects.all()
         self._check_for_updates(cf_users)
-        
-        return Response(Cf_Serializer(cf_users,many=True).data)
+        serializer = Cf_Serializer(cf_users, many=True)
+        return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request, *args, **kwargs):
         """
-        Registers a new username
+        Registers a new username in the list
         """
         username = request.data["username"]
         cf_user = CodeforcesUser(username=username)
         cf_user.save()
-        
-        return Response(Cf_Serializer(cf_user).data)
 
-    
-    def delete(self, request, format=None):
-        """
-        Removes a registered username
-        """
-        username = request.data["username"]
-        cf_user = CodeforcesUser.objects.get(username=username)
-        cf_user.delete()
-        
-        return Response(Cf_Serializer(cf_user).data) # id == null
+        return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
+
+
+class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CodeforcesUser.objects.all()
+    serializer_class = Cf_Serializer
 
 
 class CodechefAPI(APIView):
