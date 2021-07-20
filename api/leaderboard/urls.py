@@ -21,5 +21,7 @@ from leaderboard import views
 urlpatterns = [
     path('github/user', views.GithubUserAPI.as_view()),
     path('github/organisation', views.GithubOrganisationAPI.as_view()),
+    path('codeforces/', views.CodeforcesAPI.as_view()),
+    path('codechef/', views.CodechefAPI.as_view()),
     path('admin/', admin.site.urls),
 ]

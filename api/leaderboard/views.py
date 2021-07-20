@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-
+from datetime import datetime
 from random import randint, choice
 import requests
 
@@ -67,3 +67,52 @@ class GithubOrganisationAPI(APIView):
         gh_users.sort(key=lambda r: r.get("rank", 0))
 
         return Response(gh_users)
+
+
+class CodeforcesAPI(APIView):
+    """
+    Collects data from codeforces API
+    """
+
+    REGISTERED_CF_USERS = [
+        "DmitriyH",
+        "Fefer_Ivan",
+        "tourist",
+        # Contributors may add their Github username here
+    ]
+
+    def _get_cf_data(self, days_passed=7):
+        """
+        TODO:
+        """
+
+        res = []
+        for cf_user in self.REGISTERED_CF_USERS:
+            user_info = requests.get(f"https://codeforces.com/api/user.info?handles={cf_user}") \
+                .json()["result"][0]
+
+            res.append({
+                "username": cf_user,
+                "maxRating": user_info.get('max_rating',0),
+                "rating": user_info.get('rating', 0),
+                "lastActivity": user_info.get('lastOnlineTimeSeconds', datetime.max.timestamp()),
+            })
+
+        return res
+
+    def get(self, request, format=None):
+        gh_users = self._get_cf_data()
+        gh_users.sort(key=lambda r: -r.get("rating", 0))
+
+        return Response(gh_users)
+
+
+class CodechefAPI(APIView):
+    """
+    TODO
+    """
+
+    def get(self, request, format=None):
+        # TODO
+
+        return Response("TODO")
