@@ -112,7 +112,7 @@ class CodeforcesLeaderboard(
         return cf_users
 
     def get(self, request):
-        cf_users = self._check_for_updates(self.queryset)
+        cf_users = self._check_for_updates(self.get_queryset())
         serializer = Cf_Serializer(cf_users, many=True)
         return Response(serializer.data)
 
