@@ -1,9 +1,12 @@
+from leaderboard.models import CodeforcesUser
+from leaderboard.serializers import Cf_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint, choice
 import requests
+import json
 
 
 class GithubUserAPI(APIView):
@@ -81,30 +84,56 @@ class CodeforcesAPI(APIView):
         # Contributors may add their Github username here
     ]
 
-    def _get_cf_data(self, days_passed=7):
-        """
-        TODO:
-        """
+    def _check_for_updates(self, cf_users):
+        cf_outdated_users = []
+        for cf_user in cf_users:
+            if cf_user.is_outdated:
+                cf_outdated_users.append(cf_user.username)
+        
+        url = f"https://codeforces.com/api/user.info?handles={';'.join(cf_outdated_users)}"
+        cf_api_response = requests.get(url).json()["result"]
+        
+        outdated_counter = 0
+        for i, cf_user in enumerate(cf_users):
+            
+            if cf_user.is_outdated:
+                user_info = cf_api_response[outdated_counter]
+                outdated_counter += 1
 
-        res = []
-        for cf_user in self.REGISTERED_CF_USERS:
-            user_info = requests.get(f"https://codeforces.com/api/user.info?handles={cf_user}") \
-                .json()["result"][0]
+                # TODO: Use serialier for saving data from codeforces API
+                cf_user.max_rating = user_info.get('max_rating',0)
+                cf_user.rating = user_info.get('rating', 0)
+                cf_user.last_activity = user_info.get('lastOnlineTimeSeconds', datetime.max.timestamp())
+                cf_user.save()
 
-            res.append({
-                "username": cf_user,
-                "maxRating": user_info.get('max_rating',0),
-                "rating": user_info.get('rating', 0),
-                "lastActivity": user_info.get('lastOnlineTimeSeconds', datetime.max.timestamp()),
-            })
-
-        return res
+   
 
     def get(self, request, format=None):
-        gh_users = self._get_cf_data()
-        gh_users.sort(key=lambda r: -r.get("rating", 0))
+        cf_users = CodeforcesUser.objects.all()
+        self._check_for_updates(cf_users)
+        
+        return Response(Cf_Serializer(cf_users,many=True).data)
 
-        return Response(gh_users)
+    def post(self, request, format=None):
+        """
+        Registers a new username
+        """
+        username = request.data["username"]
+        cf_user = CodeforcesUser(username=username)
+        cf_user.save()
+        
+        return Response(Cf_Serializer(cf_user).data)
+
+    
+    def delete(self, request, format=None):
+        """
+        Removes a registered username
+        """
+        username = request.data["username"]
+        cf_user = CodeforcesUser.objects.get(username=username)
+        cf_user.delete()
+        
+        return Response(Cf_Serializer(cf_user).data) # id == null
 
 
 class CodechefAPI(APIView):
