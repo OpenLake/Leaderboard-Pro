@@ -119,6 +119,41 @@ class CodeforcesLeaderboard(APIView):
         cf_user.save()
 
         return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
+    
+    def submissions(username):
+        resp4=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000')
+        current_date = date.today().isoformat() 
+        ps=0
+        pus=0
+        cs=0
+        cus=0
+        timere=int(input("Enter the days till which you require data from current date: "))
+        times=86400*timere
+        for i in range(1000):
+            duration=datetime.now()-datetime.fromtimestamp(resp4.json()['result'][i]['creationTimeSeconds'])
+            durations=duration.total_seconds()
+            if int(durations) <= (times):
+               #contesttype
+                contesttype=resp4.json()['result'][i]['author']['participantType']
+                if contesttype=="PRACTICE":
+                    verdict=resp4.json()['result'][i]['verdict']
+                    if verdict=="OK":
+                        ps+=1
+                    else:
+                        pus+=1
+                else:
+                    verdict=resp4.json()['result'][i]['verdict']
+                    if verdict=="OK":
+                        cs+=1
+                    else:
+                        cus+=1
+            else:
+                break
+        print("The correctly solved practise problems in",timere,"days are :",ps)
+        print("The wrong practise problems in",timere,"days are :",pus)
+        print("The correctly solved contest problems in",timere,"days are :",cs)
+        print("The wrong contest problems in",timere,"days are :",cus)
+
 
 
 class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
