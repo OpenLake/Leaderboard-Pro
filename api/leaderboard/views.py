@@ -127,38 +127,43 @@ class CodeforcesLeaderboard(
         return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
     
     def submissions(username):
-        resp4=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000')
-        current_date = date.today().isoformat() 
-        ps=0
-        pus=0
-        cs=0
-        cus=0
-        timere=int(input("Enter the days till which you require data from current date: "))
-        times=86400*timere
+        response=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000') 
+        practise_correct_count=0
+        practise_wrong_count=0
+        contest_correct_count=0
+        contest_wrong_count=0
+        result_history_days=int(input("Enter the days till which you require data from current date: "))
+        times=86400*result_history_days
         for i in range(1000):
-            duration=datetime.now()-datetime.fromtimestamp(resp4.json()['result'][i]['creationTimeSeconds'])
+            result=response.json()['result'][i]
+            creation_time=datetime.fromtimestamp(result['creationTimeSeconds'])
+            duration=datetime.now()-creation_time
             durations=duration.total_seconds()
             if int(durations) <= (times):
-               #contesttype
-                contesttype=resp4.json()['result'][i]['author']['participantType']
+                #contesttype
+                contesttype=result['author']['participantType']
                 if contesttype=="PRACTICE":
-                    verdict=resp4.json()['result'][i]['verdict']
+                    verdict=result['verdict']
                     if verdict=="OK":
-                        ps+=1
+                        practise_correct_count+=1
                     else:
-                        pus+=1
+                        practise_wrong_count+=1
                 else:
-                    verdict=resp4.json()['result'][i]['verdict']
+                    verdict=result['verdict']
                     if verdict=="OK":
-                        cs+=1
+                        contest_correct_count+=1
                     else:
-                        cus+=1
+                        contest_wrong_count+=1
             else:
                 break
-        print("The correctly solved practise problems in",timere,"days are :",ps)
-        print("The wrong practise problems in",timere,"days are :",pus)
-        print("The correctly solved contest problems in",timere,"days are :",cs)
-        print("The wrong contest problems in",timere,"days are :",cus)
+        data= {
+            "practise_correct" : practise_correct_count,
+            "practise_wrong" : practise_wrong_count,
+            "contest_correct" :contest_correct_count,
+            "contest_wrong" : contest_wrong_count,
+        }
+            
+        return data
 
 
 
