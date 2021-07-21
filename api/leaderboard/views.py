@@ -2,7 +2,7 @@ from leaderboard.models import CodeforcesUser
 from leaderboard.serializers import Cf_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, status
+from rest_framework import generics, mixins, status
 
 from datetime import datetime, timedelta
 from random import randint, choice
@@ -71,10 +71,15 @@ class GithubOrganisationAPI(APIView):
         return Response(gh_users)
 
 
-class CodeforcesLeaderboard(APIView):
+class CodeforcesLeaderboard(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
     """
     Collects data from codeforces API
     """
+
+    queryset = CodeforcesUser.objects.all()
+    serializer_class = Cf_Serializer
 
     def _check_for_updates(self, cf_users):
         cf_outdated_users = []
@@ -104,13 +109,14 @@ class CodeforcesLeaderboard(APIView):
                 )
                 cf_user.save()
 
-    def get(self, request, *args, **kwargs):
-        cf_users = CodeforcesUser.objects.all()
-        self._check_for_updates(cf_users)
+        return cf_users
+
+    def get(self, request):
+        cf_users = self._check_for_updates(self.get_queryset())
         serializer = Cf_Serializer(cf_users, many=True)
         return Response(serializer.data)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         """
         Registers a new username in the list
         """
