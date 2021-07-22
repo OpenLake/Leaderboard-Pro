@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
 
 
 const useStyles = makeStyles({
@@ -17,6 +17,7 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
             <Table className={classes.table} aria-label="codeforces-table">
                 <TableHead>
                     <TableRow>
+                        <TableCell>Avatar</TableCell>
                         <TableCell>Username</TableCell>
                         <TableCell>Rating</TableCell>
                         <TableCell>Max rating</TableCell>
@@ -26,6 +27,10 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
                 <TableBody>
                     {codeforcesUsers.map(cfUser => (
                         <TableRow key={cfUser.id}>
+                            <TableCell>
+                                <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
+                                {/* TODO: Lazy load the avatars ? */}
+                            </TableCell>
                             <TableCell>
                                 <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
                                     {cfUser.username}
