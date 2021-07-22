@@ -25,4 +25,4 @@ class Cf_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = CodeforcesUser
-        fields = ["id", "username", "rating", "max_rating", "last_activity"]
+        fields = ["id", "username", "rating", "avatar", "max_rating", "last_activity"]

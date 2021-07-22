@@ -107,6 +107,7 @@ class CodeforcesLeaderboard(
                 cf_user.last_activity = user_info.get(
                     "lastOnlineTimeSeconds", datetime.max.timestamp()
                 )
+                cf_user.avatar = user_info.get("avatar", "")
                 cf_user.save()
 
         return cf_users
