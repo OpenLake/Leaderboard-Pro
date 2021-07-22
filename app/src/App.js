@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import logo from './logo.svg';
 import './App.css';
-import { Checkbox } from '@material-ui/core'
+import { Checkbox, Grid } from '@material-ui/core'
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { darkTheme, lightTheme } from './theme.js';
 
+import { Navbar } from './components/Navbar.js';
 import { CodeforcesTable } from './components/CodeforcesTable.js';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -38,14 +39,17 @@ function App() {
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <CssBaseline />
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+        <Navbar />
 
-          {darkMode ? "Dark" : "Light"}
-          <Checkbox checked={darkMode} onClick={() => toggleDarkMode()} />
+        <Checkbox checked={darkMode} onClick={() => toggleDarkMode()} />
+        {darkMode ? "Dark" : "Light"}
 
-          <CodeforcesTable codeforcesUsers={codeforcesUsers} />
-        </header>
+        <Grid container>
+          <Grid item xs={6}>
+            <CodeforcesTable codeforcesUsers={codeforcesUsers} />
+          </Grid>
+        </Grid>
+
       </div>
     </ThemeProvider>
   );

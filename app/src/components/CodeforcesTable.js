@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
 
 
 const useStyles = makeStyles({
@@ -26,7 +26,11 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
                 <TableBody>
                     {codeforcesUsers.map(cfUser => (
                         <TableRow key={cfUser.id}>
-                            <TableCell>{cfUser.username}</TableCell>
+                            <TableCell>
+                                <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
+                                    {cfUser.username}
+                                </Link>
+                            </TableCell>
                             <TableCell>{cfUser.rating}</TableCell>
                             <TableCell>{cfUser.max_rating}</TableCell>
                             <TableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</TableCell>
