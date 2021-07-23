@@ -1,12 +1,14 @@
 from django.db import models
 from datetime import datetime, timezone, timedelta
 
+
 class CodeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     last_activity = models.PositiveIntegerField(default=datetime.max.timestamp())
     last_updated = models.DateTimeField(auto_now=True)
+    avatar = models.CharField(max_length=256, default="")
 
     @property
     def is_outdated(self):
@@ -16,4 +18,20 @@ class CodeforcesUser(models.Model):
             False
 
     class Meta:
-        ordering = ['-rating']
+        ordering = ["-rating"]
+
+
+class CodeforcesUserRatingUpdate(models.Model):
+    cf_user = models.ForeignKey(
+        CodeforcesUser,
+        default=lambda: CodeforcesUser.objects.get_or_create(username="tourist")[0],
+        on_delete=models.CASCADE,
+        related_name="rating_updates",
+    )
+    index = models.PositiveIntegerField(default=0)
+    prev_index = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(default=0)
+    timestamp = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["timestamp"]

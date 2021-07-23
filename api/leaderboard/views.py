@@ -1,5 +1,5 @@
-from leaderboard.models import CodeforcesUser
-from leaderboard.serializers import Cf_Serializer
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
+from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, mixins, status
@@ -7,6 +7,8 @@ from rest_framework import generics, mixins, status
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
+
+MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
 
 class GithubUserAPI(APIView):
@@ -105,9 +107,36 @@ class CodeforcesLeaderboard(
                 cf_user.max_rating = user_info.get("max_rating", 0)
                 cf_user.rating = user_info.get("rating", 0)
                 cf_user.last_activity = user_info.get(
-                    "lastOnlineTimeSeconds", datetime.max.timestamp()
+                    "lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP
                 )
+                cf_user.avatar = user_info.get("avatar", "")
                 cf_user.save()
+
+                url = (
+                    f"https://codeforces.com/api/user.rating?handle={cf_user.username}"
+                )
+                rating_update_api_response = requests.get(url).json()
+                if rating_update_api_response.get("status", "FAILED") != "OK":
+                    continue
+
+                cf_user = CodeforcesUser.objects.get(username=cf_user.username)
+
+                rating_updates = rating_update_api_response.get("result", [])
+                stored_rating_count = CodeforcesUserRatingUpdate.objects.count()
+                new_rating_updates = rating_updates[stored_rating_count:]
+
+                for i, rating_update in enumerate(new_rating_updates):
+                    new_index = i + stored_rating_count
+                    cf_rating_update = CodeforcesUserRatingUpdate(
+                        cf_user=cf_user,
+                        index=new_index,
+                        prev_index=new_index - 1 if new_index > 0 else 0,
+                        rating=rating_update.get("newRating", 0),
+                        timestamp=rating_update.get(
+                            "ratingUpdateTimeSeconds", MAX_DATE_TIMESTAMP
+                        ),
+                    )
+                    cf_rating_update.save()
 
         return cf_users
 
@@ -169,7 +198,7 @@ class CodeforcesLeaderboard(
 
 class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = CodeforcesUser.objects.all()
-    serializer_class = Cf_Serializer
+    serializer_class = Cf_User_Serializer
 
 
 class CodechefAPI(APIView):
