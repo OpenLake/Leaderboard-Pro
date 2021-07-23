@@ -17,6 +17,9 @@ class CodeforcesUser(models.Model):
         else:
             False
 
+    def __str__(self):
+        return f"{self.username} ({self.rating})"
+
     class Meta:
         ordering = ["-rating"]
 
@@ -32,6 +35,9 @@ class CodeforcesUserRatingUpdate(models.Model):
     prev_index = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     timestamp = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.cf_user.username}.{self.index} {self.rating}"
 
     class Meta:
         ordering = ["timestamp"]
