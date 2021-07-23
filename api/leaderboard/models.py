@@ -19,3 +19,19 @@ class CodeforcesUser(models.Model):
 
     class Meta:
         ordering = ["-rating"]
+
+
+class CodeforcesUserRatingUpdate(models.Model):
+    cf_user = models.ForeignKey(
+        CodeforcesUser,
+        default=lambda: CodeforcesUser.objects.get_or_create(username="tourist")[0],
+        on_delete=models.CASCADE,
+        related_name="rating_updates",
+    )
+    index = models.PositiveIntegerField(default=0)
+    prev_index = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(default=0)
+    timestamp = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["timestamp"]

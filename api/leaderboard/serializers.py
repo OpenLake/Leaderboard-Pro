@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from leaderboard.models import CodeforcesUser
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
 
 
 class Cf_Serializer(serializers.ModelSerializer):
@@ -26,3 +26,25 @@ class Cf_Serializer(serializers.ModelSerializer):
     class Meta:
         model = CodeforcesUser
         fields = ["id", "username", "rating", "avatar", "max_rating", "last_activity"]
+
+
+class Cf_RatingUpdate_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = CodeforcesUserRatingUpdate
+        fields = ["rating", "timestamp"]
+
+
+class Cf_User_Serializer(Cf_Serializer):
+    rating_updates = Cf_RatingUpdate_Serializer(many=True)
+
+    class Meta:
+        model = CodeforcesUser
+        fields = [
+            "id",
+            "username",
+            "rating",
+            "avatar",
+            "max_rating",
+            "last_activity",
+            "rating_updates",
+        ]
