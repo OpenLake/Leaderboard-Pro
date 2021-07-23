@@ -155,20 +155,20 @@ class CodeforcesLeaderboard(
 
         return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
     
-    def submissions(username):
+    def submissions(username,days_passed):
         response=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000') 
         practise_correct_count=0
         practise_wrong_count=0
         contest_correct_count=0
         contest_wrong_count=0
-        result_history_days=int(input("Enter the days till which you require data from current date: "))
-        times=86400*result_history_days
+        seconds_in_a_day=86400
+        times=seconds_in_a_day*days_passed
         for i in range(1000):
             result=response.json()['result'][i]
             creation_time=datetime.fromtimestamp(result['creationTimeSeconds'])
-            duration=datetime.now()-creation_time
-            durations=duration.total_seconds()
-            if int(durations) <= (times):
+            duration=(datetime.now()-creation_time).total_seconds()
+        
+            if int(duration) <= (times):
                 #contesttype
                 contesttype=result['author']['participantType']
                 if contesttype=="PRACTICE":
