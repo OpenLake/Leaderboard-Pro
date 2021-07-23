@@ -154,6 +154,46 @@ class CodeforcesLeaderboard(
         cf_user.save()
 
         return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
+    
+    def submissions(username,days_passed):
+        response=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000') 
+        practise_correct_count=0
+        practise_wrong_count=0
+        contest_correct_count=0
+        contest_wrong_count=0
+        seconds_in_a_day=86400
+        times=seconds_in_a_day*days_passed
+        for i in range(1000):
+            result=response.json()['result'][i]
+            creation_time=datetime.fromtimestamp(result['creationTimeSeconds'])
+            duration=(datetime.now()-creation_time).total_seconds()
+        
+            if int(duration) <= (times):
+                #contesttype
+                contesttype=result['author']['participantType']
+                if contesttype=="PRACTICE":
+                    verdict=result['verdict']
+                    if verdict=="OK":
+                        practise_correct_count+=1
+                    else:
+                        practise_wrong_count+=1
+                else:
+                    verdict=result['verdict']
+                    if verdict=="OK":
+                        contest_correct_count+=1
+                    else:
+                        contest_wrong_count+=1
+            else:
+                break
+        data= {
+            "practise_correct" : practise_correct_count,
+            "practise_wrong" : practise_wrong_count,
+            "contest_correct" :contest_correct_count,
+            "contest_wrong" : contest_wrong_count,
+        }
+            
+        return data
+
 
 
 class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
