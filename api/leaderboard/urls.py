@@ -18,7 +18,6 @@ from django.urls import path, include
 from django.contrib.auth.models import User, Group
 
 from rest_framework import serializers, viewsets, routers, permissions
-
 from leaderboard import views
 
 
@@ -52,12 +51,26 @@ router.register(r"groups", GroupViewSet)
 
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", views.api_root),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    path("github/user", views.GithubUserAPI.as_view()),
-    path("github/organisation", views.GithubOrganisationAPI.as_view()),
-    path("codeforces/", views.CodeforcesLeaderboard.as_view()),
-    path("codeforces/<int:pk>", views.CodeforcesUserAPI.as_view()),
-    path("codechef/", views.CodechefAPI.as_view()),
+    path("github/user", views.GithubUserAPI.as_view(), name="gh-user-details"),
+    path(
+        "github/organisation",
+        views.GithubOrganisationAPI.as_view(),
+        name="gh-org-leaderboard",
+    ),
+    path(
+        "codeforces/",
+        views.CodeforcesLeaderboard.as_view(),
+        name="codeforces-leaderboard",
+    ),
+    path(
+        "codeforces/<int:pk>",
+        views.CodeforcesUserAPI.as_view(),
+        name="codeforces-user-details",
+    ),
+    path("codechef/", views.CodechefAPI.as_view(), name="codechef-leaderboard"),
     path("admin/", admin.site.urls),
 ]
+
+urlpatterns += router.urls

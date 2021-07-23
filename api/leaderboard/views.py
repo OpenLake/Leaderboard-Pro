@@ -2,13 +2,32 @@ from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
 from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.reverse import reverse
 from rest_framework import generics, mixins, status
+
+from rest_framework.permissions import AllowAny
 
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
+
+
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def api_root(request, format=None):
+    return Response(
+        {
+            "codeforces": reverse(
+                "codeforces-leaderboard", request=request, format=format
+            ),
+            # urls from from router:
+            "users": reverse("user-list", request=request, format=format),
+            "groups": reverse("group-list", request=request, format=format),
+        }
+    )
 
 
 class GithubUserAPI(APIView):
@@ -154,46 +173,47 @@ class CodeforcesLeaderboard(
         cf_user.save()
 
         return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
-    
-    def submissions(username,days_passed):
-        response=requests.get(f'https://codeforces.com/api/user.status?handle={username}&from=1&count=1000') 
-        practise_correct_count=0
-        practise_wrong_count=0
-        contest_correct_count=0
-        contest_wrong_count=0
-        seconds_in_a_day=86400
-        times=seconds_in_a_day*days_passed
+
+    def submissions(username, days_passed):
+        response = requests.get(
+            f"https://codeforces.com/api/user.status?handle={username}&from=1&count=1000"
+        )
+        practise_correct_count = 0
+        practise_wrong_count = 0
+        contest_correct_count = 0
+        contest_wrong_count = 0
+        seconds_in_a_day = 86400
+        times = seconds_in_a_day * days_passed
         for i in range(1000):
-            result=response.json()['result'][i]
-            creation_time=datetime.fromtimestamp(result['creationTimeSeconds'])
-            duration=(datetime.now()-creation_time).total_seconds()
-        
+            result = response.json()["result"][i]
+            creation_time = datetime.fromtimestamp(result["creationTimeSeconds"])
+            duration = (datetime.now() - creation_time).total_seconds()
+
             if int(duration) <= (times):
-                #contesttype
-                contesttype=result['author']['participantType']
-                if contesttype=="PRACTICE":
-                    verdict=result['verdict']
-                    if verdict=="OK":
-                        practise_correct_count+=1
+                # contesttype
+                contesttype = result["author"]["participantType"]
+                if contesttype == "PRACTICE":
+                    verdict = result["verdict"]
+                    if verdict == "OK":
+                        practise_correct_count += 1
                     else:
-                        practise_wrong_count+=1
+                        practise_wrong_count += 1
                 else:
-                    verdict=result['verdict']
-                    if verdict=="OK":
-                        contest_correct_count+=1
+                    verdict = result["verdict"]
+                    if verdict == "OK":
+                        contest_correct_count += 1
                     else:
-                        contest_wrong_count+=1
+                        contest_wrong_count += 1
             else:
                 break
-        data= {
-            "practise_correct" : practise_correct_count,
-            "practise_wrong" : practise_wrong_count,
-            "contest_correct" :contest_correct_count,
-            "contest_wrong" : contest_wrong_count,
+        data = {
+            "practise_correct": practise_correct_count,
+            "practise_wrong": practise_wrong_count,
+            "contest_correct": contest_correct_count,
+            "contest_wrong": contest_wrong_count,
         }
-            
-        return data
 
+        return data
 
 
 class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
