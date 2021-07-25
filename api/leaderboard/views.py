@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
+from requests.auth import HTTPBasicAuth
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
@@ -45,6 +46,50 @@ class GithubUserAPI(APIView):
         """
         TODO
         """
+        
+        username = input("Enter your github username: " )
+        today = date.today()
+        def checkcommits(org):
+            commits_today = 0
+            repos = requests.get(f"https://api.github.com/users/{org}/repos")
+            for x in repos.json():
+                reponame = x["name"]
+                commit = requests.get(f'https://api.github.com/repos/{org}/{reponame}/commits')
+                for rep in commit.json():
+                    if rep['commit']['author']['date'][0:10] == str(today):
+                        if rep["commit"]["author"]["name"] == username:
+                            commits_today += 1
+                    else:
+                        continue
+            return commits_today
+        repo_names = requests.get(f"https://api.github.com/users/{username}/repos")
+
+        repos = []
+
+        for repo in repo_names.json():
+            print(f'The repo {repo["name"]} is added to the list')
+            repos.append(repo)
+
+
+            # COMMITS IN THE PERSONAL REPOSITORIES
+                # Commits on the above repo
+            print(f'Commits made on {repo["name"]} on {today}')
+            commit_today = 0
+            commit = requests.get(f'https://api.github.com/repos/ArshpreetS/{repo["name"]}/commits')
+            for x in commit.json():
+                if x["commit"]["author"]["date"][0:10] == str(today):
+                    commit_today += 1
+            print(f"I made {commit_today} on the {repo['name']} today ({today})!")
+            print()
+
+        orgs = requests.get(f"https://api.github.com/users/{username}/orgs")
+
+        for i in orgs.json():
+            name = i["login"] #Name of the Organisations
+            commited = checkcommits(name)
+            print(f"For organization {name}, {username} did {commited} commits")
+
+
 
         return {
             "username": username,
@@ -66,6 +111,7 @@ class GithubOrganisationAPI(APIView):
     """
     Collects Github data for GH_ORG
     """
+    
 
     GH_ORG = "OpenLake"
 
@@ -74,7 +120,45 @@ class GithubOrganisationAPI(APIView):
         TODO:
         """
 
-        repos = requests.get("https://api.github.com/users/OpenLake/repos").json()
+    repo_names = requests.get(f'https://api.github.com/users/{GH_ORG}/repos',auth = HTTPBasicAuth('Username',"Password"))
+
+
+    repo_list = []
+
+    today = date.today()
+    days = []
+    # To make the range of dates
+    print("You want to see the commits for the last how many days?", end = " ")
+    days_passed = int(input())
+
+    print()
+
+    for z in range(days_passed):
+        diff = str(today - timedelta(days = z))
+        print(f'ON {diff}')
+        print()
+        #To get the commit list FOR EACH REPOSITORY
+        for reponame in repo_list:
+            guys = {}
+            commits_that_day = 0
+            commit = requests.get(f"https://api.github.com/repos/{GH_ORG}/{reponame}/commits", auth = HTTPBasicAuth('Username',"Password"))
+            for x in commit.json():
+                if x["commit"]["author"]["date"][0:10] == str(diff):
+                    commits_that_day = commits_that_day + 1
+                    if x['commit']['author']['name'] not in guys:
+                        guys[x['commit']['author']['name']] = 1
+                    else:
+                        guys[x['commit']['author']['name']] += 1 
+
+            if commits_that_day:
+                print(f'There were a total of {commits_that_day} commits on {reponame}!')
+                print()
+            commits_that_day = 0
+            for m in guys:
+                print(f'{m} made {guys[m]} commits to {reponame}')
+            print()
+            print()
+	
         return [
             {
                 "username": f"gh_user_{i}",
