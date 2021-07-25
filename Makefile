@@ -6,7 +6,7 @@ install:
 	cd api/ && $(PIP) install -r requirements.txt
 	cd app/ && $(PNPM) install
 
-setup:
+migrate:
 	cd api/ && $(PYTHON) manage.py makemigrations
 	cd api/ && $(PYTHON) manage.py migrate
 
