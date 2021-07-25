@@ -13,7 +13,7 @@ migrate:
 dev-ui:
 	cd app/ && $(PNPM) run start
 
-dev-server: setup
+dev-server: migrate
 	cd api/ && $(PYTHON) manage.py runserver &
 
 dev: dev-server dev-ui 
