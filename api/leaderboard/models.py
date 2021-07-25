@@ -24,10 +24,14 @@ class CodeforcesUser(models.Model):
         ordering = ["-rating"]
 
 
+def get_default_cf_user():
+    return CodeforcesUser.objects.get_or_create(username="tourist")[0]
+
+
 class CodeforcesUserRatingUpdate(models.Model):
     cf_user = models.ForeignKey(
         CodeforcesUser,
-        default=lambda: CodeforcesUser.objects.get_or_create(username="tourist")[0],
+        default=get_default_cf_user,
         on_delete=models.CASCADE,
         related_name="rating_updates",
     )
