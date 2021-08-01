@@ -29,23 +29,23 @@ for z in range(dates):
 	print()
 	#To get the commit list FOR EACH REPOSITORY
 	for reponame in repo_list:
-		guys = {}
+		gh_user = {}
 		commits_that_day = 0
 		commit = requests.get(f"https://api.github.com/repos/OpenLake/{reponame}/commits", auth = HTTPBasicAuth('Username',"Password"))
 		for x in commit.json():
 			if x["commit"]["author"]["date"][0:10] == str(diff):
 				commits_that_day = commits_that_day + 1
-				if x['commit']['author']['name'] not in guys:
-					guys[x['commit']['author']['name']] = 1
+				if x['commit']['author']['name'] not in gh_user:
+					gh_user[x['commit']['author']['name']] = 1
 				else:
-					guys[x['commit']['author']['name']] += 1 
+					gh_user[x['commit']['author']['name']] += 1 
 
 		if commits_that_day:
 			print(f'There were a total of {commits_that_day} commits on {reponame}!')
 			print()
 		commits_that_day = 0
-		for m in guys:
-			print(f'{m} made {guys[m]} commits to {reponame}')
+		for m in gh_user:
+			print(f'{m} made {gh_user[m]} commits to {reponame}')
 		print()
 		print()
 	
