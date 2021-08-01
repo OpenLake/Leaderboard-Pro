@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from random import randint, choice
 import requests
 
+
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
 
@@ -45,6 +46,9 @@ class GithubUserAPI(APIView):
         """
         TODO
         """
+        
+        
+
 
         return {
             "username": username,
@@ -66,6 +70,7 @@ class GithubOrganisationAPI(APIView):
     """
     Collects Github data for GH_ORG
     """
+    
 
     GH_ORG = "OpenLake"
 
@@ -74,7 +79,7 @@ class GithubOrganisationAPI(APIView):
         TODO:
         """
 
-        repos = requests.get("https://api.github.com/users/OpenLake/repos").json()
+    
         return [
             {
                 "username": f"gh_user_{i}",

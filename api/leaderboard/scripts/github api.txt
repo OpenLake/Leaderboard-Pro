@@ -1,0 +1,4 @@
+To get the information about the user's followers --> `curl https://api.github.com/users/{username}/followers`
+To get the list of PRs in the given repo --> `curl https://api.github.com/repos/{owner}/{repo}/pulls`
+To get the list of repos of the given user --> `curl https://api.github.com/users/{username}/repos`
+To get the list of commits --> `curl https://api.github.com/users/{username}/{reponame}/commits`
