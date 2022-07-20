@@ -1,4 +1,4 @@
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser
 from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,12 +35,12 @@ class GithubUserAPI(APIView):
     Collects Github data for registered users
     """
 
-    REGISTERED_GH_USERS = [
-        "KShivendu",
-        "ArsphreetS",
-        # Contributors may add their Github username here
-    ]
-
+    # REGISTERED_GH_USERS = [
+    #     "KShivendu",
+    #     "ArsphreetS",
+    #     # Contributors may add their Github username here
+    # ]
+    REGISTERED_GH_USERS = GitHubUser.objects.all()
     def _get_github_data(self, username: str, days_passed=7):
         """
         TODO
@@ -54,7 +54,7 @@ class GithubUserAPI(APIView):
 
     def get(self, request, format=None):
         gh_users = [
-            self._get_github_data(gh_username)
+            self._get_github_data(gh_username.username)
             for gh_username in self.REGISTERED_GH_USERS
         ]
         gh_users.sort(key=lambda r: r.get("rank", 0))
