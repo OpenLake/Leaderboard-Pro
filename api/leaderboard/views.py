@@ -121,9 +121,8 @@ class CodeforcesLeaderboard(
             if cf_user.is_outdated:
                 user_info = cf_api_response[outdated_counter]
                 outdated_counter += 1
-
                 # TODO: Use serialier for saving data from codeforces API
-                cf_user.max_rating = user_info.get("max_rating", 0)
+                cf_user.max_rating = user_info.get("maxRating", 0)
                 cf_user.rating = user_info.get("rating", 0)
                 cf_user.last_activity = user_info.get(
                     "lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP
