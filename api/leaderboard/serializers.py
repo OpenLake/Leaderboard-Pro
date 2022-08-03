@@ -48,3 +48,27 @@ class Cf_User_Serializer(Cf_Serializer):
             "last_activity",
             "rating_updates",
         ]
+
+class CC_Serializer(serializers.ModelSerializer):
+    """
+    TODO
+    """
+
+    def create(self, validated_data):
+        return CodechefUser.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `CodechefUser` instance, given the validated data.
+        """
+        instance.rating = validated_data.get("rating", instance.rating)
+        instance.max_rating = validated_data.get("maxRating", instance.max_rating)
+        instance.last_activity = validated_data.get(
+            "lastActivity", instance.last_activity
+        )
+        instance.save()
+        return instance
+
+    class Meta:
+        model = CodechefUser
+        fields = ["id", "username", "rating", "avatar", "max_rating", "last_activity"]

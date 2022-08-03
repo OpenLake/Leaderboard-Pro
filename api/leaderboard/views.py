@@ -1,5 +1,5 @@
 from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser, CodechefUser
-from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
+from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer, CC_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -220,12 +220,6 @@ class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Cf_User_Serializer
 
 
-class CodechefAPI(APIView):
-    """
-    TODO
-    """
-
-    def get(self, request, format=None):
-        # TODO
-
-        return Response("TODO")
+# class CodeforcesLeaderboard(
+#     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     def get:
