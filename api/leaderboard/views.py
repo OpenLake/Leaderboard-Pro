@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
+from bs4 import BeautifulSoup
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
@@ -22,6 +23,9 @@ def api_root(request, format=None):
         {
             "codeforces": reverse(
                 "codeforces-leaderboard", request=request, format=format
+            ),
+            "codechef": reverse(
+                "codechef-leaderboard", request=request, format=format
             ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
@@ -220,6 +224,32 @@ class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Cf_User_Serializer
 
 
-# class CodeforcesLeaderboard(
-#     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-#     def get:
+class CodechefLeaderboard(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = CodechefUser.objects.all()
+    serializer_class = CC_Serializer
+
+    def _check_for_updates(self, cc_users):
+        for i, cc_user in enumerate(cc_users):
+            if cc_user.is_outdated:
+                url = 'https://www.codechef.com/users/{}'.format(cc_user.username)
+                page = requests.get(url)
+                data_cc = BeautifulSoup(page.text, 'html.parser')
+                cc_user.rating = data_cc.find('div', class_='rating-number').text
+                container_highest_rating = data_cc.find('div', class_='rating-header')
+                cc_user.max_rating = container_highest_rating.find_next('small').text.split()[-1].rstrip(')')
+                container_ranks = data_cc.find('div', class_='rating-ranks')
+                ranks = container_ranks.find_all('a')
+                cc_user.Global_rank = ranks[0].strong.text
+                cc_user.Country_rank = ranks[1].strong.text
+                cc_user.save()
+        return cc_users
+    def get(self, request):
+        cc_users = self._check_for_updates(self.get_queryset())
+        serializer = CC_Serializer(cc_users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        username = request.data["username"]
+        cc_user = CodechefUser(username=username)
+        cc_user.save()
+        return Response(CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED)

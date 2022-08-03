@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, CodechefUser
 
 
 class Cf_Serializer(serializers.ModelSerializer):
@@ -63,12 +63,11 @@ class CC_Serializer(serializers.ModelSerializer):
         """
         instance.rating = validated_data.get("rating", instance.rating)
         instance.max_rating = validated_data.get("maxRating", instance.max_rating)
-        instance.last_activity = validated_data.get(
-            "lastActivity", instance.last_activity
-        )
+        instance.Global_rank = validated_data.get("globalrank", instance.Global_rank)
+        instance.Country_rank = validated_data.get("countryrank", instance.Country_rank)
         instance.save()
         return instance
 
     class Meta:
         model = CodechefUser
-        fields = ["id", "username", "rating", "avatar", "max_rating", "last_activity"]
+        fields = ["id", "username", "rating", "max_rating", "Global_rank", "Country_rank"]

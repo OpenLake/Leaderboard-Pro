@@ -69,7 +69,7 @@ urlpatterns = [
         views.CodeforcesUserAPI.as_view(),
         name="codeforces-user-details",
     ),
-    path("codechef/", views.CodechefAPI.as_view(), name="codechef-leaderboard"),
+    path("codechef/", views.CodechefLeaderboard.as_view(), name="codechef-leaderboard"),
     path("admin/", admin.site.urls),
 ]
 

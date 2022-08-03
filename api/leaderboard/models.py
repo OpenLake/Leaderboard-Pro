@@ -47,10 +47,10 @@ class CodeforcesUser(models.Model):
 class CodechefUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
+    Global_rank = models.CharField(max_length = 10, default="NA")
+    Country_rank = models.CharField(max_length = 10, default="NA")
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.PositiveIntegerField(default=datetime.max.timestamp())
     last_updated = models.DateTimeField(auto_now=True)
-    avatar = models.CharField(max_length=256, default="")
 
     @property
     def is_outdated(self):
