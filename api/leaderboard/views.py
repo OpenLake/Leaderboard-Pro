@@ -1,4 +1,4 @@
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser, CodechefUser
 from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
