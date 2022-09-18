@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, CodechefUser, GitHubUser
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, CodechefUser, GitHubUser, OpenLakeContributer
 
 
 class Cf_Serializer(serializers.ModelSerializer):
@@ -83,7 +83,7 @@ class GH_Serializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `CodechefUser` instance, given the validated data.
+        Update and return an existing `GithubUser` instance, given the validated data.
         """
         instance.contributions = validated_data.get("contributions", instance.contributions)
         instance.repositories = validated_data.get("repositories", instance.repositories)
@@ -94,3 +94,23 @@ class GH_Serializer(serializers.ModelSerializer):
     class Meta:
         model = GitHubUser
         fields = ["id", "username", "contributions", "repositories", "stars"]
+
+class OL_Serializer(serializers.ModelSerializer):
+    """
+    TODO
+    """
+
+    def create(self, validated_data):
+        return OpenLakeContributer.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `OpenLake Contributor` instance, given the validated data.
+        """
+        instance.contributions = validated_data.get("contributions", instance.contributions)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = OpenLakeContributer
+        fields = ["id", "username", "contributions"]
