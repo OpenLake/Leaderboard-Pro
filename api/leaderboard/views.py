@@ -1,5 +1,5 @@
 from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser, CodechefUser
-from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer, CC_Serializer
+from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer, CC_Serializer, GH_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -27,6 +27,9 @@ def api_root(request, format=None):
             "codechef": reverse(
                 "codechef-leaderboard", request=request, format=format
             ),
+            "github": reverse(
+                "github-leaderboard", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),
@@ -34,36 +37,39 @@ def api_root(request, format=None):
     )
 
 
-class GithubUserAPI(APIView):
+class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for registered users
     """
-
-    # REGISTERED_GH_USERS = [
-    #     "KShivendu",
-    #     "ArsphreetS",
-    #     # Contributors may add their Github username here
-    # ]
-    REGISTERED_GH_USERS = GitHubUser.objects.all()
-    def _get_github_data(self, username: str, days_passed=7):
-        """
-        TODO
-        """
-
-        return {
-            "username": username,
-            "commits": randint(1, 100),
-            "rank": randint(1, 100),
-        }
-
-    def get(self, request, format=None):
-        gh_users = [
-            self._get_github_data(gh_username.username)
-            for gh_username in self.REGISTERED_GH_USERS
-        ]
-        gh_users.sort(key=lambda r: r.get("rank", 0))
-
-        return Response(gh_users)
+    queryset = GitHubUser.objects.all()
+    serializer_class = GH_Serializer
+    def _check_for_updates(self, gh_users):
+        for i, gh_user in enumerate(gh_users):
+            if gh_user.is_outdated:
+                url = 'https://github.com/{}'.format(gh_user.username)
+                page = requests.get(url)
+                data_gh = BeautifulSoup(page.text, 'html.parser')
+                a = data_gh.find('div', class_='js-yearly-contributions')
+                b = a.find('h2', class_="f4 text-normal mb-2").text
+                gh_user.contributions = int(b.split(" ")[6])
+                url = f"https://api.github.com/users/{gh_user.username}/repos"
+                response = requests.get(url).json()
+                gh_user.repositories = len(response)
+                stars = 0
+                for i in range(len(response)):
+                    stars = stars + response[i]["stargazers_count"]
+                gh_user.stars = stars
+                gh_user.save()
+        return gh_users
+    def get(self, request):
+        gh_users = self._check_for_updates(self.get_queryset())
+        serializer = GH_Serializer(gh_users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        username = request.data["username"]
+        gh_user = GitHubUser(username=username)
+        gh_user.save()
+        return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
 
 
 class GithubOrganisationAPI(APIView):

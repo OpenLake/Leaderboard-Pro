@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, CodechefUser
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, CodechefUser, GitHubUser
 
 
 class Cf_Serializer(serializers.ModelSerializer):
@@ -71,3 +71,26 @@ class CC_Serializer(serializers.ModelSerializer):
     class Meta:
         model = CodechefUser
         fields = ["id", "username", "rating", "max_rating", "Global_rank", "Country_rank"]
+
+
+class GH_Serializer(serializers.ModelSerializer):
+    """
+    TODO
+    """
+
+    def create(self, validated_data):
+        return GitHubUser.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `CodechefUser` instance, given the validated data.
+        """
+        instance.contributions = validated_data.get("contributions", instance.contributions)
+        instance.repositories = validated_data.get("repositories", instance.repositories)
+        instance.stars = validated_data.get("stars", instance.stars)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = GitHubUser
+        fields = ["id", "username", "contributions", "repositories", "stars"]

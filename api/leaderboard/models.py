@@ -4,9 +4,9 @@ from datetime import datetime, timezone, timedelta
 
 class GitHubUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
-    commits = models.PositiveIntegerField(default=0)
+    contributions = models.PositiveIntegerField(default=0)
+    repositories = models.PositiveIntegerField(default=0)
     stars = models.PositiveIntegerField(default=0)
-    rank = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
 
     @property
@@ -19,8 +19,6 @@ class GitHubUser(models.Model):
     def __str__(self):
         return f"{self.username}"
 
-    class Meta:
-        ordering = ["rank"]
 
 
 class CodeforcesUser(models.Model):
