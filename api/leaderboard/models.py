@@ -19,6 +19,22 @@ class GitHubUser(models.Model):
     def __str__(self):
         return f"{self.username}"
 
+class OpenLakeContributer(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    contributions = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True 
+        else:
+            return False
+    
+    def __str__(self):
+        return f"{self.username}"
+    class Meta:
+        ordering = ["-contributions"]
 
 
 class CodeforcesUser(models.Model):
