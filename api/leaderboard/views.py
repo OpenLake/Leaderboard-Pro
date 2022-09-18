@@ -30,6 +30,9 @@ def api_root(request, format=None):
             "github": reverse(
                 "github-leaderboard", request=request, format=format
             ),
+            "openlake": reverse(
+                "openlake-leaderboard", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),
@@ -72,34 +75,46 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
         return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
 
 
-class GithubOrganisationAPI(APIView):
+class GithubOrganisationAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for GH_ORG
     """
-
-    GH_ORG = "OpenLake"
-
-    def _get_github_data(self, days_passed=7):
-        """
-        TODO:
-        """
-
-        repos = requests.get("https://api.github.com/users/OpenLake/repos").json()
-        return [
-            {
-                "username": f"gh_user_{i}",
-                "commits": randint(1, 100),
-                "rank": randint(1, 100),
-                "contributions": {choice(repos)["name"]: randint(1, 100)},
-            }
-            for i in range(10)
-        ]
-
-    def get(self, request, format=None):
-        gh_users = self._get_github_data()
-        gh_users.sort(key=lambda r: r.get("rank", 0))
-
-        return Response(gh_users)
+    queryset = OpenLakeContributer.objects.all()
+    serializer_class = OL_Serializer
+    def _check_for_updates(self):
+        updated_list = {}
+        url = "https://api.github.com/users/OpenLake/repos"
+        response = requests.get(url).json()
+        print(len(response))
+        for i in range(len(response)):
+            repo_url = str(response[i]['contributors_url'])
+            print(repo_url)
+            try:
+                repo_response = requests.get(repo_url).json()
+                for j in range(len(repo_response)):
+                    try:
+                        print(repo_response[j]['login'])
+                        print(updated_list)
+                        if repo_response[j]['login'] in updated_list.keys():
+                            updated_list[repo_response[j]['login']] = updated_list[repo_response[j]['login']] + repo_response[j]['contributions']
+                        else:
+                            updated_list[repo_response[j]['login']] = repo_response[j]['contributions']
+                    except:
+                        continue
+            except:
+                continue
+        return updated_list
+    def get(self, request):
+        ol_list = self._check_for_updates()
+        OpenLakeContributer.objects.all().delete()
+        for i in ol_list.keys():
+            ol_contributor = OpenLakeContributer()
+            ol_contributor.username = i 
+            ol_contributor.contributions = ol_list[i]
+            ol_contributor.save()
+        ol_contributors = OpenLakeContributer.objects.all()
+        serializer = OL_Serializer(ol_contributors, many=True)
+        return Response(serializer.data)
 
 
 class CodeforcesLeaderboard(
