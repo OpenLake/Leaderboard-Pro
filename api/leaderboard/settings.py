@@ -136,13 +136,18 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CHECK_INTV = 1
+CC_INTV = 1
+GH_INTV = 1
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
-    "update_db_task": {
+    "cc_update_db_task": {
         "task": "leaderboard.celery.codechef_user_update",
-        "schedule": crontab(minute=f"*/{CHECK_INTV}"),
+        "schedule": crontab(minute=f"*/{CC_INTV}"),
+    },
+    "gh_update_db_task": {
+        "task": "leaderboard.celery.github_user_update",
+        "schedule": crontab(minute=f"*/{GH_INTV}"),
     },
 }

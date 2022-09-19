@@ -46,26 +46,8 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
     """
     queryset = GitHubUser.objects.all()
     serializer_class = GH_Serializer
-    def _check_for_updates(self, gh_users):
-        for i, gh_user in enumerate(gh_users):
-            if gh_user.is_outdated:
-                url = 'https://github.com/{}'.format(gh_user.username)
-                page = requests.get(url)
-                data_gh = BeautifulSoup(page.text, 'html.parser')
-                a = data_gh.find('div', class_='js-yearly-contributions')
-                b = a.find('h2', class_="f4 text-normal mb-2").text
-                gh_user.contributions = int(b.split(" ")[6])
-                url = f"https://api.github.com/users/{gh_user.username}/repos"
-                response = requests.get(url).json()
-                gh_user.repositories = len(response)
-                stars = 0
-                for i in range(len(response)):
-                    stars = stars + response[i]["stargazers_count"]
-                gh_user.stars = stars
-                gh_user.save()
-        return gh_users
     def get(self, request):
-        gh_users = self._check_for_updates(self.get_queryset())
+        gh_users = GitHubUser.objects.all()
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
     def post(self, request):

@@ -81,15 +81,15 @@ class GH_Serializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return GitHubUser.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `GithubUser` instance, given the validated data.
-        """
-        instance.contributions = validated_data.get("contributions", instance.contributions)
-        instance.repositories = validated_data.get("repositories", instance.repositories)
-        instance.stars = validated_data.get("stars", instance.stars)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     """
+    #     Update and return an existing `GithubUser` instance, given the validated data.
+    #     """
+    #     instance.contributions = validated_data.get("contributions", instance.contributions)
+    #     instance.repositories = validated_data.get("repositories", instance.repositories)
+    #     instance.stars = validated_data.get("stars", instance.stars)
+    #     instance.save()
+    #     return instance
 
     class Meta:
         model = GitHubUser
