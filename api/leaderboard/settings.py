@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "django_celery_beat",
     "leaderboard",
 ]
 
@@ -132,3 +135,19 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CC_INTV = 1
+GH_INTV = 1
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_BEAT_SCHEDULE = {
+    "cc_update_db_task": {
+        "task": "leaderboard.celery.codechef_user_update",
+        "schedule": crontab(minute=f"*/{CC_INTV}"),
+    },
+    "gh_update_db_task": {
+        "task": "leaderboard.celery.github_user_update",
+        "schedule": crontab(minute=f"*/{GH_INTV}"),
+    },
+}

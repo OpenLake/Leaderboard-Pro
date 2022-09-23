@@ -2,6 +2,41 @@ from django.db import models
 from datetime import datetime, timezone, timedelta
 
 
+class GitHubUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    contributions = models.PositiveIntegerField(default=0)
+    repositories = models.PositiveIntegerField(default=0)
+    stars = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True 
+        else:
+            return False
+    
+    def __str__(self):
+        return f"{self.username}"
+
+class OpenLakeContributer(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    contributions = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True 
+        else:
+            return False
+    
+    def __str__(self):
+        return f"{self.username}"
+    class Meta:
+        ordering = ["-contributions"]
+
+
 class CodeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
@@ -23,6 +58,26 @@ class CodeforcesUser(models.Model):
     class Meta:
         ordering = ["-rating"]
 
+class CodechefUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    max_rating = models.PositiveIntegerField(default=0)
+    Global_rank = models.CharField(max_length = 10, default="NA")
+    Country_rank = models.CharField(max_length = 10, default="NA")
+    rating = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3):
+            return True
+        else:
+            False
+
+    def __str__(self):
+        return f"{self.username} ({self.rating})"
+
+    class Meta:
+        ordering = ["-rating"]
 
 def get_default_cf_user():
     return CodeforcesUser.objects.get_or_create(username="tourist")[0]

@@ -1,5 +1,5 @@
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate
-from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer
+from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser, CodechefUser, OpenLakeContributer
+from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer, CC_Serializer, GH_Serializer, OL_Serializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from datetime import datetime, timedelta
 from random import randint, choice
 import requests
+from bs4 import BeautifulSoup
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
@@ -23,6 +24,15 @@ def api_root(request, format=None):
             "codeforces": reverse(
                 "codeforces-leaderboard", request=request, format=format
             ),
+            "codechef": reverse(
+                "codechef-leaderboard", request=request, format=format
+            ),
+            "github": reverse(
+                "github-leaderboard", request=request, format=format
+            ),
+            "openlake": reverse(
+                "openlake-leaderboard", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),
@@ -30,66 +40,63 @@ def api_root(request, format=None):
     )
 
 
-class GithubUserAPI(APIView):
+class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for registered users
     """
-
-    REGISTERED_GH_USERS = [
-        "KShivendu",
-        "ArsphreetS",
-        # Contributors may add their Github username here
-    ]
-
-    def _get_github_data(self, username: str, days_passed=7):
-        """
-        TODO
-        """
-
-        return {
-            "username": username,
-            "commits": randint(1, 100),
-            "rank": randint(1, 100),
-        }
-
-    def get(self, request, format=None):
-        gh_users = [
-            self._get_github_data(gh_username)
-            for gh_username in self.REGISTERED_GH_USERS
-        ]
-        gh_users.sort(key=lambda r: r.get("rank", 0))
-
-        return Response(gh_users)
+    queryset = GitHubUser.objects.all()
+    serializer_class = GH_Serializer
+    def get(self, request):
+        gh_users = GitHubUser.objects.all()
+        serializer = GH_Serializer(gh_users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        username = request.data["username"]
+        gh_user = GitHubUser(username=username)
+        gh_user.save()
+        return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
 
 
-class GithubOrganisationAPI(APIView):
+class GithubOrganisationAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for GH_ORG
     """
-
-    GH_ORG = "OpenLake"
-
-    def _get_github_data(self, days_passed=7):
-        """
-        TODO:
-        """
-
-        repos = requests.get("https://api.github.com/users/OpenLake/repos").json()
-        return [
-            {
-                "username": f"gh_user_{i}",
-                "commits": randint(1, 100),
-                "rank": randint(1, 100),
-                "contributions": {choice(repos)["name"]: randint(1, 100)},
-            }
-            for i in range(10)
-        ]
-
-    def get(self, request, format=None):
-        gh_users = self._get_github_data()
-        gh_users.sort(key=lambda r: r.get("rank", 0))
-
-        return Response(gh_users)
+    queryset = OpenLakeContributer.objects.all()
+    serializer_class = OL_Serializer
+    def _check_for_updates(self):
+        updated_list = {}
+        url = "https://api.github.com/users/OpenLake/repos"
+        response = requests.get(url).json()
+        print(len(response))
+        for i in range(len(response)):
+            repo_url = str(response[i]['contributors_url'])
+            print(repo_url)
+            try:
+                repo_response = requests.get(repo_url).json()
+                for j in range(len(repo_response)):
+                    try:
+                        print(repo_response[j]['login'])
+                        print(updated_list)
+                        if repo_response[j]['login'] in updated_list.keys():
+                            updated_list[repo_response[j]['login']] = updated_list[repo_response[j]['login']] + repo_response[j]['contributions']
+                        else:
+                            updated_list[repo_response[j]['login']] = repo_response[j]['contributions']
+                    except:
+                        continue
+            except:
+                continue
+        return updated_list
+    def get(self, request):
+        ol_list = self._check_for_updates()
+        OpenLakeContributer.objects.all().delete()
+        for i in ol_list.keys():
+            ol_contributor = OpenLakeContributer()
+            ol_contributor.username = i 
+            ol_contributor.contributions = ol_list[i]
+            ol_contributor.save()
+        ol_contributors = OpenLakeContributer.objects.all()
+        serializer = OL_Serializer(ol_contributors, many=True)
+        return Response(serializer.data)
 
 
 class CodeforcesLeaderboard(
@@ -121,9 +128,8 @@ class CodeforcesLeaderboard(
             if cf_user.is_outdated:
                 user_info = cf_api_response[outdated_counter]
                 outdated_counter += 1
-
                 # TODO: Use serialier for saving data from codeforces API
-                cf_user.max_rating = user_info.get("max_rating", 0)
+                cf_user.max_rating = user_info.get("maxRating", 0)
                 cf_user.rating = user_info.get("rating", 0)
                 cf_user.last_activity = user_info.get(
                     "lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP
@@ -221,12 +227,17 @@ class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Cf_User_Serializer
 
 
-class CodechefAPI(APIView):
-    """
-    TODO
-    """
+class CodechefLeaderboard(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = CodechefUser.objects.all()
+    serializer_class = CC_Serializer
 
-    def get(self, request, format=None):
-        # TODO
-
-        return Response("TODO")
+    def get(self, request):
+        cc_users = CodechefUser.objects.all()
+        serializer = CC_Serializer(cc_users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        username = request.data["username"]
+        cc_user = CodechefUser(username=username)
+        cc_user.save()
+        return Response(CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED)

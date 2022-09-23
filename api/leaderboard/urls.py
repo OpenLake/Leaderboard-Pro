@@ -53,12 +53,6 @@ router.register(r"groups", GroupViewSet)
 urlpatterns = [
     path("", views.api_root),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    path("github/user", views.GithubUserAPI.as_view(), name="gh-user-details"),
-    path(
-        "github/organisation",
-        views.GithubOrganisationAPI.as_view(),
-        name="gh-org-leaderboard",
-    ),
     path(
         "codeforces/",
         views.CodeforcesLeaderboard.as_view(),
@@ -69,7 +63,9 @@ urlpatterns = [
         views.CodeforcesUserAPI.as_view(),
         name="codeforces-user-details",
     ),
-    path("codechef/", views.CodechefAPI.as_view(), name="codechef-leaderboard"),
+    path("codechef/", views.CodechefLeaderboard.as_view(), name="codechef-leaderboard"),
+    path("github/", views.GithubUserAPI.as_view(), name="github-leaderboard"),
+    path("openlake/", views.GithubOrganisationAPI.as_view(), name="openlake-leaderboard"),
     path("admin/", admin.site.urls),
 ]
 
