@@ -4,7 +4,7 @@ PIP ?= pip3
 
 install:
 	cd api/ && $(PIP) install -r requirements.txt
-	cd app/ && $(PNPM) install
+	cd app/ && $(NPM) i
 
 migrate:
 	cd api/ && $(PYTHON) manage.py makemigrations
