@@ -4,7 +4,7 @@ PIP ?= pip3
 
 install:
 	cd api/ && $(PIP) install -r requirements.txt
-	cd app/ && $(PNPM) install
+	cd app/ && $(PNPM) i
 
 migrate:
 	cd api/ && $(PYTHON) manage.py makemigrations
@@ -16,5 +16,11 @@ dev-ui:
 dev-server: migrate
 	cd api/ && $(PYTHON) manage.py runserver &
 
-dev: dev-server dev-ui 
+celery-1:
+	cd api/ && celery -A leaderboard worker --loglevel=info
+
+celery-2:
+	cd api/ && celery -A leaderboard beat -l info
+
+dev: dev-server dev-ui celery-1 celery-2
 	@echo 'Starting dev servers'
