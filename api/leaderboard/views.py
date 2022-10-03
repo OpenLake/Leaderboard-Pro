@@ -1,17 +1,27 @@
-from leaderboard.models import CodeforcesUser, CodeforcesUserRatingUpdate, GitHubUser, CodechefUser, OpenLakeContributer
-from leaderboard.serializers import Cf_Serializer, Cf_User_Serializer, CC_Serializer, GH_Serializer, OL_Serializer
+from leaderboard.models import (
+    CodeforcesUser,
+    CodeforcesUserRatingUpdate,
+    GitHubUser,
+    CodechefUser,
+    OpenLakeContributer,
+)
+from leaderboard.serializers import (
+    Cf_Serializer,
+    Cf_User_Serializer,
+    CC_Serializer,
+    GH_Serializer,
+    OL_Serializer,
+)
 from rest_framework.response import Response
-from rest_framework.views import APIView
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.reverse import reverse
 from rest_framework import generics, mixins, status
 
 from rest_framework.permissions import AllowAny
 
-from datetime import datetime, timedelta
-from random import randint, choice
+from datetime import datetime
 import requests
-from bs4 import BeautifulSoup
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
@@ -40,58 +50,77 @@ def api_root(request, format=None):
     )
 
 
-class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class GithubUserAPI(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
     """
     Collects Github data for registered users
     """
+
     queryset = GitHubUser.objects.all()
     serializer_class = GH_Serializer
+
     def get(self, request):
         gh_users = GitHubUser.objects.all()
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
+
     def post(self, request):
         username = request.data["username"]
         gh_user = GitHubUser(username=username)
         gh_user.save()
-        return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
+        return Response(
+            GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
+        )
 
 
-class GithubOrganisationAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class GithubOrganisationAPI(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
     """
     Collects Github data for GH_ORG
     """
+
     queryset = OpenLakeContributer.objects.all()
     serializer_class = OL_Serializer
+
     def _check_for_updates(self):
         updated_list = {}
         url = "https://api.github.com/users/OpenLake/repos"
         response = requests.get(url).json()
         print(len(response))
         for i in range(len(response)):
-            repo_url = str(response[i]['contributors_url'])
+            repo_url = str(response[i]["contributors_url"])
             print(repo_url)
             try:
                 repo_response = requests.get(repo_url).json()
                 for j in range(len(repo_response)):
                     try:
-                        print(repo_response[j]['login'])
+                        print(repo_response[j]["login"])
                         print(updated_list)
-                        if repo_response[j]['login'] in updated_list.keys():
-                            updated_list[repo_response[j]['login']] = updated_list[repo_response[j]['login']] + repo_response[j]['contributions']
+                        if repo_response[j]["login"] in updated_list.keys():
+                            updated_list[repo_response[j]["login"]] = (
+                                updated_list[repo_response[j]["login"]]
+                                + repo_response[j]["contributions"]
+                            )
                         else:
-                            updated_list[repo_response[j]['login']] = repo_response[j]['contributions']
-                    except:
+                            updated_list[
+                                repo_response[j]["login"]
+                            ] = repo_response[j]["contributions"]
+                    except Exception as ex:
+                        print("=========================", ex)
                         continue
-            except:
+            except Exception as ex:
+                print("=========================", ex)
                 continue
         return updated_list
+
     def get(self, request):
         ol_list = self._check_for_updates()
         OpenLakeContributer.objects.all().delete()
         for i in ol_list.keys():
             ol_contributor = OpenLakeContributer()
-            ol_contributor.username = i 
+            ol_contributor.username = i
             ol_contributor.contributions = ol_list[i]
             ol_contributor.save()
         ol_contributors = OpenLakeContributer.objects.all()
@@ -118,7 +147,8 @@ class CodeforcesLeaderboard(
         cf_api_response = {}
 
         if len(cf_outdated_users) > 0:
-            url = f"https://codeforces.com/api/user.info?handles={';'.join(cf_outdated_users)}"
+            url = f"https://codeforces.com/api/user.info?handles=\
+            {';'.join(cf_outdated_users)}"
             cf_api_response = requests.get(url).json()
             cf_api_response = cf_api_response["result"]
 
@@ -137,9 +167,8 @@ class CodeforcesLeaderboard(
                 cf_user.avatar = user_info.get("avatar", "")
                 cf_user.save()
 
-                url = (
-                    f"https://codeforces.com/api/user.rating?handle={cf_user.username}"
-                )
+                url = f"https://codeforces.com/api/user.rating?handle=\
+                {cf_user.username}"
                 rating_update_api_response = requests.get(url).json()
                 if rating_update_api_response.get("status", "FAILED") != "OK":
                     continue
@@ -147,7 +176,9 @@ class CodeforcesLeaderboard(
                 cf_user = CodeforcesUser.objects.get(username=cf_user.username)
 
                 rating_updates = rating_update_api_response.get("result", [])
-                stored_rating_count = CodeforcesUserRatingUpdate.objects.count()
+                stored_rating_count = (
+                    CodeforcesUserRatingUpdate.objects.count()
+                )
                 new_rating_updates = rating_updates[stored_rating_count:]
 
                 for i, rating_update in enumerate(new_rating_updates):
@@ -178,11 +209,14 @@ class CodeforcesLeaderboard(
         cf_user = CodeforcesUser(username=username)
         cf_user.save()
 
-        return Response(Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
+        return Response(
+            Cf_Serializer(cf_user).data, status=status.HTTP_201_CREATED
+        )
 
     def submissions(username, days_passed):
         response = requests.get(
-            f"https://codeforces.com/api/user.status?handle={username}&from=1&count=1000"
+            f"https://codeforces.com/api/user.status?handle=\
+            {username}&from=1&count=1000"
         )
         practise_correct_count = 0
         practise_wrong_count = 0
@@ -192,7 +226,9 @@ class CodeforcesLeaderboard(
         times = seconds_in_a_day * days_passed
         for i in range(1000):
             result = response.json()["result"][i]
-            creation_time = datetime.fromtimestamp(result["creationTimeSeconds"])
+            creation_time = datetime.fromtimestamp(
+                result["creationTimeSeconds"]
+            )
             duration = (datetime.now() - creation_time).total_seconds()
 
             if int(duration) <= (times):
@@ -228,7 +264,8 @@ class CodeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CodechefLeaderboard(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
     queryset = CodechefUser.objects.all()
     serializer_class = CC_Serializer
 
@@ -236,8 +273,11 @@ class CodechefLeaderboard(
         cc_users = CodechefUser.objects.all()
         serializer = CC_Serializer(cc_users, many=True)
         return Response(serializer.data)
+
     def post(self, request):
         username = request.data["username"]
         cc_user = CodechefUser(username=username)
         cc_user.save()
-        return Response(CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED)
+        return Response(
+            CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
+        )
