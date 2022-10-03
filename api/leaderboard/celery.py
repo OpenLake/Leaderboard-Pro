@@ -1,11 +1,6 @@
 import os
 from celery import Celery
-
-# from dateutil import parser
-# from celery.utils.log import get_task_logger
 import requests
-
-# import json
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "leaderboard.settings")
 app = Celery("leaderboard")
