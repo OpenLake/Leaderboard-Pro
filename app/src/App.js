@@ -7,7 +7,7 @@ import { darkTheme, lightTheme } from './theme.js';
 
 import { Navbar } from './components/Navbar.js';
 import { CodeforcesTable } from './components/CodeforcesTable.js';
-
+import { CodechefTable } from "./components/CodechefTable";
 import { ThemeProvider } from '@material-ui/core/styles';
 
 
@@ -17,7 +17,7 @@ function App() {
     ? localStorage.getItem("darkMode") === "true"
     : prefersDark;
   const [darkMode, setDarkMode] = useState(isDark);
-
+  const [codechefUsers, setCodechefUsers] = useState([]);
 
   const [codeforcesUsers, setCodeforcesUsers] = useState([]);
 
@@ -29,6 +29,13 @@ function App() {
       })
 
   }, [])
+  useEffect(() => {
+    fetch("http://localhost:8000/codechef/")
+      .then((res) => res.json())
+      .then((res) => {
+        setCodechefUsers(res);
+      });
+  }, []);
 
   function toggleDarkMode() {
     setDarkMode(!darkMode);
@@ -47,9 +54,9 @@ function App() {
         <Grid container>
           <Grid item xs={6}>
             <CodeforcesTable codeforcesUsers={codeforcesUsers} />
+            <CodechefTable codechefUsers={codechefUsers} />
           </Grid>
         </Grid>
-
       </div>
     </ThemeProvider>
   );
