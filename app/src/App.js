@@ -9,7 +9,7 @@ import { Navbar } from './components/Navbar.js';
 import { CodeforcesTable } from './components/CodeforcesTable.js';
 import { CodechefTable } from "./components/CodechefTable";
 import { ThemeProvider } from '@material-ui/core/styles';
-
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 function App() {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -43,22 +43,30 @@ function App() {
   }
 
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <CssBaseline />
-      <div className="App">
-        <Navbar />
+    <Router>
+      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+        <CssBaseline />
+        <div className="App">
+          <Navbar />
 
-        <Checkbox checked={darkMode} onClick={() => toggleDarkMode()} />
-        {darkMode ? "Dark" : "Light"}
+          <Checkbox checked={darkMode} onClick={() => toggleDarkMode()} />
+          {darkMode ? "Dark" : "Light"}
 
-        <Grid container>
-          <Grid item xs={6}>
-            <CodeforcesTable codeforcesUsers={codeforcesUsers} />
-            <CodechefTable codechefUsers={codechefUsers} />
+          <Grid container>
+            <Grid item xs={6}>
+              <Switch>
+                <Route path="/codeforces">
+                  <CodeforcesTable codeforcesUsers={codeforcesUsers} />
+                </Route>
+                <Route path="/codechef">
+                <CodechefTable codechefUsers={codechefUsers} />
+                </Route>
+              </Switch>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
-    </ThemeProvider>
+        </div>
+      </ThemeProvider>
+    </Router>
   );
 }
 

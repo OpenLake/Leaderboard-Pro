@@ -8,7 +8,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CodeIcon from '@material-ui/icons/Code';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import DeveloperModeIcon from '@material-ui/icons/DeveloperMode';
-
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
 import CodechefLogo from '../icons/codechef.png';
 import CodeforcesLogo from '../icons/codeforces.svg';
 import OpenlakeLogo from '../icons/openlake.svg';
@@ -37,15 +42,15 @@ export const Navbar = () => {
                         Leaderboard Pro
                     </Typography>
                     <div className={classes.platformButtons}>
-                        <IconButton edge="start" color="inherit" aria-label="menu">
+                    <Link to='/codechef'><IconButton edge="start" color="inherit" aria-label="menu">
                             <img src={CodechefLogo} width={25} height={25} alt="Codechef Logo" />
-                        </IconButton>
+                        </IconButton></Link>
                         <IconButton edge="start" color="inherit" aria-label="menu">
                             <GitHubIcon />
                         </IconButton>
-                        <IconButton edge="start" color="inherit" aria-label="menu">
+                        <Link to='/codeforces'><IconButton edge="start" color="inherit" aria-label="menu">
                             <img src={CodeforcesLogo} width={25} height={25} alt="Codeforces Logo" />
-                        </IconButton>
+                        </IconButton></Link>
 
                         <IconButton edge="start" color="inherit" aria-label="menu">
                             <img src={OpenlakeLogo} width={25} height={25} alt="OpenLake Logo" />
