@@ -62,7 +62,7 @@ urlpatterns = [
     ),
     path(
         "codeforces/<int:pk>",
-        views.CodeforcesUserAPI.as_view(),
+        views.codeforcesUserAPI.as_view(),
         name="codeforces-user-details",
     ),
     path(

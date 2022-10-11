@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime, timezone, timedelta
 
 
-class GitHubUser(models.Model):
+class githubUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     contributions = models.PositiveIntegerField(default=0)
     repositories = models.PositiveIntegerField(default=0)
@@ -22,7 +22,7 @@ class GitHubUser(models.Model):
         return f"{self.username}"
 
 
-class OpenLakeContributer(models.Model):
+class openlakeContributer(models.Model):
     username = models.CharField(max_length=64, unique=True)
     contributions = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
@@ -43,7 +43,7 @@ class OpenLakeContributer(models.Model):
         ordering = ["-contributions"]
 
 
-class CodeforcesUser(models.Model):
+class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
@@ -69,7 +69,7 @@ class CodeforcesUser(models.Model):
         ordering = ["-rating"]
 
 
-class CodechefUser(models.Model):
+class codechefUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     Global_rank = models.CharField(max_length=10, default="NA")
@@ -94,12 +94,12 @@ class CodechefUser(models.Model):
 
 
 def get_default_cf_user():
-    return CodeforcesUser.objects.get_or_create(username="tourist")[0]
+    return codeforcesUser.objects.get_or_create(username="tourist")[0]
 
 
-class CodeforcesUserRatingUpdate(models.Model):
+class codeforcesUserRatingUpdate(models.Model):
     cf_user = models.ForeignKey(
-        CodeforcesUser,
+        codeforcesUser,
         default=get_default_cf_user,
         on_delete=models.CASCADE,
         related_name="rating_updates",
