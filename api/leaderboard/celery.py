@@ -10,10 +10,10 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)
 def codechef_user_update(self):
-    from leaderboard.models import CodechefUser
+    from leaderboard.models import codechefUser
     from bs4 import BeautifulSoup
 
-    cc_users = CodechefUser.objects.all()
+    cc_users = codechefUser.objects.all()
     for i, cc_user in enumerate(cc_users):
         if cc_user.is_outdated:
             url = "https://www.codechef.com/users/{}".format(cc_user.username)
@@ -37,10 +37,10 @@ def codechef_user_update(self):
 
 @app.task(bind=True)
 def github_user_update(self):
-    from leaderboard.models import GitHubUser
+    from leaderboard.models import githubUser
     from bs4 import BeautifulSoup
 
-    gh_users = GitHubUser.objects.all()
+    gh_users = githubUser.objects.all()
     for i, gh_user in enumerate(gh_users):
         if gh_user.is_outdated:
             url = "https://github.com/{}".format(gh_user.username)

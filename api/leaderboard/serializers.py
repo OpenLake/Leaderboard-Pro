@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from leaderboard.models import (
-    CodeforcesUser,
-    CodeforcesUserRatingUpdate,
-    CodechefUser,
-    GitHubUser,
-    OpenLakeContributer,
+    codeforcesUser,
+    codeforcesUserRatingUpdate,
+    codechefUser,
+    githubUser,
+    openlakeContributer,
 )
 
 
@@ -14,11 +14,11 @@ class Cf_Serializer(serializers.ModelSerializer):
     """
 
     def create(self, validated_data):
-        return CodeforcesUser.objects.create(**validated_data)
+        return codeforcesUser.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `CodeforcesUser`
+        Update and return an existing `codeforcesUser`
         instance, given the validated data.
         """
         instance.rating = validated_data.get("rating", instance.rating)
@@ -32,7 +32,7 @@ class Cf_Serializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = CodeforcesUser
+        model = codeforcesUser
         fields = [
             "id",
             "username",
@@ -45,7 +45,7 @@ class Cf_Serializer(serializers.ModelSerializer):
 
 class Cf_RatingUpdate_Serializer(serializers.ModelSerializer):
     class Meta:
-        model = CodeforcesUserRatingUpdate
+        model = codeforcesUserRatingUpdate
         fields = ["rating", "timestamp"]
 
 
@@ -53,7 +53,7 @@ class Cf_User_Serializer(Cf_Serializer):
     rating_updates = Cf_RatingUpdate_Serializer(many=True)
 
     class Meta:
-        model = CodeforcesUser
+        model = codeforcesUser
         fields = [
             "id",
             "username",
@@ -71,11 +71,11 @@ class CC_Serializer(serializers.ModelSerializer):
     """
 
     def create(self, validated_data):
-        return CodechefUser.objects.create(**validated_data)
+        return codechefUser.objects.create(**validated_data)
 
     # def update(self, instance, validated_data):
     #     """
-    #     Update and return an existing `CodechefUser`
+    #     Update and return an existing `codechefUser`
     #     instance, given the validated data.
     #     """
     #     instance.rating = validated_data.get("rating", instance.rating)
@@ -89,7 +89,7 @@ class CC_Serializer(serializers.ModelSerializer):
     #     return instance
 
     class Meta:
-        model = CodechefUser
+        model = codechefUser
         fields = [
             "id",
             "username",
@@ -106,7 +106,7 @@ class GH_Serializer(serializers.ModelSerializer):
     """
 
     def create(self, validated_data):
-        return GitHubUser.objects.create(**validated_data)
+        return githubUser.objects.create(**validated_data)
 
     # def update(self, instance, validated_data):
     #     """
@@ -122,7 +122,7 @@ class GH_Serializer(serializers.ModelSerializer):
     #     return instance
 
     class Meta:
-        model = GitHubUser
+        model = githubUser
         fields = ["id", "username", "contributions", "repositories", "stars"]
 
 
@@ -132,7 +132,7 @@ class OL_Serializer(serializers.ModelSerializer):
     """
 
     def create(self, validated_data):
-        return OpenLakeContributer.objects.create(**validated_data)
+        return openlakeContributer.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
@@ -146,5 +146,5 @@ class OL_Serializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = OpenLakeContributer
+        model = openlakeContributer
         fields = ["id", "username", "contributions"]
