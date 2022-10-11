@@ -1,9 +1,9 @@
 from leaderboard.models import (
-    codeforcesUser,
-    codeforcesUserRatingUpdate,
-    githubUser,
-    codechefUser,
-    openlakeContributer,
+    codeForcesUser,
+    codeForcesUserRatingUpdate,
+    gitHubUser,
+    codeChefUser,
+    openLakeContributor,
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -57,17 +57,17 @@ class GithubUserAPI(
     Collects Github data for registered users
     """
 
-    queryset = githubUser.objects.all()
+    queryset = gitHubUser.objects.all()
     serializer_class = GH_Serializer
 
     def get(self, request):
-        gh_users = githubUser.objects.all()
+        gh_users = gitHubUser.objects.all()
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         username = request.data["username"]
-        gh_user = githubUser(username=username)
+        gh_user = gitHubUser(username=username)
         gh_user.save()
         return Response(
             GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
@@ -81,7 +81,7 @@ class GithubOrganisationAPI(
     Collects Github data for GH_ORG
     """
 
-    queryset = openlakeContributer.objects.all()
+    queryset = openLakeContributor.objects.all()
     serializer_class = OL_Serializer
 
     def _check_for_updates(self):
@@ -117,13 +117,13 @@ class GithubOrganisationAPI(
 
     def get(self, request):
         ol_list = self._check_for_updates()
-        openlakeContributer.objects.all().delete()
+        openLakeContributor.objects.all().delete()
         for i in ol_list.keys():
-            ol_contributor = openlakeContributer()
+            ol_contributor = openLakeContributor()
             ol_contributor.username = i
             ol_contributor.contributions = ol_list[i]
             ol_contributor.save()
-        ol_contributors = openlakeContributer.objects.all()
+        ol_contributors = openLakeContributor.objects.all()
         serializer = OL_Serializer(ol_contributors, many=True)
         return Response(serializer.data)
 
@@ -135,7 +135,7 @@ class CodeforcesLeaderboard(
     Collects data from codeforces API
     """
 
-    queryset = codeforcesUser.objects.all()
+    queryset = codeForcesUser.objects.all()
     serializer_class = Cf_Serializer
 
     def _check_for_updates(self, cf_users):
@@ -177,13 +177,13 @@ class CodeforcesLeaderboard(
 
                 rating_updates = rating_update_api_response.get("result", [])
                 stored_rating_count = (
-                    codeforcesUserRatingUpdate.objects.count()
+                    codeForcesUserRatingUpdate.objects.count()
                 )
                 new_rating_updates = rating_updates[stored_rating_count:]
 
                 for i, rating_update in enumerate(new_rating_updates):
                     new_index = i + stored_rating_count
-                    cf_rating_update = codeforcesUserRatingUpdate(
+                    cf_rating_update = codeForcesUserRatingUpdate(
                         cf_user=cf_user,
                         index=new_index,
                         prev_index=new_index - 1 if new_index > 0 else 0,
@@ -206,7 +206,7 @@ class CodeforcesLeaderboard(
         Registers a new username in the list
         """
         username = request.data["username"]
-        cf_user = codeforcesUser(username=username)
+        cf_user = codeForcesUser(username=username)
         cf_user.save()
 
         return Response(
@@ -258,25 +258,25 @@ class CodeforcesLeaderboard(
         return data
 
 
-class codeforcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
-    queryset = codeforcesUser.objects.all()
+class codeForcesUserAPI(generics.RetrieveUpdateDestroyAPIView):
+    queryset = codeForcesUser.objects.all()
     serializer_class = Cf_User_Serializer
 
 
 class CodechefLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
-    queryset = codechefUser.objects.all()
+    queryset = codeChefUser.objects.all()
     serializer_class = CC_Serializer
 
     def get(self, request):
-        cc_users = codechefUser.objects.all()
+        cc_users = codeChefUser.objects.all()
         serializer = CC_Serializer(cc_users, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         username = request.data["username"]
-        cc_user = codechefUser(username=username)
+        cc_user = codeChefUser(username=username)
         cc_user.save()
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED

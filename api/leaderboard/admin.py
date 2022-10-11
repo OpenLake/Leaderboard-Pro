@@ -1,12 +1,12 @@
 from django.contrib import admin
 from leaderboard.models import (
-    codeforcesUser,
-    githubUser,
-    codechefUser,
-    openlakeContributer,
+    codeForcesUser,
+    gitHubUser,
+    codeChefUser,
+    openLakeContributor,
 )
 
-admin.site.register(codeforcesUser)
-admin.site.register(githubUser)
-admin.site.register(codechefUser)
-admin.site.register(openlakeContributer)
+admin.site.register(codeForcesUser)
+admin.site.register(gitHubUser)
+admin.site.register(codeChefUser)
+admin.site.register(openLakeContributor)
