@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from "react";
-import logo from './logo.svg';
-import './App.css';
-import { Checkbox, Grid } from '@material-ui/core'
+import "./App.css";
+import { Grid } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { darkTheme, lightTheme } from './theme.js';
-
-import { Navbar } from './components/Navbar.js';
-import { CodeforcesTable } from './components/CodeforcesTable.js';
+import { darkTheme, lightTheme } from "./theme.js";
+import { Navbar } from "./components/Navbar.js";
+import { CodeforcesTable } from "./components/CodeforcesTable.js";
 import { CodechefTable } from "./components/CodechefTable";
-import { ThemeProvider } from '@material-ui/core/styles';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const isDark = localStorage.getItem("darkMode")
-    ? localStorage.getItem("darkMode") === "true"
-    : prefersDark;
-  const [darkMode, setDarkMode] = useState(isDark);
-  const [codechefUsers, setCodechefUsers] = useState([]);
-
-  const [codeforcesUsers, setCodeforcesUsers] = useState([]);
-
+  const [darkmode, setDarkmode] = useState(false);
+  const toggle = () => {
+    setDarkmode(!darkmode);
+    const g = localStorage.getItem("dark-Mode");
+    if (g === "off") localStorage.setItem("dark-Mode", "on");
+    else localStorage.setItem("dark-Mode", "off");
+    window.location.reload();
+  };
   useEffect(() => {
-    fetch('http://localhost:8000/codeforces/')
-      .then(res => res.json())
-      .then(res => {
-        setCodeforcesUsers(res)
-      })
-
-  }, [])
+    fetch("http://localhost:8000/codeforces/")
+      .then((res) => res.json())
+      .then((res) => {
+        setCodeforcesUsers(res);
+      });
+  }, []);
   useEffect(() => {
     fetch("http://localhost:8000/codechef/")
       .then((res) => res.json())
@@ -36,22 +32,23 @@ function App() {
         setCodechefUsers(res);
       });
   }, []);
+  useEffect(() => {
+    const dm = localStorage.getItem("dark-Mode");
+    if (dm != null) {
+      if (dm === "on") setDarkmode(true);
+      else setDarkmode(false);
+    }
+  }, []);
+  const [codechefUsers, setCodechefUsers] = useState([]);
 
-  function toggleDarkMode() {
-    setDarkMode(!darkMode);
-    localStorage.setItem("darkMode", !darkMode);
-  }
+  const [codeforcesUsers, setCodeforcesUsers] = useState([]);
 
   return (
-    <Router>
-      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-        <CssBaseline />
+    <ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
+      <CssBaseline />
+      <Router>
         <div className="App">
-          <Navbar />
-
-          <Checkbox checked={darkMode} onClick={() => toggleDarkMode()} />
-          {darkMode ? "Dark" : "Light"}
-
+          <Navbar darkmode={darkmode} toggle={toggle} />
           <Grid container>
             <Grid item xs={6}>
               <Switch>
@@ -59,15 +56,14 @@ function App() {
                   <CodeforcesTable codeforcesUsers={codeforcesUsers} />
                 </Route>
                 <Route path="/codechef">
-                <CodechefTable codechefUsers={codechefUsers} />
+                  <CodechefTable codechefUsers={codechefUsers} />
                 </Route>
               </Switch>
             </Grid>
           </Grid>
         </div>
-      </ThemeProvider>
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
-
 export default App;
