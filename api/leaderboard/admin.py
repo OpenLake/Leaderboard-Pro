@@ -3,10 +3,10 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     codechefUser,
-    openlakeContributer,
+    openlakeContributor,
 )
 
 admin.site.register(codeforcesUser)
 admin.site.register(githubUser)
 admin.site.register(codechefUser)
-admin.site.register(openlakeContributer)
+admin.site.register(openlakeContributor)

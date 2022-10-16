@@ -4,7 +4,7 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     codechefUser,
     githubUser,
-    openlakeContributer,
+    openlakeContributor,
 )
 
 
@@ -132,7 +132,7 @@ class OL_Serializer(serializers.ModelSerializer):
     """
 
     def create(self, validated_data):
-        return openlakeContributer.objects.create(**validated_data)
+        return openlakeContributor.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
@@ -146,5 +146,5 @@ class OL_Serializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = openlakeContributer
+        model = openlakeContributor
         fields = ["id", "username", "contributions"]

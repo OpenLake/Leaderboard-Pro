@@ -3,7 +3,7 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     githubUser,
     codechefUser,
-    openlakeContributer,
+    openlakeContributor,
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -81,7 +81,7 @@ class GithubOrganisationAPI(
     Collects Github data for GH_ORG
     """
 
-    queryset = openlakeContributer.objects.all()
+    queryset = openlakeContributor.objects.all()
     serializer_class = OL_Serializer
 
     def _check_for_updates(self):
@@ -117,13 +117,13 @@ class GithubOrganisationAPI(
 
     def get(self, request):
         ol_list = self._check_for_updates()
-        openlakeContributer.objects.all().delete()
+        openlakeContributor.objects.all().delete()
         for i in ol_list.keys():
-            ol_contributor = openlakeContributer()
+            ol_contributor = openlakeContributor()
             ol_contributor.username = i
             ol_contributor.contributions = ol_list[i]
             ol_contributor.save()
-        ol_contributors = openlakeContributer.objects.all()
+        ol_contributors = openlakeContributor.objects.all()
         serializer = OL_Serializer(ol_contributors, many=True)
         return Response(serializer.data)
 
