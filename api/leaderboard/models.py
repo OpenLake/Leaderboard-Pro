@@ -22,7 +22,7 @@ class githubUser(models.Model):
         return f"{self.username}"
 
 
-class openlakeContributer(models.Model):
+class openlakeContributor(models.Model):
     username = models.CharField(max_length=64, unique=True)
     contributions = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
