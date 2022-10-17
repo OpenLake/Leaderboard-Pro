@@ -21,7 +21,6 @@ export const CodechefTable = ({ codechefUsers }) => {
                     <TableRow>
                         <TableCell>Username</TableCell>
                         <TableCell>Rating</TableCell>
-                        <TableCell>Progress</TableCell>
                         <TableCell>Max rating</TableCell>
                         <TableCell>Last activity</TableCell>
                         <TableCell>Global Rank</TableCell>
@@ -37,12 +36,6 @@ export const CodechefTable = ({ codechefUsers }) => {
                                 </Link>
                             </TableCell>
                             <TableCell>{cfUser.rating}</TableCell>
-                            <TableCell>
-
-                                <div style={{ height: 50, width: 100 }}>
-                                    <MyResponsiveLine url={`http://localhost:8000/codechef/${cfUser.id}`} />
-                                </div>
-                            </TableCell>
                             <TableCell>{cfUser.max_rating}</TableCell>
                             <TableCell>{(new Date(cfUser.last_updated)).toLocaleString()}</TableCell>
                             <TableCell>{cfUser.Global_rank}</TableCell>
