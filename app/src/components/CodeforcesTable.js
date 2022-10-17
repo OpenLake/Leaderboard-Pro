@@ -18,6 +18,8 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
 
 
     return (
+        <div className="codechef" style={{display:"flex" ,justifyContent:"center",alignItems:"center",marginTop:"8px",paddingLeft:"100%",paddingRight:"100%"}}>
+            <div>
         <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="codeforces-table">
                 <TableHead>
@@ -56,6 +58,8 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
                 </TableBody>
             </Table>
         </TableContainer>
+        </div>
+        </div>
     )
 }
 

@@ -1,9 +1,6 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 
 import { blue } from "@material-ui/core/colors";
-
-
-const isDarkTheme = true;
 
 // COMMON 
 const overrides = {
@@ -107,13 +104,13 @@ const lightOverrides = {
     }
 };
 
-export const darkTheme = createMuiTheme({
+export const darkTheme = createTheme({
     ...themeOptions,
     palette: darkPalette,
     overrides: darkOverrides,
 });
 
-export const lightTheme = createMuiTheme({
+export const lightTheme = createTheme({
     ...themeOptions,
     palette: lightPalette,
     overrides: lightOverrides,
