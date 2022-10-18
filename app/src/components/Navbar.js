@@ -108,7 +108,7 @@ export const Navbar = ({ toggle, darkmode }) => {
                 />
               </IconButton>
             </Link>
-            <Link to="/" style={{ margin: "10px" }}>
+            <Link style={{ margin: "10px" }} to="/openlake">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img
                   src={OpenlakeLogo}

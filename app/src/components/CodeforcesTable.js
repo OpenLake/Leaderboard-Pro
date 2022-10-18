@@ -18,47 +18,47 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
 
 
     return (
-        <div className="codechef" style={{display:"flex" ,justifyContent:"center",alignItems:"center",marginTop:"8px",paddingLeft:"100%",paddingRight:"100%"}}>
+        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
             <div>
-        <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="codeforces-table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Avatar</TableCell>
-                        <TableCell>Username</TableCell>
-                        <TableCell>Rating</TableCell>
-                        <TableCell>Progress</TableCell>
-                        <TableCell>Max rating</TableCell>
-                        <TableCell>Last activity</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {codeforcesUsers.map(cfUser => (
-                        <TableRow key={cfUser.id}>
-                            <TableCell>
-                                <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
-                                {/* TODO: Lazy load the avatars ? */}
-                            </TableCell>
-                            <TableCell>
-                                <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
-                                    {cfUser.username}
-                                </Link>
-                            </TableCell>
-                            <TableCell>{cfUser.rating}</TableCell>
-                            <TableCell>
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="codeforces-table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Avatar</TableCell>
+                                <TableCell>Username</TableCell>
+                                <TableCell>Rating</TableCell>
+                                <TableCell>Progress</TableCell>
+                                <TableCell>Max rating</TableCell>
+                                <TableCell>Last activity</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {codeforcesUsers.map(cfUser => (
+                                <TableRow key={cfUser.id}>
+                                    <TableCell>
+                                        <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
+                                        {/* TODO: Lazy load the avatars ? */}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
+                                            {cfUser.username}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{cfUser.rating}</TableCell>
+                                    <TableCell>
 
-                                <div style={{ height: 50, width: 100 }}>
-                                    <MyResponsiveLine url={`http://localhost:8000/codeforces/${cfUser.id}`} />
-                                </div>
-                            </TableCell>
-                            <TableCell>{cfUser.max_rating}</TableCell>
-                            <TableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-        </div>
+                                        <div style={{ height: 50, width: 100 }}>
+                                            <MyResponsiveLine url={`http://localhost:8000/codeforces/${cfUser.id}`} />
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{cfUser.max_rating}</TableCell>
+                                    <TableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
         </div>
     )
 }
@@ -104,8 +104,6 @@ const MyResponsiveLine = ({ url }) => {
             useMesh={true}
             legends={[]}
         />
-
-
 
     )
 }
