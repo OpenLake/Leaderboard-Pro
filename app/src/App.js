@@ -8,6 +8,7 @@ import { CodeforcesTable } from "./components/CodeforcesTable.js";
 import { CodechefTable } from "./components/CodechefTable";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { OpenlakeTable } from "./components/OpenlakeTable";
 
 function App() {
   const [darkmode, setDarkmode] = useState(false);
@@ -25,6 +26,7 @@ function App() {
         setCodeforcesUsers(res);
       });
   }, []);
+
   useEffect(() => {
     fetch("http://localhost:8000/codechef/")
       .then((res) => res.json())
@@ -32,6 +34,15 @@ function App() {
         setCodechefUsers(res);
       });
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/codechef/")
+      .then((res) => res.json())
+      .then((res) => {
+        setOpenlakeContributor(res);
+      });
+  }, []);
+
   useEffect(() => {
     const dm = localStorage.getItem("dark-Mode");
     if (dm != null) {
@@ -42,6 +53,8 @@ function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
 
   const [codeforcesUsers, setCodeforcesUsers] = useState([]);
+
+  const [openlakeContributor, setOpenlakeContributor] = useState([]);
 
   return (
     <ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
@@ -57,6 +70,9 @@ function App() {
                 </Route>
                 <Route path="/codechef">
                   <CodechefTable codechefUsers={codechefUsers} />
+                </Route>
+                <Route path="/openlake">
+                  <OpenlakeTable openlakeContributor={openlakeContributor} />
                 </Route>
               </Switch>
             </Grid>
