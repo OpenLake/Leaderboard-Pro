@@ -12,6 +12,12 @@ import { OpenlakeTable } from "./components/OpenlakeTable";
 
 function App() {
   const [darkmode, setDarkmode] = useState(false);
+  const [codechefUsers, setCodechefUsers] = useState([]);
+
+  const [codeforcesUsers, setCodeforcesUsers] = useState([]);
+
+  const [openlakeContributor, setOpenlakeContributor] = useState([]);
+
   const toggle = () => {
     setDarkmode(!darkmode);
     const g = localStorage.getItem("dark-Mode");
@@ -36,7 +42,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/codechef/")
+    fetch("http://localhost:8000/openlake/")
       .then((res) => res.json())
       .then((res) => {
         setOpenlakeContributor(res);
@@ -50,11 +56,7 @@ function App() {
       else setDarkmode(false);
     }
   }, []);
-  const [codechefUsers, setCodechefUsers] = useState([]);
 
-  const [codeforcesUsers, setCodeforcesUsers] = useState([]);
-
-  const [openlakeContributor, setOpenlakeContributor] = useState([]);
 
   return (
     <ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
