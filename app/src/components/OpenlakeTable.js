@@ -28,7 +28,7 @@ export const OpenlakeTable = ({ openlakeContributor }) => {
                         <TableBody>
                             {openlakeContributor.map(olUser => (
                                 <TableRow key={olUser.id}>
-                                    <TableCell>
+                                    <TableCell style={{ textAlign: 'center' }}>
                                         <Link href={`https://github.com/${olUser.username}`} target="_blank">
                                             {olUser.username}
                                         </Link>
