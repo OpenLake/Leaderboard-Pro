@@ -57,3 +57,42 @@ def github_user_update(self):
                 stars = stars + response[i]["stargazers_count"]
             gh_user.stars = stars
             gh_user.save()
+
+@app.task(bind=True)
+def openlake_contributor__update(self):
+    from leaderboard.models import openlakeContributor
+    
+    updated_list = {}
+    url = "https://api.github.com/users/OpenLake/repos"
+    response = requests.get(url).json()
+    print(len(response))
+    for i in range(len(response)):
+        repo_url = str(response[i]["contributors_url"])
+        print(repo_url)
+        try:
+            repo_response = requests.get(repo_url).json()
+            for j in range(len(repo_response)):
+                try:
+                    print(repo_response[j]["login"])
+                    print(updated_list)
+                    if repo_response[j]["login"] in updated_list.keys():
+                        updated_list[repo_response[j]["login"]] = (
+                            updated_list[repo_response[j]["login"]]
+                            + repo_response[j]["contributions"]
+                        )
+                    else:
+                        updated_list[
+                            repo_response[j]["login"]
+                        ] = repo_response[j]["contributions"]
+                except Exception as ex:
+                    print("=========================", ex)
+                    continue
+        except Exception as ex:
+            print("=========================", ex)
+            continue
+    openlakeContributor.objects.all().delete()
+    for i in updated_list.keys():
+        ol_contributor = openlakeContributor()
+        ol_contributor.username = i
+        ol_contributor.contributions = updated_list[i]
+        ol_contributor.save()

@@ -84,45 +84,7 @@ class GithubOrganisationAPI(
     queryset = openlakeContributor.objects.all()
     serializer_class = OL_Serializer
 
-    def _check_for_updates(self):
-        updated_list = {}
-        url = "https://api.github.com/users/OpenLake/repos"
-        response = requests.get(url).json()
-        print(len(response))
-        for i in range(len(response)):
-            repo_url = str(response[i]["contributors_url"])
-            print(repo_url)
-            try:
-                repo_response = requests.get(repo_url).json()
-                for j in range(len(repo_response)):
-                    try:
-                        print(repo_response[j]["login"])
-                        print(updated_list)
-                        if repo_response[j]["login"] in updated_list.keys():
-                            updated_list[repo_response[j]["login"]] = (
-                                updated_list[repo_response[j]["login"]]
-                                + repo_response[j]["contributions"]
-                            )
-                        else:
-                            updated_list[
-                                repo_response[j]["login"]
-                            ] = repo_response[j]["contributions"]
-                    except Exception as ex:
-                        print("=========================", ex)
-                        continue
-            except Exception as ex:
-                print("=========================", ex)
-                continue
-        return updated_list
-
     def get(self, request):
-        ol_list = self._check_for_updates()
-        openlakeContributor.objects.all().delete()
-        for i in ol_list.keys():
-            ol_contributor = openlakeContributor()
-            ol_contributor.username = i
-            ol_contributor.contributions = ol_list[i]
-            ol_contributor.save()
         ol_contributors = openlakeContributor.objects.all()
         serializer = OL_Serializer(ol_contributors, many=True)
         return Response(serializer.data)
