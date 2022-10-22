@@ -12,7 +12,7 @@ const useStyles = makeStyles({
 });
 
 
-export const OpenlakeTable = ({ OpenlakeContributor }) => {
+export const OpenlakeTable = ({ openlakeContributor }) => {
     const classes = useStyles();
     return (
         <div className="openlake" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
@@ -26,9 +26,13 @@ export const OpenlakeTable = ({ OpenlakeContributor }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {OpenlakeContributor.map(olUser => (
+                            {openlakeContributor.map(olUser => (
                                 <TableRow key={olUser.id}>
-                                    <TableCell style={{ textAlign: 'center' }}> {olUser.username}</TableCell>
+                                    <TableCell>
+                                        <Link href={`https://github.com/${olUser.username}`} target="_blank">
+                                            {olUser.username}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell style={{ textAlign: 'center' }}>{olUser.contributions}</TableCell>
                                 </TableRow>
                             ))}
