@@ -10,7 +10,7 @@ const useStyles = makeStyles({
     },
 });
 export const CodechefTable = ({ codechefUsers }) => {
-    console.log(codechefUsers, "CodechefUsers")
+
     const classes = useStyles();
     return (
         <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
