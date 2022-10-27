@@ -83,6 +83,7 @@ export const Navbar = ({ toggle, darkmode }) => {
             Leaderboard Pro
           </Typography>
           <div className={classes.platformButtons}>
+          
             <Link style={{ margin: "10px" }} to="/codechef">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img
@@ -93,11 +94,17 @@ export const Navbar = ({ toggle, darkmode }) => {
                 />
               </IconButton>
             </Link>
-            <Link to="/" style={{ margin: "10px"}}>
+            
+            <Link to="/github" style={{ margin: "10px"}}>
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <GitHubIcon style={{filter:darkmode?"invert(100)":"brightness(20%)"}}/>
               </IconButton>
             </Link>
+            
+             
+            
+            
+            
             <Link style={{ margin: "10px" }} to="/codeforces">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img
@@ -108,6 +115,7 @@ export const Navbar = ({ toggle, darkmode }) => {
                 />
               </IconButton>
             </Link>
+            
             <Link style={{ margin: "10px" }} to="/openlake">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img
@@ -118,6 +126,8 @@ export const Navbar = ({ toggle, darkmode }) => {
                 />
               </IconButton>
             </Link>
+            
+            
           </div>
           <div>
             <FormGroup>

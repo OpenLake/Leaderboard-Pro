@@ -6,6 +6,7 @@ import { darkTheme, lightTheme } from "./theme.js";
 import { Navbar } from "./components/Navbar.js";
 import { CodeforcesTable } from "./components/CodeforcesTable.js";
 import { CodechefTable } from "./components/CodechefTable";
+import { GithubTable } from "./components/GithubTable";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
@@ -17,6 +18,7 @@ function App() {
   const [codeforcesUsers, setCodeforcesUsers] = useState([]);
 
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
+  const [githubUser, setGithubUser] = useState([]);
 
   const toggle = () => {
     setDarkmode(!darkmode);
@@ -48,6 +50,14 @@ function App() {
         setOpenlakeContributor(res);
       });
   }, []);
+  
+    useEffect(() => {
+    fetch("http://localhost:8000/github/")
+      .then((res) => res.json())
+      .then((res) => {
+        setGithubUser(res);
+      });
+  }, []);
 
   useEffect(() => {
     const dm = localStorage.getItem("dark-Mode");
@@ -75,6 +85,9 @@ function App() {
                 </Route>
                 <Route path="/openlake">
                   <OpenlakeTable openlakeContributor={openlakeContributor} />
+                </Route>
+                <Route path="/github">
+                  <GithubTable githubUser={githubUser} />
                 </Route>
               </Switch>
             </Grid>
