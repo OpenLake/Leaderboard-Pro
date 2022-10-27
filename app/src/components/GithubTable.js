@@ -26,17 +26,17 @@ export const GithubTable = ({ githubUser }) => {
                                 <TableCell >Contributions</TableCell>
                                 <TableCell >Repositories</TableCell>
                                 <TableCell >Stars</TableCell>
-                                <TableCell >Last_updated</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {githubUser.map(glUser => (
                                 <TableRow key={glUser.id}>
-                                    <TableCell>{glUser.username}</TableCell>
+                                    <Link href={`https://github.com/${glUser.username}`} target="_blank">
+                                        {glUser.username}
+                                    </Link>
                                     <TableCell>{glUser.contributions}</TableCell>
                                     <TableCell>{glUser.repositories}</TableCell>
                                     <TableCell>{glUser.stars}</TableCell>
-                                    <TableCell>{glUser.last_updated}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
