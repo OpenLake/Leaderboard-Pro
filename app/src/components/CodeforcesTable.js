@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
-
+import { makeStyles,withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
 
 import { ResponsiveLine } from '@nivo/line'
@@ -11,9 +10,19 @@ const useStyles = makeStyles({
     table: {
         minWidth: 650,
     },
+    table_dark:{
+        minWidth: 650,
+        backgroundColor:"Black",
+        border:"2px solid White",
+        borderRadius:"10px",
+    }
 });
-export const CodeforcesTable = ({ codeforcesUsers }) => {
-
+export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
+    const StyledTableCell = withStyles({
+        root: {
+          color: !darkmode?"Black":"White",
+        }
+      })(TableCell);
     const classes = useStyles();
 
 
@@ -21,38 +30,38 @@ export const CodeforcesTable = ({ codeforcesUsers }) => {
         <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
             <div>
                 <TableContainer component={Paper}>
-                    <Table className={classes.table} aria-label="codeforces-table">
+                    <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Avatar</TableCell>
-                                <TableCell>Username</TableCell>
-                                <TableCell>Rating</TableCell>
-                                <TableCell>Progress</TableCell>
-                                <TableCell>Max rating</TableCell>
-                                <TableCell>Last activity</TableCell>
+                                <StyledTableCell>Avatar</StyledTableCell>
+                                <StyledTableCell>Username</StyledTableCell>
+                                <StyledTableCell>Rating</StyledTableCell>
+                                <StyledTableCell>Progress</StyledTableCell>
+                                <StyledTableCell>Max rating</StyledTableCell>
+                                <StyledTableCell>Last activity</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {codeforcesUsers.map(cfUser => (
                                 <TableRow key={cfUser.id}>
-                                    <TableCell>
+                                    <StyledTableCell>
                                         <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
                                         {/* TODO: Lazy load the avatars ? */}
-                                    </TableCell>
-                                    <TableCell>
+                                    </StyledTableCell>
+                                    <StyledTableCell>
                                         <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
                                             {cfUser.username}
                                         </Link>
-                                    </TableCell>
-                                    <TableCell>{cfUser.rating}</TableCell>
-                                    <TableCell>
+                                    </StyledTableCell>
+                                    <StyledTableCell>{cfUser.rating}</StyledTableCell>
+                                    <StyledTableCell>
 
                                         <div style={{ height: 50, width: 100 }}>
                                             <MyResponsiveLine url={`http://localhost:8000/codeforces/${cfUser.id}`} />
                                         </div>
-                                    </TableCell>
-                                    <TableCell>{cfUser.max_rating}</TableCell>
-                                    <TableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</TableCell>
+                                    </StyledTableCell>
+                                    <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
+                                    <StyledTableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</StyledTableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
