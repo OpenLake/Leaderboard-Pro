@@ -61,6 +61,11 @@ urlpatterns = [
         name="codeforces-leaderboard",
     ),
     path(
+        "appuser/",
+        views.AppUsers.as_view(),
+        name="app-user",
+    ),
+    path(
         "codeforces/<int:pk>",
         views.codeforcesUserAPI.as_view(),
         name="codeforces-user-details",

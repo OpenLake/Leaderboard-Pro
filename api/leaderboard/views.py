@@ -4,6 +4,7 @@ from leaderboard.models import (
     githubUser,
     codechefUser,
     openlakeContributor,
+    AppUser
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -11,7 +12,9 @@ from leaderboard.serializers import (
     CC_Serializer,
     GH_Serializer,
     OL_Serializer,
+    AppUser_Serializer
 )
+
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view, permission_classes
@@ -243,3 +246,21 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+
+class AppUsers(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = AppUser.objects.all()
+    serializer_class = AppUser_Serializer
+    def get(self, request):
+        app_users = AppUser.objects.all()
+        serializer = AppUser_Serializer(app_users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        email = request.data["email"]
+        app_users = AppUser(email=email)
+        app_users.save()
+        return Response(
+            AppUser_Serializer(app_users).data, status=status.HTTP_201_CREATED
+        )
+

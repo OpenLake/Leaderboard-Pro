@@ -114,3 +114,26 @@ class codeforcesUserRatingUpdate(models.Model):
 
     class Meta:
         ordering = ["timestamp"]
+
+class AppUser(models.Model):
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
+    email = models.CharField(max_length=64,unique=True)
+    password = models.CharField(max_length=64)
+    cc_uname = models.CharField(max_length=64)  
+    cf_uname = models.CharField(max_length=64)
+    gh_uname = models.CharField(max_length=64)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
+            minutes=1
+        ):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"{self.email}"
+

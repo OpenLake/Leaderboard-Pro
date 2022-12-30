@@ -4,9 +4,11 @@ from leaderboard.models import (
     githubUser,
     codechefUser,
     openlakeContributor,
+    AppUser
 )
 
 admin.site.register(codeforcesUser)
 admin.site.register(githubUser)
 admin.site.register(codechefUser)
 admin.site.register(openlakeContributor)
+admin.site.register(AppUser)

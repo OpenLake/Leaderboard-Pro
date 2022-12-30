@@ -9,6 +9,8 @@ import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 const darkTheme = createTheme({
   palette: {
@@ -146,6 +148,12 @@ function App() {
                 </Route>
                 <Route path="/github">
                   <GithubTable darkmode={darkmode} githubUser={githubUser} />
+                </Route>
+                <Route path="/login">
+                  <Login darkmode={darkmode}/>
+                </Route>
+                <Route path="/register">
+                  <Register darkmode={darkmode}/>
                 </Route>
               </Switch>
             </Grid>

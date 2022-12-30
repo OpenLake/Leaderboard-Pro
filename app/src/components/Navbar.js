@@ -137,7 +137,9 @@ export const Navbar = ({ darkmode, toggle }) => {
               }
           />
       </FormGroup>
-          <Button color="inherit">Login</Button>
+      <Link style={{textDecoration:"none",color:"white"}} to="/login">
+      <Button color="inherit">Login</Button>
+      </Link>
         </Toolbar>
       </AppBar>
     </div>
