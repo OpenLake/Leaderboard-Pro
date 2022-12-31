@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime, timezone, timedelta
-
+from django.contrib.auth.models import User
 
 class githubUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
@@ -114,3 +114,8 @@ class codeforcesUserRatingUpdate(models.Model):
 
     class Meta:
         ordering = ["timestamp"]
+class UserNames(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    cc_uname = models.CharField(max_length=64, unique=True)
+    cf_uname = models.CharField(max_length=64, unique=True)
+    gh_uname = models.CharField(max_length=64, unique=True)

@@ -64,11 +64,12 @@ class GithubUserAPI(
     def get(self, request):
         gh_users = githubUser.objects.all()
         serializer = GH_Serializer(gh_users, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data)    
 
     def post(self, request):
         username = request.data["username"]
         gh_user = githubUser(username=username)
+        
         gh_user.save()
         return Response(
             GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
