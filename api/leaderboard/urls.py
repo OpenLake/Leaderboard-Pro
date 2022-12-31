@@ -13,10 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.models import User, Group
-
 from rest_framework import serializers, viewsets, routers, permissions
 from leaderboard import views
 
@@ -52,19 +55,17 @@ router.register(r"groups", GroupViewSet)
 
 urlpatterns = [
     path("", views.api_root),
-    path(
-        "api-auth/", include("rest_framework.urls", namespace="rest_framework")
-    ),
+    path('api/',include('leaderboard.api.urls')),
     path(
         "codeforces/",
         views.CodeforcesLeaderboard.as_view(),
         name="codeforces-leaderboard",
     ),
-    path(
-        "appuser/",
-        views.AppUsers.as_view(),
-        name="app-user",
-    ),
+    # path(
+    #     "appuser/",
+    #     views.AppUsers.as_view(),
+    #     name="app-user",
+    # ),
     path(
         "codeforces/<int:pk>",
         views.codeforcesUserAPI.as_view(),

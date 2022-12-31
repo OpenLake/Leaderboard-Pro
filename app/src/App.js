@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import { LeetcodeTable } from "./components/LeetcodeTable";
 
 const darkTheme = createTheme({
   palette: {
@@ -73,7 +74,7 @@ function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
   const [darkmode, setDarkmode] = useState(false)
   const [codeforcesUsers, setCodeforcesUsers] = useState([]);
-
+  const [leetcodeUsers,setLeetcodeUsers]=useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
   const [githubUser, setGithubUser] = useState([]);
   const toggle = () =>{
@@ -148,6 +149,9 @@ function App() {
                 </Route>
                 <Route path="/github">
                   <GithubTable darkmode={darkmode} githubUser={githubUser} />
+                </Route>
+                <Route path="/leetcode">
+                  <LeetcodeTable darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
                 </Route>
                 <Route path="/login">
                   <Login darkmode={darkmode}/>

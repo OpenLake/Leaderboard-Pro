@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import CodechefLogo from "../icons/codechef.png";
 import CodeforcesLogo from "../icons/codeforces.svg";
 import OpenlakeLogo from "../icons/openlake.svg";
+import LeetcodeLogo from "../icons/leetcode.svg"
+
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
 
@@ -111,7 +113,17 @@ export const Navbar = ({ darkmode, toggle }) => {
                 />
               </IconButton>
             </Link>
-            
+            <Link style={{ margin: "10px" }} to="/leetcode">
+              <IconButton edge="start" color="inherit" aria-label="menu">
+                <img
+                  src={LeetcodeLogo}
+                  width={25}
+                  height={25}
+                  alt="LeetCode Logo"
+                  style={{filter:darkmode?"invert(100)":""}}
+                />
+              </IconButton>
+            </Link> 
             <Link style={{ margin: "10px" }} to="/openlake">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img

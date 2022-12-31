@@ -5,7 +5,6 @@ from leaderboard.models import (
     codechefUser,
     githubUser,
     openlakeContributor,
-    AppUser
 )
 
 
@@ -149,13 +148,7 @@ class OL_Serializer(serializers.ModelSerializer):
     class Meta:
         model = openlakeContributor
         fields = ["id", "username", "contributions"]
-
-class AppUser_Serializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        return AppUser.objects.create(**validated_data)
-    class Meta:
-        model=AppUser
-        fields=["id","first_name","last_name","email","password","cc_uname","cf_uname","gh_uname"]
+        
 
 
 
