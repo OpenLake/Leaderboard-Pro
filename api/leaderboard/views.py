@@ -12,14 +12,15 @@ from leaderboard.serializers import (
     GH_Serializer,
     OL_Serializer,
 )
+from knox.models import AuthToken
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.reverse import reverse
 from rest_framework import generics, mixins, status
-
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
-
+from django.contrib.auth import get_user_model
 from datetime import datetime
 import requests
 
@@ -63,11 +64,12 @@ class GithubUserAPI(
     def get(self, request):
         gh_users = githubUser.objects.all()
         serializer = GH_Serializer(gh_users, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data)    
 
     def post(self, request):
         username = request.data["username"]
         gh_user = githubUser(username=username)
+        
         gh_user.save()
         return Response(
             GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
@@ -243,3 +245,4 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+

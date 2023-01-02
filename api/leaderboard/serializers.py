@@ -148,3 +148,7 @@ class OL_Serializer(serializers.ModelSerializer):
     class Meta:
         model = openlakeContributor
         fields = ["id", "username", "contributions"]
+        
+
+
+

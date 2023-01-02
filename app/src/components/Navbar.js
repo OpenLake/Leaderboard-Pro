@@ -11,9 +11,12 @@ import { Link } from "react-router-dom";
 import CodechefLogo from "../icons/codechef.png";
 import CodeforcesLogo from "../icons/codeforces.svg";
 import OpenlakeLogo from "../icons/openlake.svg";
+import LeetcodeLogo from "../icons/leetcode.svg"
+import { useContext } from "react";
+import AuthContext from "../Context/AuthContext";
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
-
+import {useHistory} from "react-router-dom"
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -60,6 +63,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
       borderRadius: 20 / 2,
   },
 }));
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -74,7 +78,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
-
+  const history=useHistory();
+  const manageClick=()=>{
+    history.push('/profile')
+  }
+  let {user,logoutUser}=useContext(AuthContext);
   return (
     <div className={classes.root} >
       <AppBar position="static" style={{backgroundColor:!darkmode?"#39ace7":"#2F4562"}}>
@@ -111,7 +119,17 @@ export const Navbar = ({ darkmode, toggle }) => {
                 />
               </IconButton>
             </Link>
-            
+            <Link style={{ margin: "10px" }} to="/leetcode">
+              <IconButton edge="start" color="inherit" aria-label="menu">
+                <img
+                  src={LeetcodeLogo}
+                  width={25}
+                  height={25}
+                  alt="LeetCode Logo"
+                  style={{filter:darkmode?"invert(100)":""}}
+                />
+              </IconButton>
+            </Link> 
             <Link style={{ margin: "10px" }} to="/openlake">
               <IconButton edge="start" color="inherit" aria-label="menu">
                 <img
@@ -137,7 +155,8 @@ export const Navbar = ({ darkmode, toggle }) => {
               }
           />
       </FormGroup>
-          <Button color="inherit">Login</Button>
+      <Button color="inherit" style={{display:user?"block":"none",margin:"10px 10px"}} onClick={manageClick}>{user?user.username:""}</Button>
+      <Button color="inherit" onClick={user?logoutUser:history.push('/login')}>{user?"Logout":"Login"}</Button>
         </Toolbar>
       </AppBar>
     </div>
