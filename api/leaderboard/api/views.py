@@ -32,17 +32,31 @@ def getRoutes(request):
     ]
     return Response(routes)
 
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def current_user(request):
+    user = request.user
+    return Response({
+        'username': user.username,
+        'email': user.email,
+    })
+
 @api_view(["POST"])
-@permission_classes((permissions.AllowAny,))
+@permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
     try:
         data=request.data
-        print(data)
-        return Response({
-            'status':200,
-            'message':"Success"
-        })
-    except Exception as e:
+        # data['user']=request.user.username
+        serializer=UserNamesSerializer(data=data)
+        if serializer.is_valid():
+            # print(request.user.username)
+            serializer.save(user=request.user)
+            return Response({
+                'status':200,
+                'message':"Success",
+                'data':serializer.data
+            })
+    except Exception as e:  
         print(e)
         return Response({
             'status':400,
