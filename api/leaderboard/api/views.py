@@ -6,8 +6,11 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserNamesSerializer
-from leaderboard.models import UserNames
+from leaderboard.serializers import Cf_Serializer
+from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -40,7 +43,6 @@ def current_user(request):
         'username': user.username,
         'email': user.email,
     })
-
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
@@ -56,6 +58,15 @@ def post_UserNames(request):
                 'message':"Success",
                 'data':serializer.data
             })
+        username_cc = request.data["cc_uname"]
+        cc_user = codechefUser(username=username_cc)
+        cc_user.save()
+        username_cf = request.data["cf_uname"]
+        cf_user = codeforcesUser(username=username_cf)
+        cf_user.save()
+        username_gh = request.data["gh_uname"]
+        gh_user = githubUser(username=username_gh)
+        gh_user.save()
     except Exception as e:  
         print(e)
         return Response({
