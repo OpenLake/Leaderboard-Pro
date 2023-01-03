@@ -12,6 +12,8 @@ urlpatterns=[
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('usernames/',views.UserNamesDetailView.as_view()),
     path('insertapi/',views.post_UserNames),
-    path('tripathi/',views.current_user)
+    path('tripathi/',views.current_user),
+    path('register/',views.registerUser)
 ]
+
 

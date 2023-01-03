@@ -82,6 +82,9 @@ export const Navbar = ({ darkmode, toggle }) => {
   const manageClick=()=>{
     history.push('/profile')
   }
+  const toLogin=()=>{
+    history.push('/login')
+  }
   let {user,logoutUser}=useContext(AuthContext);
   return (
     <div className={classes.root} >
@@ -156,7 +159,7 @@ export const Navbar = ({ darkmode, toggle }) => {
           />
       </FormGroup>
       <Button color="inherit" style={{display:user?"block":"none",margin:"10px 10px"}} onClick={manageClick}>{user?user.username:""}</Button>
-      <Button color="inherit" onClick={user?logoutUser:history.push('/login')}>{user?"Logout":"Login"}</Button>
+      <Button color="inherit" onClick={user?logoutUser:toLogin}>{user?"Logout":"Login"}</Button>
         </Toolbar>
       </AppBar>
     </div>

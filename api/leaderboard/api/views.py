@@ -9,8 +9,8 @@ from .serializers import UserNamesSerializer
 from leaderboard.serializers import Cf_Serializer
 from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
-
-
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -20,7 +20,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token['username'] = user.username
         # ...
-
         return token
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -68,6 +67,26 @@ def post_UserNames(request):
         gh_user = githubUser(username=username_gh)
         gh_user.save()
     except Exception as e:  
+        print(e)
+        return Response({
+            'status':400,
+            'message':"Wrong"
+        })
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
+def registerUser(request):
+    first_name = request.data["first_name"]
+    username = request.data["username"]
+    password = request.data["password"]
+    try:
+        user = User.objects.create_user(username=username, password=password, first_name=first_name)
+        if first_name!="" and username!="" and password!="":
+            user.save()
+            return Response({
+                    'status':200,
+                    'message':"Success",
+                })
+    except Exception as e:
         print(e)
         return Response({
             'status':400,

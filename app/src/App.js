@@ -142,33 +142,34 @@ function App() {
           <Grid container>
             <Grid item xs={6}>
               <Switch>
-              <PrivateRoute path="/" exact>
-                  <UserPageList darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
-                </PrivateRoute>
-                <PrivateRoute path="/codeforces" exact >
-                  <CodeforcesTable darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
-                </PrivateRoute>
-                <PrivateRoute path="/codechef" exact>
-                  <CodechefTable darkmode={darkmode} codechefUsers={codechefUsers} />
-                </PrivateRoute>
-                <PrivateRoute path="/openlake" exact>
-                  <OpenlakeTable darkmode={darkmode} openlakeContributor={openlakeContributor} />
-                </PrivateRoute>
-                <PrivateRoute path="/github" exact>
-                  <GithubTable darkmode={darkmode} githubUser={githubUser} />
-                </PrivateRoute>
-                <PrivateRoute path="/leetcode" exact>
-                  <LeetcodeTable darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
-                </PrivateRoute>
-                <PrivateRoute path="/profile" exact>
-                  <Profile1 darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
-                </PrivateRoute>
-                <Route path="/login" exact>
+                {/* <Route exact path='/*' element={<Login/>}/> */}
+              <Route exact path="/register" >
+                  <Register darkmode={darkmode}/>
+                </Route> 
+              <Route exact path="/login" >
                   <Login darkmode={darkmode}/>
                 </Route>
-                <Route path="/register" exact>
-                  <Register darkmode={darkmode}/>
-                </Route>
+              <PrivateRoute exact path="/" >
+                  <UserPageList darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
+                </PrivateRoute>
+                <PrivateRoute exact path="/codeforces"  >
+                  <CodeforcesTable darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
+                </PrivateRoute>
+                <PrivateRoute exact path="/codechef" >
+                  <CodechefTable darkmode={darkmode} codechefUsers={codechefUsers} />
+                </PrivateRoute>
+                <PrivateRoute exact path="/openlake" >
+                  <OpenlakeTable darkmode={darkmode} openlakeContributor={openlakeContributor} />
+                </PrivateRoute>
+                <PrivateRoute exact path="/github" >
+                  <GithubTable darkmode={darkmode} githubUser={githubUser} />
+                </PrivateRoute>
+                <PrivateRoute exact path="/leetcode" >
+                  <LeetcodeTable darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
+                </PrivateRoute>
+                <PrivateRoute exact path="/profile" >
+                  <Profile1 darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
+                </PrivateRoute>
               </Switch>
             </Grid>
           </Grid>
