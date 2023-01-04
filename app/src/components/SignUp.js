@@ -33,14 +33,12 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignUp() {
+export default function SignUp({registerUser}) {
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    console.log('====================================');
+    console.log('submit');
+    console.log('====================================');
   };
 
   return (
@@ -64,14 +62,14 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={registerUser}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="first_name"
                   required
                   fullWidth
                   id="firstName"
@@ -83,10 +81,22 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  id="last_name"
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  defaultValue=""
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="username"
+                  label="username"
+                  type="username"
+                  id="username"
+                  autoComplete="new-username"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -97,6 +107,7 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  type="email"
                 />
               </Grid>
               <Grid item xs={12}>

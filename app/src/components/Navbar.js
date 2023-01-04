@@ -158,8 +158,8 @@ export const Navbar = ({ darkmode, toggle }) => {
               }
           />
       </FormGroup>
-      <Button color="inherit" style={{display:user?"block":"none",margin:"10px 10px"}} onClick={manageClick}>{user?user.username:""}</Button>
-      <Button color="inherit" onClick={user?logoutUser:toLogin}>{user?"Logout":"Login"}</Button>
+      {/* <Button color="inherit" style={{display:user?"block":"none",margin:"10px 10px"}} onClick={manageClick}>{user?user.username:""}</Button>
+      <Button color="inherit" onClick={user?logoutUser:toLogin}>{user?"Logout":"Login"}</Button> */}
         </Toolbar>
       </AppBar>
     </div>

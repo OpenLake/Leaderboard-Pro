@@ -41,10 +41,39 @@ export const AuthProvider=({children})=>{
         localStorage.removeItem('authTokens')
         history.push('/login')
     }
+    let registerUser=async(e)=>
+    {
+        e.preventDefault();
+        // console.log(e.target.first_name.value)
+        // console.log(e.target.email.value)
+        // console.log(e.target.userame.value)
+        // console.log(e.target.first_name.value)
+        let response=await fetch('http://localhost:8000/api/register/',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                'first_name':e.target.first_name.value,'email':e.target.email.value,'username':e.target.username.value,'password':e.target.password.value,
+                'last_name':e.target.last_name.value,
+            })
+        })
+        let data = await response.json()
+        if(response.status===200)
+        {
+            // setAuthTokens(data)
+            // setUser(jwt_decode(data.access))
+            // localStorage.setItem('authTokens',JSON.stringify(data))
+            history.push('/login')
+        }else{
+            alert('ERROR!!!!')
+        }
+    }
     let contextData={
         user:user,
         authTokens:authTokens,
         loginUser:loginUser,
+        registerUser:registerUser,
         logoutUser:logoutUser
     }
     return (

@@ -71,16 +71,19 @@ def post_UserNames(request):
         return Response({
             'status':400,
             'message':"Wrong"
-        })
+        },status=status.HTTP_400_BAD_REQUEST)
+        
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def registerUser(request):
-    first_name = request.data["first_name"]
-    username = request.data["username"]
-    password = request.data["password"]
     try:
-        user = User.objects.create_user(username=username, password=password, first_name=first_name)
-        if first_name!="" and username!="" and password!="":
+        first_name = request.data["first_name"]
+        last_name=request.data['last_name']
+        email=request.data['email']
+        username = request.data["username"]
+        password = request.data["password"]
+        user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
+        if first_name!="" and  email!="" and username!="" and password!="":
             user.save()
             return Response({
                     'status':200,
@@ -91,5 +94,5 @@ def registerUser(request):
         return Response({
             'status':400,
             'message':"Wrong"
-        })
+        },status=status.HTTP_400_BAD_REQUEST)
 
