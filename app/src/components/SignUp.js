@@ -129,6 +129,7 @@ export default function SignUp({registerUser}) {
                   type="cc_uname"
                   id="cc_uname"
                   autoComplete="new-cc_uname"
+                  defaultValue=""
                 />
               </Grid>
               <Grid item xs={12}>
@@ -139,6 +140,7 @@ export default function SignUp({registerUser}) {
                   type="cf_uname"
                   id="cf_uname"
                   autoComplete="new-cf_uname"
+                  defaultValue=""
                 />
               </Grid>
               <Grid item xs={12}>
@@ -149,6 +151,7 @@ export default function SignUp({registerUser}) {
                   type="gh_uname"
                   id="gh_uname"
                   autoComplete="new-gh_uname"
+                  defaultValue=""
                 />
               </Grid>
             </Grid>

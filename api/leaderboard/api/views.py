@@ -82,6 +82,9 @@ def registerUser(request):
         email=request.data['email']
         username = request.data["username"]
         password = request.data["password"]
+        cc_uname=request.data["cc_uname"]
+        cf_uname=request.data["cf_uname"]
+        gh_uname=request.data["gh_uname"]
         user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
         if first_name!="" and  email!="" and username!="" and password!="":
             user.save()
@@ -89,6 +92,15 @@ def registerUser(request):
                     'status':200,
                     'message':"Success",
                 })
+        if cc_uname!="":
+            cc_user = codechefUser(username=cc_uname)
+            cc_user.save()
+        if cf_uname!="":
+            cf_user = codeforcesUser(username=cf_uname)
+            cf_user.save()
+        if gh_uname!="":
+            gh_user = githubUser(username=gh_uname)
+            gh_user.save()
     except Exception as e:
         print(e)
         return Response({
