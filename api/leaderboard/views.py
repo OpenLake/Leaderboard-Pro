@@ -232,7 +232,6 @@ class CodechefLeaderboard(
 ):
     queryset = codechefUser.objects.all()
     serializer_class = CC_Serializer
-
     def get(self, request):
         cc_users = codechefUser.objects.all()
         serializer = CC_Serializer(cc_users, many=True)

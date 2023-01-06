@@ -114,8 +114,31 @@ class codeforcesUserRatingUpdate(models.Model):
 
     class Meta:
         ordering = ["timestamp"]
+class LeetcodeUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    ranking = models.PositiveIntegerField(default=0)
+    easy_solved = models.PositiveIntegerField(default=0)
+    medium_solved = models.PositiveIntegerField(default=0)
+    hard_solved = models.PositiveIntegerField(default=0)
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
+            minutes=1
+        ):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"{self.username}"
+
+    class Meta:
+        ordering = ["ranking"]
+
 class UserNames(models.Model):
     user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    cc_uname = models.CharField(max_length=64, unique=True)
-    cf_uname = models.CharField(max_length=64, unique=True)
-    gh_uname = models.CharField(max_length=64, unique=True)
+    cc_uname = models.CharField(max_length=64)
+    cf_uname = models.CharField(max_length=64)
+    gh_uname = models.CharField(max_length=64)
+    lt_uname = models.CharField(max_length=64,default="")
+    ol_uname = models.CharField(max_length=64,default="")
