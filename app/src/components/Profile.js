@@ -22,7 +22,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
         LeaderBoard-Pro
       </Link>{" "}
       {new Date().getFullYear()}
@@ -93,6 +93,26 @@ export default function Profile({update_addUsernames}) {
                   type="gh_uname"
                   id="gh_uname"
                   autoComplete="new-gh_uname"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name="LeetCode Username "
+                  label="LeetCode Username  "
+                  type="lt_uname"
+                  id="lt_uname"
+                  autoComplete="new-lt_uname"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name="Openlake Username "
+                  label="Openlake Username  "
+                  type="ol_uname"
+                  id="ol_uname"
+                  autoComplete="new-ol_uname"
                 />
               </Grid>
             </Grid>

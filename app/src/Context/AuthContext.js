@@ -51,7 +51,8 @@ export const AuthProvider=({children})=>{
             },
             body:JSON.stringify({
                 'first_name':e.target.first_name.value,'email':e.target.email.value,'username':e.target.username.value,'password':e.target.password.value,
-                'last_name':e.target.last_name.value,'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value
+                'last_name':e.target.last_name.value,'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value,
+                'lt_uname':e.target.lt_uname.value,'ol_uname':e.target.ol_uname.value
             })
         })
         let data = await response.json()
@@ -74,7 +75,8 @@ export const AuthProvider=({children})=>{
                 'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
             },
             body:JSON.stringify({
-                'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value
+                'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value,
+                'lt_uname':e.target.lt_uname.value,'ol_uname':e.target.ol_uname.value
             })
         })
         let data = await response.json()
@@ -85,12 +87,20 @@ export const AuthProvider=({children})=>{
             alert('ERROR!!!!')
         }
     }
+    let toLogin=()=>{
+        history.push('/login')
+    }
+    let toRegister=()=>{
+        history.push('/register')
+    }
     let contextData={
         user:user,
         authTokens:authTokens,
         loginUser:loginUser,
         registerUser:registerUser,
         logoutUser:logoutUser,
+        toLogin:toLogin,
+        toRegister:toRegister,
         update_addUsernames:update_addUsernames
     }
     return (

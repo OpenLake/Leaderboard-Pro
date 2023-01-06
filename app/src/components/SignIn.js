@@ -1,4 +1,4 @@
-import * as React from "react";
+import {React,useContext} from 'react'
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import AuthContext from '../Context/AuthContext.js';
 function Copyright(props) {
   return (
     <Typography
@@ -22,7 +22,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
         LeaderBoard-Pro
       </Link>{" "}
       {new Date().getFullYear()}
@@ -42,7 +42,7 @@ export default function SignIn({loginUser}) {
       password: data.get("password"),
     });
   };
-
+  let {toRegister}=useContext(AuthContext);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -101,9 +101,9 @@ export default function SignIn({loginUser}) {
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
-                <Link href="/register" variant="body2">
+                <Button variant="body2" style={{color:"red"}} onClick={toRegister}>
                   {"Don't have an account? Sign Up"}
-                </Link>
+                </Button>
               </Grid>
             </Grid>
           </Box>

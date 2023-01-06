@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserNamesSerializer
 from leaderboard.serializers import Cf_Serializer
-from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser
+from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -51,6 +51,8 @@ def post_UserNames(request):
         username_cc=request.data["cc_uname"]
         username_cf=request.data["cf_uname"]
         username_gh=request.data["gh_uname"]
+        username_lt=request.data["lt_uname"]
+        username_ol=request.data["ol_uname"]
         user=request.user
         if UserNames.objects.filter(user=user).exists():
             t = UserNames.objects.get(user=user)
@@ -69,10 +71,20 @@ def post_UserNames(request):
                 t.gh_uname=username_gh
                 gh_user = githubUser(username=username_gh)
                 gh_user.save()
+            if username_lt!="":
+                LeetcodeUser.objects.filter(username=t.lt_uname).delete()
+                t.lt_uname=username_lt
+                lt_user = githubUser(username=username_lt)
+                lt_user.save()
+            if username_ol!="":
+                openlakeContributor.objects.filter(username=t.ol_uname).delete()
+                t.ol_uname=username_ol
+                ol_user = githubUser(username=username_ol)
+                ol_user.save()
             t.save()
         else:
             if user!="":
-                userName=UserNames(user=user,cc_uname=username_cc,cf_uname=username_cf,gh_uname=username_gh)
+                userName=UserNames(user=user,cc_uname=username_cc,cf_uname=username_cf,gh_uname=username_gh,lt_uname=username_lt,ol_uname=username_ol)
                 userName.save()
             if username_cc!="":
                 cc_user = codechefUser(username=username_cc)
@@ -85,6 +97,12 @@ def post_UserNames(request):
             if username_gh!="":
                 gh_user = githubUser(username=username_gh)
                 gh_user.save()
+            if username_lt!="":
+                lt_user = LeetcodeUser(username=username_lt)
+                lt_user.save()
+            if username_ol!="":
+                ol_user = openlakeContributor(username=username_ol)
+                ol_user.save()
         return Response({
             'status':200,
             'message':"Success",
@@ -114,9 +132,13 @@ def registerUser(request):
         cc_uname=request.data["cc_uname"]
         cf_uname=request.data["cf_uname"]
         gh_uname=request.data["gh_uname"]
+        lt_uname=request.data["lt_uname"]
+        ol_uname=request.data["ol_uname"]
         user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
         if first_name!="" and  email!="" and username!="" and password!="":
             user.save()
+            userName=UserNames(user=user,cc_uname=cc_uname,cf_uname=cf_uname,gh_uname=gh_uname,lt_uname=lt_uname,ol_uname=ol_uname)
+            userName.save()
             if cc_uname!="":
                 cc_user = codechefUser(username=cc_uname)
                 cc_user.save()
@@ -126,6 +148,12 @@ def registerUser(request):
             if gh_uname!="":
                 gh_user = githubUser(username=gh_uname)
                 gh_user.save()
+            if lt_uname!="":
+                lt_user = LeetcodeUser(username=lt_uname)
+                lt_user.save()
+            if ol_uname!="":
+                ol_user = openlakeContributor(username=ol_uname)
+                ol_user.save()
             return Response({
                     'status':200,
                     'message':"Success",

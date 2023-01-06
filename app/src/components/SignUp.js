@@ -1,4 +1,4 @@
-import * as React from "react";
+import {React,useContext} from 'react'
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import AuthContext from '../Context/AuthContext.js';
 function Copyright(props) {
   return (
     <Typography
@@ -22,7 +22,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="#">
+      <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
         LeaderBoard-Pro
       </Link>{" "}
       {new Date().getFullYear()}
@@ -40,7 +40,7 @@ export default function SignUp({registerUser}) {
     console.log('submit');
     console.log('====================================');
   };
-
+  let {toLogin}=useContext(AuthContext);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -65,10 +65,11 @@ export default function SignUp({registerUser}) {
             onSubmit={registerUser}
             sx={{ mt: 3 }}
           >
-            <Grid container spacing={2}>
+            <Grid container spacing={1}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
+                  size="small"
                   name="first_name"
                   required
                   fullWidth
@@ -81,6 +82,7 @@ export default function SignUp({registerUser}) {
                 <TextField
                   required
                   fullWidth
+                  size="small"
                   id="last_name"
                   label="Last Name"
                   name="lastName"
@@ -92,6 +94,7 @@ export default function SignUp({registerUser}) {
                 <TextField
                   required
                   fullWidth
+                  size="small"
                   name="username"
                   label="username"
                   type="username"
@@ -101,8 +104,10 @@ export default function SignUp({registerUser}) {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                
                   required
                   fullWidth
+                  size="small"
                   id="email"
                   label="Email Address"
                   name="email"
@@ -114,6 +119,7 @@ export default function SignUp({registerUser}) {
                 <TextField
                   required
                   fullWidth
+                  size="small"
                   name="password"
                   label="Password"
                   type="password"
@@ -124,9 +130,10 @@ export default function SignUp({registerUser}) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  size="small"
                   name="CodeChef Username"
                   label="CodeChef Username"
-                  type="cc_uname"
+                  type="text"
                   id="cc_uname"
                   autoComplete="new-cc_uname"
                   defaultValue=""
@@ -135,9 +142,10 @@ export default function SignUp({registerUser}) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  size="small"
                   name="Codeforces Username"
                   label="Codeforces Username"
-                  type="cf_uname"
+                  type="text"
                   id="cf_uname"
                   autoComplete="new-cf_uname"
                   defaultValue=""
@@ -146,14 +154,39 @@ export default function SignUp({registerUser}) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  size="small"
                   name="Github Username "
                   label="Github Username  "
-                  type="gh_uname"
+                  type="text"
                   id="gh_uname"
                   autoComplete="new-gh_uname"
                   defaultValue=""
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+                size="small"
+                  fullWidth
+                  name="LeetCode Username "
+                  label="LeetCode Username  "
+                  type="text"
+                  id="lt_uname"
+                  autoComplete="new-lt_uname"
+                  defaultValue=""
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  name="OpenLake Username "
+                  label="OpenLake Username  "
+                  type="text"
+                  id="ol_uname"
+                  autoComplete="new-ol_uname"
+                  defaultValue=""
+                />
+              </Grid> 
             </Grid>
             <Button
               type="submit"
@@ -165,9 +198,9 @@ export default function SignUp({registerUser}) {
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Button  variant="body2" style={{color:"red"}} onClick={toLogin}>
                   Already have an account? Sign in
-                </Link>
+                </Button>
               </Grid>
             </Grid>
           </Box>
