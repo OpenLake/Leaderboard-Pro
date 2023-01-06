@@ -116,6 +116,6 @@ class codeforcesUserRatingUpdate(models.Model):
         ordering = ["timestamp"]
 class UserNames(models.Model):
     user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    cc_uname = models.CharField(max_length=64, unique=True)
-    cf_uname = models.CharField(max_length=64, unique=True)
-    gh_uname = models.CharField(max_length=64, unique=True)
+    cc_uname = models.CharField(max_length=64)
+    cf_uname = models.CharField(max_length=64)
+    gh_uname = models.CharField(max_length=64)

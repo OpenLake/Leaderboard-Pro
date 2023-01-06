@@ -46,26 +46,55 @@ def current_user(request):
 @permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
     try:
-        data=request.data
         # data['user']=request.user.username
-        serializer=UserNamesSerializer(data=data)
-        if serializer.is_valid():
-            # print(request.user.username)
-            serializer.save(user=request.user)
-            return Response({
-                'status':200,
-                'message':"Success",
-                'data':serializer.data
-            })
-        username_cc = request.data["cc_uname"]
-        cc_user = codechefUser(username=username_cc)
-        cc_user.save()
-        username_cf = request.data["cf_uname"]
-        cf_user = codeforcesUser(username=username_cf)
-        cf_user.save()
-        username_gh = request.data["gh_uname"]
-        gh_user = githubUser(username=username_gh)
-        gh_user.save()
+        # data=request.data
+        username_cc=request.data["cc_uname"]
+        username_cf=request.data["cf_uname"]
+        username_gh=request.data["gh_uname"]
+        user=request.user
+        if UserNames.objects.filter(user=user).exists():
+            t = UserNames.objects.get(user=user)
+            if username_cc!="":
+                codechefUser.objects.filter(username=t.cc_uname).delete()
+                t.cc_uname=username_cc
+                cc_user = codechefUser(username=username_cc)
+                cc_user.save()
+            if username_cf!="":
+                codeforcesUser.objects.filter(username=t.cf_uname).delete()
+                t.cf_uname=username_cf
+                cf_user = codeforcesUser(username=username_cf)
+                cf_user.save()
+            if username_gh!="":
+                githubUser.objects.filter(username=t.gh_uname).delete()
+                t.gh_uname=username_gh
+                gh_user = githubUser(username=username_gh)
+                gh_user.save()
+            t.save()
+        else:
+            if user!="":
+                userName=UserNames(user=user,cc_uname=username_cc,cf_uname=username_cf,gh_uname=username_gh)
+                userName.save()
+            if username_cc!="":
+                cc_user = codechefUser(username=username_cc)
+                cc_user.save()
+            # username_cf = request.data["cf_uname"]
+            if username_cf!="":
+                cf_user = codeforcesUser(username=username_cf)
+                cf_user.save()
+            # username_gh = request.data["gh_uname"]
+            if username_gh!="":
+                gh_user = githubUser(username=username_gh)
+                gh_user.save()
+        return Response({
+            'status':200,
+            'message':"Success",
+        },status=status.HTTP_201_CREATED)
+        # else:
+        #     return Response({
+        #         'status':400,
+        #         'message':"Wrong",
+        #     },status=status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:  
         print(e)
         return Response({
@@ -88,23 +117,22 @@ def registerUser(request):
         user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
         if first_name!="" and  email!="" and username!="" and password!="":
             user.save()
+            if cc_uname!="":
+                cc_user = codechefUser(username=cc_uname)
+                cc_user.save()
+            if cf_uname!="":
+                cf_user = codeforcesUser(username=cf_uname)
+                cf_user.save()
+            if gh_uname!="":
+                gh_user = githubUser(username=gh_uname)
+                gh_user.save()
             return Response({
                     'status':200,
                     'message':"Success",
-                })
-        if cc_uname!="":
-            cc_user = codechefUser(username=cc_uname)
-            cc_user.save()
-        if cf_uname!="":
-            cf_user = codeforcesUser(username=cf_uname)
-            cf_user.save()
-        if gh_uname!="":
-            gh_user = githubUser(username=gh_uname)
-            gh_user.save()
+                },status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
         return Response({
             'status':400,
             'message':"Wrong"
         },status=status.HTTP_400_BAD_REQUEST)
-

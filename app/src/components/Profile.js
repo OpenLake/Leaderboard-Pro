@@ -33,7 +33,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function Profile() {
+export default function Profile({update_addUsernames}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -61,7 +61,7 @@ export default function Profile() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={update_addUsernames}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>

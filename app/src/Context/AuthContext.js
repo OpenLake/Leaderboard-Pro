@@ -62,12 +62,36 @@ export const AuthProvider=({children})=>{
             alert('ERROR!!!!')
         }
     }
+    let update_addUsernames=async(e)=>
+    {
+        e.preventDefault();
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!")
+        // console.log(JSON.parse(localStorage.getItem('authTokens')).access);
+        let response=await fetch('http://localhost:8000/api/insertapi/',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+            body:JSON.stringify({
+                'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value
+            })
+        })
+        let data = await response.json()
+        if(response.status===201)
+        {
+            history.push('/')
+        }else{
+            alert('ERROR!!!!')
+        }
+    }
     let contextData={
         user:user,
         authTokens:authTokens,
         loginUser:loginUser,
         registerUser:registerUser,
-        logoutUser:logoutUser
+        logoutUser:logoutUser,
+        update_addUsernames:update_addUsernames
     }
     return (
         <AuthContext.Provider value={contextData}>

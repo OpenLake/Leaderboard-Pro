@@ -103,8 +103,5 @@ const MyResponsiveLine = ({ url }) => {
             useMesh={true}
             legends={[]}
         />
-
-
-
     )
 }

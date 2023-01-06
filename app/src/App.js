@@ -115,7 +115,13 @@ function App() {
         setCodechefUsers(res);
       });
   }, []);
-
+  useEffect(()=>{
+    fetch("http://localhost:8000/openlake/")
+      .then((res) => res.json())
+      .then((res) => {
+        setLeetcodeUsers(res);
+      });
+  },[])
   useEffect(() => {
     fetch("http://localhost:8000/openlake/")
       .then((res) => res.json())
