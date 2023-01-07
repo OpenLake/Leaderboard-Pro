@@ -141,4 +141,3 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64,default="")
-    ol_uname = models.CharField(max_length=64,default="")

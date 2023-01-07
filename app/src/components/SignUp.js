@@ -175,18 +175,6 @@ export default function SignUp({registerUser}) {
                   defaultValue=""
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  name="OpenLake Username "
-                  label="OpenLake Username  "
-                  type="text"
-                  id="ol_uname"
-                  autoComplete="new-ol_uname"
-                  defaultValue=""
-                />
-              </Grid> 
             </Grid>
             <Button
               type="submit"

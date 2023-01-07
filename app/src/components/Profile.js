@@ -105,16 +105,6 @@ export default function Profile({update_addUsernames}) {
                   autoComplete="new-lt_uname"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  name="Openlake Username "
-                  label="Openlake Username  "
-                  type="ol_uname"
-                  id="ol_uname"
-                  autoComplete="new-ol_uname"
-                />
-              </Grid>
             </Grid>
             <Button
               type="submit"
