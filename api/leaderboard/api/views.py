@@ -73,7 +73,7 @@ def post_UserNames(request):
             if username_lt!="":
                 LeetcodeUser.objects.filter(username=t.lt_uname).delete()
                 t.lt_uname=username_lt
-                lt_user = githubUser(username=username_lt)
+                lt_user = LeetcodeUser(username=username_lt)
                 lt_user.save()
             t.save()
         else:
