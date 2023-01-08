@@ -35,12 +35,14 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
       
   
     return (
-        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
+        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
             <div>
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
-                            <TableRow>
+                            <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
+                            {/* #1CA7FC */}
+                            {/* #1F2F98 */}
                                 <StyledTableCell>Avatar</StyledTableCell>
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Rating</StyledTableCell>
@@ -56,7 +58,7 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                                         {/* TODO: Lazy load the avatars ? */}
                                     </StyledTableCell>
                                     <StyledTableCell>
-                                        <Link href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
+                                        <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={`https://codeforces.com/profile/${cfUser.username}`} target="_blank">
                                             {cfUser.username}
                                         </Link>
                                     </StyledTableCell>

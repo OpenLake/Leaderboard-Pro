@@ -20,12 +20,12 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
       })(TableCell);
     const classes = useStyles();
     return (
-        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
+        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
             <div >
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
-                            <TableRow>
+                            <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Rating</StyledTableCell>
                                 <StyledTableCell>Max rating</StyledTableCell>
@@ -37,7 +37,7 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
                             {codechefUsers.map(cfUser => (
                                 <TableRow key={cfUser.id}>
                                     <StyledTableCell>
-                                        <Link href={`https://codechef.com/users/${cfUser.username}`} target="_blank">
+                                        <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={`https://codechef.com/users/${cfUser.username}`} target="_blank">
                                             {cfUser.username}
                                         </Link>
                                     </StyledTableCell>

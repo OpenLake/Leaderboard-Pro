@@ -23,12 +23,12 @@ export const GithubTable = ({ darkmode,githubUser }) => {
         }
       })(TableCell);
     return (
-        <div className="openlake" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
+        <div className="openlake" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
             <div>
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
-                            <TableRow>
+                            <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
                                 <StyledTableCell >Username</StyledTableCell>
                                 <StyledTableCell >Contributions</StyledTableCell>
                                 <StyledTableCell >Repositories</StyledTableCell>
@@ -39,7 +39,7 @@ export const GithubTable = ({ darkmode,githubUser }) => {
                             {githubUser.map(glUser => (
                                 <TableRow key={glUser.id}>
                                     <StyledTableCell>
-                                    <Link href={`https://github.com/${glUser.username}`} target="_blank">
+                                    <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={`https://github.com/${glUser.username}`} target="_blank">
                                         {glUser.username}
                                     </Link>
                                     </StyledTableCell>
