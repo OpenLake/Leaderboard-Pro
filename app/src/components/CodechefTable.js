@@ -1,5 +1,5 @@
 import { makeStyles,withStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
 
 const useStyles = makeStyles({
     table: {
@@ -26,6 +26,7 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
                             <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
+                            <StyledTableCell>Avatar</StyledTableCell>
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Rating</StyledTableCell>
                                 <StyledTableCell>Max rating</StyledTableCell>
@@ -36,6 +37,10 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
                         <TableBody>
                             {codechefUsers.map(cfUser => (
                                 <TableRow key={cfUser.id}>
+                                    <StyledTableCell>
+                                        <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
+                                        {/* TODO: Lazy load the avatars ? */}
+                                    </StyledTableCell>
                                     <StyledTableCell>
                                         <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={`https://codechef.com/users/${cfUser.username}`} target="_blank">
                                             {cfUser.username}

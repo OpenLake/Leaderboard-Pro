@@ -1,6 +1,6 @@
 
 import { makeStyles,withStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
 
 
 
@@ -32,6 +32,7 @@ export const LeetcodeTable = ({ darkmode,leetcodeUsers }) => {
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
                             <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
+                            <StyledTableCell>Avatar</StyledTableCell>
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Ranking</StyledTableCell>
                                 <StyledTableCell>Easy Solved</StyledTableCell>
@@ -42,6 +43,10 @@ export const LeetcodeTable = ({ darkmode,leetcodeUsers }) => {
                         <TableBody>
                             {leetcodeUsers.map(cfUser => (
                                 <TableRow key={cfUser.id}>
+                                    <StyledTableCell>
+                                        <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
+                                        {/* TODO: Lazy load the avatars ? */}
+                                    </StyledTableCell>
                                     <StyledTableCell>
                                         <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={"https://leetcode.com/"+cfUser.username+"/"} target="_blank">
                                         {cfUser.username}

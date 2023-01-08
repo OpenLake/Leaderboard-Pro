@@ -98,6 +98,7 @@ class CC_Serializer(serializers.ModelSerializer):
             "max_rating",
             "Global_rank",
             "Country_rank",
+            "avatar",
         ]
 class LT_Serializer(serializers.ModelSerializer):
     """
@@ -150,7 +151,7 @@ class GH_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = githubUser
-        fields = ["id", "username", "contributions", "repositories", "stars"]
+        fields = ["id", "username", "contributions", "repositories", "stars","avatar",]
 
 
 class OL_Serializer(serializers.ModelSerializer):

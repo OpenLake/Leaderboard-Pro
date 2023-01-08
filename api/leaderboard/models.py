@@ -8,7 +8,7 @@ class githubUser(models.Model):
     repositories = models.PositiveIntegerField(default=0)
     stars = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
-
+    avatar = models.CharField(max_length=256, default="")
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
@@ -76,7 +76,7 @@ class codechefUser(models.Model):
     Country_rank = models.CharField(max_length=10, default="NA")
     rating = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
-
+    avatar = models.CharField(max_length=256, default="")
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
@@ -108,7 +108,6 @@ class codeforcesUserRatingUpdate(models.Model):
     prev_index = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     timestamp = models.PositiveIntegerField(default=0)
-
     def __str__(self):
         return f"{self.cf_user.username}.{self.index} {self.rating}"
 
@@ -121,6 +120,7 @@ class LeetcodeUser(models.Model):
     medium_solved = models.PositiveIntegerField(default=0)
     hard_solved = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
+    avatar = models.CharField(max_length=256, default="")
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
