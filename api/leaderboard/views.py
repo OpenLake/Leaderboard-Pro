@@ -4,6 +4,7 @@ from leaderboard.models import (
     githubUser,
     codechefUser,
     openlakeContributor,
+    LeetcodeUser
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -11,6 +12,7 @@ from leaderboard.serializers import (
     CC_Serializer,
     GH_Serializer,
     OL_Serializer,
+    LT_Serializer
 )
 from knox.models import AuthToken
 from rest_framework.response import Response
@@ -243,5 +245,22 @@ class CodechefLeaderboard(
         cc_user.save()
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
+        )
+class LeetcodeLeaderboard(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
+    queryset = LeetcodeUser.objects.all()
+    serializer_class = LT_Serializer
+    def get(self, request):
+        lt_users = LeetcodeUser.objects.all()
+        serializer = LT_Serializer(lt_users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        username = request.data["username"]
+        lt_user = LeetcodeUser(username=username)
+        lt_user.save()
+        return Response(
+            LT_Serializer(lt_user).data, status=status.HTTP_201_CREATED
         )
 

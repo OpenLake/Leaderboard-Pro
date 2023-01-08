@@ -120,6 +120,7 @@ class LeetcodeUser(models.Model):
     easy_solved = models.PositiveIntegerField(default=0)
     medium_solved = models.PositiveIntegerField(default=0)
     hard_solved = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(

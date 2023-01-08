@@ -5,6 +5,7 @@ from leaderboard.models import (
     codechefUser,
     githubUser,
     openlakeContributor,
+    LeetcodeUser
 )
 
 
@@ -98,6 +99,32 @@ class CC_Serializer(serializers.ModelSerializer):
             "Global_rank",
             "Country_rank",
         ]
+class LT_Serializer(serializers.ModelSerializer):
+    """
+    TODO
+    """
+
+    def create(self, validated_data):
+        return LeetcodeUser.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     """
+    #     Update and return an existing `codechefUser`
+    #     instance, given the validated data.
+    #     """
+    #     instance.rating = validated_data.get("rating", instance.rating)
+    #     instance.max_rating = validated_data.get("maxRating",
+    #     instance.max_rating)
+    #     instance.Global_rank = validated_data.get("globalrank",
+    #     instance.Global_rank)
+    #     instance.Country_rank = validated_data.get("countryrank",
+    #     instance.Country_rank)
+    #     instance.save()
+    #     return instance
+
+    class Meta:
+        model = LeetcodeUser
+        fields='__all__'
 
 
 class GH_Serializer(serializers.ModelSerializer):

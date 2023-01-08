@@ -7,6 +7,11 @@ app = Celery("leaderboard")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
+def listToString(s):
+    str1 = ""
+    for ele in s:
+        str1 += ele
+    return str1
 
 @app.task(bind=True)
 def codechef_user_update(self):
@@ -19,20 +24,23 @@ def codechef_user_update(self):
             url = "https://www.codechef.com/users/{}".format(cc_user.username)
             page = requests.get(url)
             data_cc = BeautifulSoup(page.text, "html.parser")
-            cc_user.rating = data_cc.find("div", class_="rating-number").text
-            container_highest_rating = data_cc.find(
-                "div", class_="rating-header"
-            )
-            cc_user.max_rating = (
-                container_highest_rating.find_next("small")
-                .text.split()[-1]
-                .rstrip(")")
-            )
-            container_ranks = data_cc.find("div", class_="rating-ranks")
-            ranks = container_ranks.find_all("a")
-            cc_user.Global_rank = ranks[0].strong.text
-            cc_user.Country_rank = ranks[1].strong.text
-            cc_user.save()
+            try:
+                cc_user.rating = data_cc.find("div", class_="rating-number").text
+                container_highest_rating = data_cc.find(
+                    "div", class_="rating-header"
+                )
+                cc_user.max_rating = (
+                    container_highest_rating.find_next("small")
+                    .text.split()[-1]
+                    .rstrip(")")
+                )
+                container_ranks = data_cc.find("div", class_="rating-ranks")
+                ranks = container_ranks.find_all("a")
+                cc_user.Global_rank = ranks[0].strong.text
+                cc_user.Country_rank = ranks[1].strong.text
+                cc_user.save()
+            except:
+                pass
 
 
 @app.task(bind=True)
@@ -58,6 +66,26 @@ def github_user_update(self):
             gh_user.stars = stars
             gh_user.save()
 
+@app.task(bind=True)
+def leetcode_user_update(self):
+    from leaderboard.models import LeetcodeUser
+    from bs4 import BeautifulSoup
+    # print("running-----1")
+    lt_users = LeetcodeUser.objects.all()
+    # print("running-----2")
+    for i, lt_user in enumerate(lt_users):
+        # print("running-----3")
+        if lt_user.is_outdated:
+            url = "https://leetcode.com/{}".format(lt_user.username)
+            page = requests.get(url)
+            data_cc = BeautifulSoup(page.text, "html.parser")
+            lt_ranking = data_cc.find("span", class_="ttext-label-1 dark:text-dark-label-1 font-medium")
+            lt_questions=data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
+            lt_user.ranking = int(listToString(lt_ranking.text.split(',')))
+            lt_user.easy_solved=int(listToString(lt_questions[0].text.split(',')))
+            lt_user.medium_solved=int(listToString(lt_questions[1].text.split(',')))
+            lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
+            lt_user.save()
 @app.task(bind=True)
 def openlake_contributor__update(self):
     from leaderboard.models import openlakeContributor
