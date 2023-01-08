@@ -97,10 +97,6 @@ class GithubOrganisationAPI(
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
-    """
-    Collects data from codeforces API
-    """
-
     queryset = codeforcesUser.objects.all()
     serializer_class = Cf_Serializer
 

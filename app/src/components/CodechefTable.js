@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react'
 import { makeStyles,withStyles } from '@material-ui/core/styles';
-
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
 
-import { ResponsiveLine } from '@nivo/line'
 const useStyles = makeStyles({
     table: {
         minWidth: 700,
@@ -32,7 +29,6 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Rating</StyledTableCell>
                                 <StyledTableCell>Max rating</StyledTableCell>
-                                <StyledTableCell>Last activity</StyledTableCell>
                                 <StyledTableCell>Global Rank</StyledTableCell>
                                 <StyledTableCell>Country Rank</StyledTableCell>
                             </TableRow>
@@ -47,7 +43,6 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
                                     </StyledTableCell>
                                     <StyledTableCell>{cfUser.rating}</StyledTableCell>
                                     <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
-                                    <StyledTableCell>{(new Date(cfUser.last_updated)).toLocaleString()}</StyledTableCell>
                                     <StyledTableCell>{cfUser.Global_rank}</StyledTableCell>
                                     <StyledTableCell>{cfUser.Country_rank}</StyledTableCell>
                                 </TableRow>
@@ -62,46 +57,3 @@ export const CodechefTable = ({ darkmode,codechefUsers }) => {
 
 
 
-const MyResponsiveLine = ({ url }) => {
-
-    const [ratingUpdates, setRatingUpdates] = useState([]);
-
-    useEffect(() => {
-        fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                const updates = res["rating_updates"].map(entry => ({ x: entry.rating, y: entry.timestamp }));
-                console.log(updates);
-                setRatingUpdates([
-                    {
-                        "id": `data_${url}`,
-                        "color": "hsl(28, 70%, 50%)",
-                        "data": updates
-                    }
-                ])
-            })
-    }, [url])
-
-    return (
-        <ResponsiveLine
-            data={ratingUpdates}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={null}
-            axisLeft={null}
-            enableGridX={false}
-            enableGridY={false}
-            enablePoints={false}
-            pointSize={10}
-            colors={{ scheme: 'category10' }}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            // pointLabelYOffset={-12}
-            useMesh={true}
-            legends={[]}
-        />
-    )
-}

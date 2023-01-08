@@ -1,9 +1,5 @@
-import { useEffect, useState } from 'react'
 import { makeStyles,withStyles } from '@material-ui/core/styles';
-
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
-
-import { ResponsiveLine } from '@nivo/line'
 
 
 const useStyles = makeStyles({
@@ -42,9 +38,11 @@ export const GithubTable = ({ darkmode,githubUser }) => {
                         <TableBody>
                             {githubUser.map(glUser => (
                                 <TableRow key={glUser.id}>
+                                    <StyledTableCell>
                                     <Link href={`https://github.com/${glUser.username}`} target="_blank">
                                         {glUser.username}
                                     </Link>
+                                    </StyledTableCell>
                                     <StyledTableCell>{glUser.contributions}</StyledTableCell>
                                     <StyledTableCell>{glUser.repositories}</StyledTableCell>
                                     <StyledTableCell>{glUser.stars}</StyledTableCell>

@@ -1,10 +1,5 @@
-import { useEffect, useState } from 'react'
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
-
-import { ResponsiveLine } from '@nivo/line'
-
-
 
 const useStyles = makeStyles({
     table: {
@@ -25,7 +20,20 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
       })(TableCell);
     const classes = useStyles();
 
-
+    function timeConverter(UNIX_timestamp){
+        var a = new Date(UNIX_timestamp * 1000);
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = a.getFullYear();
+        var month = months[a.getMonth()];
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        return time;
+      }
+      
+  
     return (
         <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "8px", paddingLeft: "100%", paddingRight: "100%" }}>
             <div>
@@ -36,7 +44,6 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                                 <StyledTableCell>Avatar</StyledTableCell>
                                 <StyledTableCell>Username</StyledTableCell>
                                 <StyledTableCell>Rating</StyledTableCell>
-                                <StyledTableCell>Progress</StyledTableCell>
                                 <StyledTableCell>Max rating</StyledTableCell>
                                 <StyledTableCell>Last activity</StyledTableCell>
                             </TableRow>
@@ -54,14 +61,8 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                                         </Link>
                                     </StyledTableCell>
                                     <StyledTableCell>{cfUser.rating}</StyledTableCell>
-                                    <StyledTableCell>
-
-                                        <div style={{ height: 50, width: 100 }}>
-                                            <MyResponsiveLine url={`http://localhost:8000/codeforces/${cfUser.id}`} />
-                                        </div>
-                                    </StyledTableCell>
                                     <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
-                                    <StyledTableCell>{(new Date(cfUser.last_activity)).toLocaleString()}</StyledTableCell>
+                                    <StyledTableCell>{timeConverter(cfUser.last_activity)}</StyledTableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -69,50 +70,5 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                 </TableContainer>
             </div>
         </div>
-    )
-}
-
-const MyResponsiveLine = ({ url }) => {
-
-    const [ratingUpdates, setRatingUpdates] = useState([]);
-
-    useEffect(() => {
-        fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                const updates = res["rating_updates"].map(entry => ({ x: entry.rating, y: entry.timestamp }));
-                console.log(updates);
-                setRatingUpdates([
-                    {
-                        "id": `data_${url}`,
-                        "color": "hsl(28, 70%, 50%)",
-                        "data": updates
-                    }
-                ])
-            })
-    }, [url])
-
-    return (
-        <ResponsiveLine
-            data={ratingUpdates}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={null}
-            axisLeft={null}
-            enableGridX={false}
-            enableGridY={false}
-            enablePoints={false}
-            pointSize={10}
-            colors={{ scheme: 'category10' }}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            // pointLabelYOffset={-12}
-            useMesh={true}
-            legends={[]}
-        />
-
     )
 }
