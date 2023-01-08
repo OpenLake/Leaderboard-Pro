@@ -61,6 +61,11 @@ urlpatterns = [
         views.CodeforcesLeaderboard.as_view(),
         name="codeforces-leaderboard",
     ),
+    path(
+        "leetcode/",
+        views.LeetcodeLeaderboard.as_view(),
+        name="leetcode-leaderboard",
+    ),
     # path(
     #     "appuser/",
     #     views.AppUsers.as_view(),

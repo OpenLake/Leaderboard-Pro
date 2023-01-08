@@ -116,7 +116,7 @@ function App() {
       });
   }, []);
   useEffect(()=>{
-    fetch("http://localhost:8000/openlake/")
+    fetch("http://localhost:8000/leetcode/")
       .then((res) => res.json())
       .then((res) => {
         setLeetcodeUsers(res);
@@ -174,7 +174,7 @@ function App() {
                   <LeetcodeTable darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
                 </PrivateRoute>
                 <PrivateRoute exact path="/profile" >
-                  <Profile1 darkmode={darkmode} leetcodeUsers={leetcodeUsers}/>
+                  <Profile1 darkmode={darkmode}/>
                 </PrivateRoute>
               </Switch>
             </Grid>
