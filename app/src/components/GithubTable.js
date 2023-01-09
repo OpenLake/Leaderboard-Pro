@@ -1,6 +1,9 @@
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
-
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles({
     table: {
@@ -16,6 +19,30 @@ const useStyles = makeStyles({
 
 
 export const GithubTable = ({ darkmode,githubUser }) => {
+    const [searchfield,setSearchfield]=useState("")
+    const [filteredusers,setFilteredusers]=useState([])
+useEffect(() => {
+    if(searchfield === "")
+    {
+        // eslint-disable-next-line
+        setFilteredusers(githubUser)
+    }
+    else
+    {
+        // eslint-disable-next-line
+        setFilteredusers(githubUser.filter(
+            cfUser => {
+              return (
+                cfUser
+                .username
+                .toLowerCase()
+                .includes(searchfield.toLowerCase())
+              );
+            }
+        ))
+    }
+    // eslint-disable-next-line
+  },[searchfield,]);
     const classes = useStyles();
     const StyledTableCell = withStyles({
         root: {
@@ -23,8 +50,9 @@ export const GithubTable = ({ darkmode,githubUser }) => {
         }
       })(TableCell);
     return (
-        <div className="openlake" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
-            <div>
+<div className="codechef" style={{ display: "flex", justifyContent: "space-between",  marginTop: "2vh",width:"100vw",flexShrink:"0"}}>
+            <div style={{visibility:"hidden",marginRight:"18vw"}}>
+                </div>            <div>
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
                         <TableHead>
@@ -37,7 +65,7 @@ export const GithubTable = ({ darkmode,githubUser }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {githubUser.map(glUser => (
+                            {filteredusers.map(glUser => (
                                 <TableRow key={glUser.id}>
                                     <StyledTableCell>
                                         <Avatar src={glUser.avatar} alt={`${glUser.username} avatar`} />
@@ -56,6 +84,20 @@ export const GithubTable = ({ darkmode,githubUser }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </div>
+            <div style={{marginRight:"3vw",marginTop:"2vh",position:"relative"}}>   
+            <TextField id="outlined-basic" label="Search Usernames" variant="outlined" 
+            defaultValue=""
+            InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e)=>{setSearchfield(e.target.value)}}
+    
+            />
             </div>
         </div>
     )
