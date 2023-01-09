@@ -13,7 +13,11 @@ urlpatterns=[
     # path('usernames/',views.UserNamesDetailView.as_view()),
     path('insertapi/',views.post_UserNames),
     path('tripathi/',views.current_user),
-    path('register/',views.registerUser)
+    path('register/',views.registerUser),
+    path('ghfriends/',views.add_GithubFriends),
+    path('ltfriends/',views.add_LeetcodeFriends),
+    path('ccfriends/',views.add_CodechefFriends),
+    path('cffriends/',views.add_CodeforcesFriends),
 ]
 
 

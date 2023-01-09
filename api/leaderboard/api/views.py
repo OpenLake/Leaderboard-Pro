@@ -5,9 +5,9 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserNamesSerializer
+from .serializers import UserNamesSerializer,LeetcodeFriendsSerializer,GithubFriendsSerializer,CodechefFriendsSerializer,CodeforcesFriendsSerializer
 from leaderboard.serializers import Cf_Serializer
-from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor
+from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor,GithubFriends,LeetcodeFriends,CodechefFriends,CodeforcesFriends
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -151,3 +151,132 @@ def registerUser(request):
             'status':400,
             'message':"Wrong"
         },status=status.HTTP_400_BAD_REQUEST)
+
+""" Insert  Into friend Lists """
+
+@api_view(["GET","POST"])
+@permission_classes([permissions.IsAuthenticated])
+def add_GithubFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ghFriend_uname=request.data['ghFriend_uname']
+            obj=GithubFriends(user=user,ghFriend_uname=ghFriend_uname)
+            obj.save()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+    elif request.method=="GET":
+        try:
+            queryset = GithubFriends.objects.all()
+            serializer = GithubFriendsSerializer(queryset,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET","POST"])
+@permission_classes([permissions.IsAuthenticated])
+def add_LeetcodeFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ltFriend_uname=request.data['ltFriend_uname']
+            obj=LeetcodeFriends(user=user,ltFriend_uname=ltFriend_uname)
+            obj.save()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+    elif request.method=="GET":
+        try:
+            queryset = LeetcodeFriends.objects.all()
+            serializer = LeetcodeFriendsSerializer(queryset,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET","POST"])
+@permission_classes([permissions.IsAuthenticated])
+def add_CodechefFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ccFriend_uname=request.data['ccFriend_uname']
+            obj=CodechefFriends(user=user,ccFriend_uname=ccFriend_uname)
+            obj.save()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+    elif request.method=="GET":
+        try:
+            queryset = CodechefFriends.objects.all()
+            serializer = CodechefFriendsSerializer(queryset,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET","POST"])
+@permission_classes([permissions.IsAuthenticated])
+def add_CodeforcesFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            cfFriend_uname=request.data['cfFriend_uname']
+            obj=CodeforcesFriends(user=user,cfFriend_uname=cfFriend_uname)
+            obj.save()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+    elif request.method=="GET":
+        try:
+            queryset = CodeforcesFriends.objects.all()
+            serializer = CodeforcesFriendsSerializer(queryset,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+    
