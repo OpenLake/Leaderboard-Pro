@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import "./App.css";
 import { Grid } from "@material-ui/core";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -11,6 +11,7 @@ import Profile1 from "./components/Profile1.js"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
+import HomePage from "./components/HomePage";
 import Register from "./components/Register";
 import { LeetcodeTable } from "./components/LeetcodeTable";
 import PrivateRoute from './utils/PrivateRoute'
@@ -148,13 +149,16 @@ function App() {
           <Grid container>
             <Grid item xs={6}>
               <Switch>
-                {/* <Route exact path='/*' element={<Login/>}/> */}
               <Route exact path="/register" >
                   <Register darkmode={darkmode}/>
                 </Route> 
               <Route exact path="/login" >
                   <Login darkmode={darkmode}/>
                 </Route>
+                <PrivateRoute exact path="/">
+                  <HomePage/>
+                </PrivateRoute>
+
                 <PrivateRoute exact path="/codeforces"  >
                   <CodeforcesTable darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
                 </PrivateRoute>
@@ -173,6 +177,9 @@ function App() {
                 <PrivateRoute exact path="/profile" >
                   <Profile1 darkmode={darkmode}/>
                 </PrivateRoute>
+                <Route exact path='/*'>
+                  <HomePage/>
+                  </Route>
               </Switch>
             </Grid>
           </Grid>
