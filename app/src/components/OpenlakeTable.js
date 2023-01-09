@@ -1,9 +1,9 @@
-
 import { makeStyles,withStyles } from '@material-ui/core/styles';
-
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@material-ui/core';
-
-
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useEffect, useState } from 'react';
 const useStyles = makeStyles({
     table: {
         minWidth: 500,
@@ -18,6 +18,30 @@ const useStyles = makeStyles({
 
 
 export const OpenlakeTable = ({ darkmode,openlakeContributor }) => {
+    const [searchfield,setSearchfield]=useState("")
+    const [filteredusers,setFilteredusers]=useState([])
+useEffect(() => {
+    if(searchfield === "")
+    {
+        // eslint-disable-next-line
+        setFilteredusers(openlakeContributor)
+    }
+    else
+    {
+        // eslint-disable-next-line
+        setFilteredusers(openlakeContributor.filter(
+            cfUser => {
+              return (
+                cfUser
+                .username
+                .toLowerCase()
+                .includes(searchfield.toLowerCase())
+              );
+            }
+        ))
+    }
+    // eslint-disable-next-line
+  },[searchfield,]);
     const classes = useStyles();
     const StyledTableCell = withStyles({
         root: {
@@ -25,7 +49,9 @@ export const OpenlakeTable = ({ darkmode,openlakeContributor }) => {
         }
       })(TableCell);
     return (
-        <div className="openlake" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
+        <div className="codechef" style={{ display: "flex", justifyContent: "space-between",  marginTop: "2vh",width:"100vw",flexShrink:"0"}}>
+            <div style={{visibility:"hidden",marginRight:"18vw"}}>
+                </div>
             <div>
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
@@ -36,7 +62,7 @@ export const OpenlakeTable = ({ darkmode,openlakeContributor }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {openlakeContributor.map(olUser => (
+                            {filteredusers.map(olUser => (
                                 <TableRow key={olUser.id}>
                                     <StyledTableCell style={{ textAlign: 'center' }}>
                                         <Link style={{fontWeight: "bold",textDecoration:"none",color:darkmode?"#03DAC6":""}} href={`https://github.com/${olUser.username}`} target="_blank">
@@ -49,6 +75,20 @@ export const OpenlakeTable = ({ darkmode,openlakeContributor }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </div>
+            <div style={{marginRight:"3vw",marginTop:"2vh",position:"relative"}}>   
+            <TextField id="outlined-basic" label="Search Usernames" variant="outlined" 
+            defaultValue=""
+            InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e)=>{setSearchfield(e.target.value)}}
+    
+            />
             </div>
         </div>
     )

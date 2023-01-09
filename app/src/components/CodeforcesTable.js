@@ -1,6 +1,9 @@
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link, Avatar } from '@material-ui/core';
-
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useEffect, useState } from 'react';
 const useStyles = makeStyles({
     table: {
         minWidth: 650,
@@ -13,6 +16,30 @@ const useStyles = makeStyles({
     }
 });
 export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
+    const [searchfield,setSearchfield]=useState("")
+    const [filteredusers,setFilteredusers]=useState([])
+useEffect(() => {
+    if(searchfield === "")
+    {
+        // eslint-disable-next-line
+        setFilteredusers(codeforcesUsers)
+    }
+    else
+    {
+        // eslint-disable-next-line
+        setFilteredusers(codeforcesUsers.filter(
+            cfUser => {
+              return (
+                cfUser
+                .username
+                .toLowerCase()
+                .includes(searchfield.toLowerCase())
+              );
+            }
+        ))
+    }
+    // eslint-disable-next-line
+  },[searchfield,]);
     const StyledTableCell = withStyles({
         root: {
           color: !darkmode?"Black":"White",
@@ -33,9 +60,11 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
         return time;
       }
       
-  
     return (
-        <div className="codechef" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "2vh", paddingLeft: "100%", paddingRight: "100%" }}>
+        
+        <div className="codechef" style={{ display: "flex", justifyContent: "space-between",  marginTop: "2vh",width:"100vw",flexShrink:"0"}}>
+            <div style={{visibility:"hidden",marginRight:"18vw"}}>
+                </div>
             <div>
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
@@ -51,7 +80,7 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {codeforcesUsers.map(cfUser => (
+                            {filteredusers.map(cfUser => (
                                 <TableRow key={cfUser.id}>
                                     <StyledTableCell>
                                         <Avatar src={cfUser.avatar} alt={`${cfUser.username} avatar`} />
@@ -70,6 +99,20 @@ export const CodeforcesTable = ({ darkmode,codeforcesUsers }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </div>
+            <div style={{marginRight:"3vw",marginTop:"2vh",position:"relative"}}>   
+            <TextField id="outlined-basic" label="Search Usernames" variant="outlined" 
+            defaultValue=""
+            InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e)=>{setSearchfield(e.target.value)}}
+    
+            />
             </div>
         </div>
     )
