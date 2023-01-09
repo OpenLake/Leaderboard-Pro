@@ -29,6 +29,8 @@ def codechef_user_update(self):
                 container_highest_rating = data_cc.find(
                     "div", class_="rating-header"
                 )
+                ttg = data_cc.findAll("img", class_="profileImage")
+                cc_user.avatar=ttg[-1]['src']
                 cc_user.max_rating = (
                     container_highest_rating.find_next("small")
                     .text.split()[-1]
@@ -60,6 +62,8 @@ def github_user_update(self):
             url = f"https://api.github.com/users/{gh_user.username}/repos"
             response = requests.get(url).json()
             gh_user.repositories = len(response)
+            ttg = data_gh.findAll("img", class_="avatar avatar-user width-full border color-bg-default")
+            gh_user.avatar=ttg[-1]['src']
             stars = 0
             for i in range(len(response)):
                 stars = stars + response[i]["stargazers_count"]
@@ -79,12 +83,14 @@ def leetcode_user_update(self):
             url = "https://leetcode.com/{}".format(lt_user.username)
             page = requests.get(url)
             data_cc = BeautifulSoup(page.text, "html.parser")
+            ttg = data_cc.findAll("img", class_="h-20 w-20 rounded-lg object-cover")
             lt_ranking = data_cc.find("span", class_="ttext-label-1 dark:text-dark-label-1 font-medium")
             lt_questions=data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
             lt_user.ranking = int(listToString(lt_ranking.text.split(',')))
             lt_user.easy_solved=int(listToString(lt_questions[0].text.split(',')))
             lt_user.medium_solved=int(listToString(lt_questions[1].text.split(',')))
             lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
+            lt_user.avatar=ttg[-1]['src']
             lt_user.save()
 @app.task(bind=True)
 def openlake_contributor__update(self):

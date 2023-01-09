@@ -1,14 +1,10 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -33,16 +29,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function Profile({update_addUsernames}) {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
-
+export default function Profile({darkmode,update_addUsernames}) {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -111,6 +98,7 @@ export default function Profile({update_addUsernames}) {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              style={{backgroundColor:darkmode?"#ff8c0b":""}}
             >
               Update
             </Button>
@@ -123,3 +111,4 @@ export default function Profile({update_addUsernames}) {
     </ThemeProvider>
   );
 }
+

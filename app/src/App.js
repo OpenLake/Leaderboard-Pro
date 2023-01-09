@@ -6,7 +6,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Navbar } from "./components/Navbar.js";
 import { CodeforcesTable } from "./components/CodeforcesTable.js";
 import { CodechefTable } from "./components/CodechefTable";
-import {UserPageList} from "./components/UserPageList"
 import { GithubTable } from "./components/GithubTable";
 import Profile1 from "./components/Profile1.js"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -108,6 +107,7 @@ function App() {
       });
   }, []);
 
+
   useEffect(() => {
     fetch("http://localhost:8000/codechef/")
       .then((res) => res.json())
@@ -155,9 +155,6 @@ function App() {
               <Route exact path="/login" >
                   <Login darkmode={darkmode}/>
                 </Route>
-              <PrivateRoute exact path="/" >
-                  <UserPageList darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
-                </PrivateRoute>
                 <PrivateRoute exact path="/codeforces"  >
                   <CodeforcesTable darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
                 </PrivateRoute>
