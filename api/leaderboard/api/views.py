@@ -249,7 +249,7 @@ def add_CodechefFriends(request):
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET","POST"])
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def add_CodeforcesFriends(request):
     if request.method=="POST":
@@ -279,4 +279,23 @@ def add_CodeforcesFriends(request):
                 'status':400,
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
-    
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_CodeforcesFriends(request):
+    if request.method=="GET":
+        try:
+            queryset = CodeforcesFriends.objects.filter(user=request.user).values()
+            fil=[]
+            for i in queryset:
+                fil.append(i['cfFriend_uname'])
+            qs=codeforcesUser.objects.filter(username__in=fil)
+            print(qs)
+            serializer = Cf_Serializer(qs,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)

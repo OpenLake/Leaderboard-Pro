@@ -80,6 +80,8 @@ function App() {
   const [leetcodeUsers,setLeetcodeUsers]=useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
   const [githubUser, setGithubUser] = useState([]);
+  const [codeforcesfriends, setCodeforcesfriends] = useState([]);
+  const [cfshowfriends, setCfshowfriends] = useState(false);
   const toggle = () =>{
     setDarkmode(!darkmode);
     const g=localStorage.getItem('dark-mode');
@@ -160,7 +162,14 @@ function App() {
                 </PrivateRoute>
 
                 <PrivateRoute exact path="/codeforces"  >
-                  <CodeforcesTable darkmode={darkmode} codeforcesUsers={codeforcesUsers} />
+                  <CodeforcesTable 
+                  darkmode={darkmode} 
+                  codeforcesfriends={codeforcesfriends}
+                  setCodeforcesfriends={setCodeforcesfriends}
+                  codeforcesUsers={codeforcesUsers}
+                  cfshowfriends={cfshowfriends}
+                  setCfshowfriends={setCfshowfriends}
+                  />
                 </PrivateRoute>
                 <PrivateRoute exact path="/codechef" >
                   <CodechefTable darkmode={darkmode} codechefUsers={codechefUsers} />
