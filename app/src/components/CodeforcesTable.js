@@ -34,7 +34,6 @@ export const CodeforcesTable = ({darkmode,
   const [searchfield, setSearchfield] = useState("");
   const [cffilteredusers, setCffilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
-  const [usrname,setUsrname]=useState("");
   const getcffriends= async ()=>{
     const response=await fetch("http://localhost:8000/api/getcffriends/",{
       method:'GET',
@@ -51,6 +50,8 @@ export const CodeforcesTable = ({darkmode,
   }
 
   async function addfriend(e){
+
+    setCodeforcesfriends(current => [...current, e]);
     const response=await fetch("http://localhost:8000/api/cffriends/",{
       method:'POST',
       headers:{
@@ -58,7 +59,7 @@ export const CodeforcesTable = ({darkmode,
           'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
       },
       body:JSON.stringify({
-        'cfFriend_uname':e
+        'cfFriend_uname':e.username
     })
   });
     if(response.status!==200)
@@ -67,6 +68,9 @@ export const CodeforcesTable = ({darkmode,
     }
   }
   async function dropfriend(e){
+    setCodeforcesfriends((current) =>
+      current.filter((fruit) => fruit.username !== e)
+    );
     const response=await fetch("http://localhost:8000/api/dropcffriends/",{
       method:'POST',
       headers:{
@@ -221,9 +225,8 @@ useEffect(()=>{
                   <StyledTableCell>
                   <Button variant="contained"
                   onClick={()=>{
-                    setUsrname(cfUser.username);
                     !(codeforcesfriends.some(item=>item.username===cfUser.username))?
-                    addfriend(cfUser.username):dropfriend(cfUser.username)
+                    addfriend(cfUser):dropfriend(cfUser.username)
                   }
                   }
                   >
