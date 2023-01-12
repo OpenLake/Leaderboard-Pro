@@ -1,4 +1,5 @@
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import Button from '@mui/material/Button';
 import {
   Table,
   TableBody,
@@ -152,6 +153,7 @@ useEffect(()=>{
                 <StyledTableCell>Rating</StyledTableCell>
                 <StyledTableCell>Max rating</StyledTableCell>
                 <StyledTableCell>Last activity</StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -181,6 +183,15 @@ useEffect(()=>{
                   <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
                   <StyledTableCell>
                     {timeConverter(cfUser.last_activity)}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                  <Button variant="contained">
+                    {
+                      (codeforcesfriends.some(item=>item.username===cfUser.username))?
+                      "Remove Friend":"Add Friend"
+                    }
+
+                  </Button>
                   </StyledTableCell>
                 </TableRow>
               ))}
