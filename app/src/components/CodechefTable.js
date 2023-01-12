@@ -4,6 +4,8 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useEffect, useState } from 'react';
+import ToggleButton from "@mui/material/ToggleButton";
+import Button from '@mui/material/Button';
 const useStyles = makeStyles({
     table: {
         minWidth: 700,
@@ -15,31 +17,106 @@ const useStyles = makeStyles({
         borderRadius:"10px",
     }
 });
-export const CodechefTable = ({ darkmode,codechefUsers }) => {
-    const [searchfield,setSearchfield]=useState("")
-    const [filteredusers,setFilteredusers]=useState([])
-useEffect(() => {
-    if(searchfield === "")
-    {
-        // eslint-disable-next-line
-        setFilteredusers(codechefUsers)
-    }
-    else
-    {
-        // eslint-disable-next-line
-        setFilteredusers(codechefUsers.filter(
-            cfUser => {
-              return (
-                cfUser
-                .username
+export const CodechefTable = ({ darkmode,
+    codechefUsers,codecheffriends,setCodecheffriends,
+    ccshowfriends,setCCshowfriends }) => {
+        const [searchfield, setSearchfield] = useState("");
+        const [filteredusers, setFilteredusers] = useState([]);
+        const [todisplayusers, setTodisplayusers] = useState([]);
+        const getccfriends= async ()=>{
+          const response=await fetch("http://localhost:8000/api/getccfriends/",{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+        });
+        
+          const newData=await response.json();
+          setCodecheffriends(newData);
+          // setTodisplayusers(codeforcesUsers)
+          // setFilteredusers(codeforcesUsers)
+        }
+      
+        async function addfriend(e){
+      
+          setCodecheffriends(current => [...current, e]);
+          const response=await fetch("http://localhost:8000/api/ccfriends/",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+            body:JSON.stringify({
+              'ccFriend_uname':e.username
+          })
+        });
+          if(response.status!==200)
+          {
+            alert('ERROR!!!!')
+          }
+        }
+        async function dropfriend(e){
+          setCodecheffriends((current) =>
+            current.filter((fruit) => fruit.username !== e)
+          );
+          const response=await fetch("http://localhost:8000/api/dropccfriends/",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+            body:JSON.stringify({
+              'ccFriend_uname':e
+          })
+        });
+          if(response.status!==200)
+          {
+            alert('ERROR!!!!')
+          }
+        }
+        useEffect(()=>{
+          getccfriends();
+          // eslint-disable-next-line
+        },[])
+      
+        useEffect(()=>{
+          if(ccshowfriends)
+          {
+            setTodisplayusers(codecheffriends);
+          }
+          else
+          {
+            setTodisplayusers(codechefUsers);
+          }
+          if (searchfield === "") {
+            setFilteredusers(todisplayusers)
+          } else {
+            // eslint-disable-next-line
+            setFilteredusers(
+              todisplayusers.filter((cfUser) => {
+                return cfUser.username
+                  .toLowerCase()
+                  .includes(searchfield.toLowerCase());
+              })
+            );
+          }
+          // eslint-disable-next-line
+        },[ccshowfriends,codecheffriends,searchfield,codechefUsers])
+      useEffect(()=>{
+        if (searchfield === "") {
+          setFilteredusers(todisplayusers)
+        } else {
+          // eslint-disable-next-line
+          setFilteredusers(
+            todisplayusers.filter((cfUser) => {
+              return cfUser.username
                 .toLowerCase()
-                .includes(searchfield.toLowerCase())
-              );
-            }
-        ))
-    }
-    // eslint-disable-next-line
-  },[searchfield,]);
+                .includes(searchfield.toLowerCase());
+            })
+          );
+        }
+      },[searchfield,todisplayusers])
     const StyledTableCell = withStyles({
         root: {
           color: !darkmode?"Black":"White",
@@ -48,7 +125,7 @@ useEffect(() => {
     const classes = useStyles();
     return (
 <div className="codechef" style={{ display: "flex", justifyContent: "space-between",  marginTop: "2vh",width:"100vw",flexShrink:"0"}}>
-            <div style={{visibility:"hidden",marginRight:"18vw"}}>
+            <div style={{marginRight:"18vw"}}>
                 </div>            <div >
                 <TableContainer component={Paper}>
                     <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
@@ -60,6 +137,7 @@ useEffect(() => {
                                 <StyledTableCell>Max rating</StyledTableCell>
                                 <StyledTableCell>Global Rank</StyledTableCell>
                                 <StyledTableCell>Country Rank</StyledTableCell>
+                                <StyledTableCell></StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -78,6 +156,21 @@ useEffect(() => {
                                     <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
                                     <StyledTableCell>{cfUser.Global_rank}</StyledTableCell>
                                     <StyledTableCell>{cfUser.Country_rank}</StyledTableCell>
+                                    <StyledTableCell>
+                  <Button variant="contained"
+                  onClick={()=>{
+                    !(codecheffriends.some(item=>item.username===cfUser.username))?
+                    addfriend(cfUser):dropfriend(cfUser.username)
+                  }
+                  }
+                  >
+                    {
+                      (codecheffriends.some(item=>item.username===cfUser.username))?
+                      "Remove Friend":"Add Friend"
+                    }
+
+                  </Button>
+                  </StyledTableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -97,6 +190,20 @@ useEffect(() => {
               onChange={(e)=>{setSearchfield(e.target.value)}}
     
             />
+            <ToggleButton
+          value="check"
+          selected={ccshowfriends}
+          onChange={() => {
+            setCCshowfriends(!ccshowfriends)
+          }}
+          style={{
+            backgroundColor: "#2196f3",
+            color: "white",
+            marginTop: "4vh",
+          }}
+        >
+          {ccshowfriends?"Show All":"Show Friends"}
+        </ToggleButton>
             </div>
         </div>
     )

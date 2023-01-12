@@ -1,5 +1,4 @@
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Button from '@mui/material/Button';
 import {
   Table,
   TableBody,
@@ -16,6 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState} from "react";
 import ToggleButton from "@mui/material/ToggleButton";
+import Button from '@mui/material/Button';
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -32,7 +32,7 @@ export const CodeforcesTable = ({darkmode,
    codeforcesUsers,codeforcesfriends,setCodeforcesfriends,
    cfshowfriends,setCfshowfriends}) => {
   const [searchfield, setSearchfield] = useState("");
-  const [cffilteredusers, setCffilteredusers] = useState([]);
+  const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getcffriends= async ()=>{
     const response=await fetch("http://localhost:8000/api/getcffriends/",{
@@ -46,7 +46,7 @@ export const CodeforcesTable = ({darkmode,
     const newData=await response.json();
     setCodeforcesfriends(newData);
     // setTodisplayusers(codeforcesUsers)
-    // setCffilteredusers(codeforcesUsers)
+    // setFilteredusers(codeforcesUsers)
   }
 
   async function addfriend(e){
@@ -101,10 +101,10 @@ export const CodeforcesTable = ({darkmode,
       setTodisplayusers(codeforcesUsers);
     }
     if (searchfield === "") {
-      setCffilteredusers(todisplayusers)
+      setFilteredusers(todisplayusers)
     } else {
       // eslint-disable-next-line
-      setCffilteredusers(
+      setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
             .toLowerCase()
@@ -116,10 +116,10 @@ export const CodeforcesTable = ({darkmode,
   },[cfshowfriends,codeforcesfriends,searchfield,codeforcesUsers])
 useEffect(()=>{
   if (searchfield === "") {
-    setCffilteredusers(todisplayusers)
+    setFilteredusers(todisplayusers)
   } else {
     // eslint-disable-next-line
-    setCffilteredusers(
+    setFilteredusers(
       todisplayusers.filter((cfUser) => {
         return cfUser.username
           .toLowerCase()
@@ -195,7 +195,7 @@ useEffect(()=>{
               </TableRow>
             </TableHead>
             <TableBody>
-              {!cffilteredusers?"no users":cffilteredusers.map((cfUser) => (
+              {!filteredusers?"no users":filteredusers.map((cfUser) => (
                 <TableRow key={cfUser.id}>
                   <StyledTableCell>
                     <Avatar

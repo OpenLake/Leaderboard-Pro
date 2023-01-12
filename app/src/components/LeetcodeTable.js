@@ -4,6 +4,8 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useEffect, useState } from 'react';
+import ToggleButton from "@mui/material/ToggleButton";
+import Button from '@mui/material/Button';
 
 
 
@@ -18,31 +20,105 @@ const useStyles = makeStyles({
         borderRadius:"10px",
     }
 });
-export const LeetcodeTable = ({ darkmode,leetcodeUsers }) => {
-    const [searchfield,setSearchfield]=useState("")
-    const [filteredusers,setFilteredusers]=useState([])
-useEffect(() => {
-    if(searchfield === "")
-    {
-        // eslint-disable-next-line
-        setFilteredusers(leetcodeUsers)
-    }
-    else
-    {
-        // eslint-disable-next-line
-        setFilteredusers(leetcodeUsers.filter(
-            cfUser => {
-              return (
-                cfUser
-                .username
+export const LeetcodeTable = ({ darkmode,leetcodeUsers,leetcodefriends,setLeetcodefriends,
+    ltshowfriends,setLTshowfriends }) => {
+        const [searchfield, setSearchfield] = useState("");
+        const [filteredusers, setFilteredusers] = useState([]);
+        const [todisplayusers, setTodisplayusers] = useState([]);
+        const getltfriends= async ()=>{
+          const response=await fetch("http://localhost:8000/api/getltfriends/",{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+        });
+        
+          const newData=await response.json();
+          setLeetcodefriends(newData);
+          // setTodisplayusers(leetcodeUsers)
+          // setFilteredusers(leetcodeUsers)
+        }
+      
+        async function addfriend(e){
+      
+          setLeetcodefriends(current => [...current, e]);
+          const response=await fetch("http://localhost:8000/api/ltfriends/",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+            body:JSON.stringify({
+              'ltFriend_uname':e.username
+          })
+        });
+          if(response.status!==200)
+          {
+            alert('ERROR!!!!')
+          }
+        }
+        async function dropfriend(e){
+          setLeetcodefriends((current) =>
+            current.filter((fruit) => fruit.username !== e)
+          );
+          const response=await fetch("http://localhost:8000/api/dropltfriends/",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+            },
+            body:JSON.stringify({
+              'ltFriend_uname':e
+          })
+        });
+          if(response.status!==200)
+          {
+            alert('ERROR!!!!')
+          }
+        }
+        useEffect(()=>{
+          getltfriends();
+          // eslint-disable-next-line
+        },[])
+      
+        useEffect(()=>{
+          if(ltshowfriends)
+          {
+            setTodisplayusers(leetcodefriends);
+          }
+          else
+          {
+            setTodisplayusers(leetcodeUsers);
+          }
+          if (searchfield === "") {
+            setFilteredusers(todisplayusers)
+          } else {
+            // eslint-disable-next-line
+            setFilteredusers(
+              todisplayusers.filter((cfUser) => {
+                return cfUser.username
+                  .toLowerCase()
+                  .includes(searchfield.toLowerCase());
+              })
+            );
+          }
+          // eslint-disable-next-line
+        },[ltshowfriends,leetcodefriends,searchfield,leetcodeUsers])
+      useEffect(()=>{
+        if (searchfield === "") {
+          setFilteredusers(todisplayusers)
+        } else {
+          // eslint-disable-next-line
+          setFilteredusers(
+            todisplayusers.filter((cfUser) => {
+              return cfUser.username
                 .toLowerCase()
-                .includes(searchfield.toLowerCase())
-              );
-            }
-        ))
-    }
-    // eslint-disable-next-line
-  },[searchfield,]);
+                .includes(searchfield.toLowerCase());
+            })
+          );
+        }
+      },[searchfield,todisplayusers])
    const StyledTableCell = withStyles({
         root: {
           color: !darkmode?"Black":"White",
@@ -56,7 +132,7 @@ useEffect(() => {
             <div style={{visibility:"hidden",marginRight:"18vw"}}>
                 </div>            <div>
                 <TableContainer component={Paper}>
-                    <Table className={darkmode?classes.table_dark:classes.table} aria-label="codeforces-table">
+                    <Table className={darkmode?classes.table_dark:classes.table} aria-label="leetcode-table">
                         <TableHead>
                             <TableRow style={{backgroundColor:darkmode?"#1F2F98":"#1CA7FC"}}>
                             <StyledTableCell>Avatar</StyledTableCell>
@@ -65,6 +141,7 @@ useEffect(() => {
                                 <StyledTableCell>Easy Solved</StyledTableCell>
                                 <StyledTableCell>Medium Solved</StyledTableCell>
                                 <StyledTableCell>Hard Solved</StyledTableCell>
+                                <StyledTableCell></StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -92,6 +169,20 @@ useEffect(() => {
                                     <StyledTableCell>
                                         {cfUser.hard_solved}
                                     </StyledTableCell>
+                                    <StyledTableCell>
+                  <Button variant="contained"
+                  onClick={()=>{
+                    !(leetcodefriends.some(item=>item.username===cfUser.username))?
+                    addfriend(cfUser):dropfriend(cfUser.username)
+                  }
+                  }
+                  >
+                    {
+                      (leetcodefriends.some(item=>item.username===cfUser.username))?
+                      "Remove Friend":"Add Friend"
+                    }
+                  </Button>
+                  </StyledTableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -111,6 +202,20 @@ useEffect(() => {
               onChange={(e)=>{setSearchfield(e.target.value)}}
     
             />
+            <ToggleButton
+          value="check"
+          selected={ltshowfriends}
+          onChange={() => {
+            setLTshowfriends(!ltshowfriends)
+          }}
+          style={{
+            backgroundColor: "#2196f3",
+            color: "white",
+            marginTop: "4vh",
+          }}
+        >
+          {ltshowfriends?"Show All":"Show Friends"}
+        </ToggleButton>
             </div>
         </div>
     )
