@@ -20,6 +20,12 @@ urlpatterns=[
     path('cffriends/',views.add_CodeforcesFriends),
     path('getcffriends/',views.get_CodeforcesFriends),
     path('dropcffriends/',views.drop_CodeforcesFriends),
+    path('getccfriends/',views.get_CodechefFriends),
+    path('dropccfriends/',views.drop_CodechefFriends),
+    path('getltfriends/',views.get_LeetcodeFriends),
+    path('dropltfriends/',views.drop_LeetcodeFriends),
+    path('getghfriends/',views.get_GithubFriends),
+    path('dropghfriends/',views.drop_GithubFriends),
 ]
 
 

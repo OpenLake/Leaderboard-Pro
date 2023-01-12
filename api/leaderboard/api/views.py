@@ -6,7 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserNamesSerializer,LeetcodeFriendsSerializer,GithubFriendsSerializer,CodechefFriendsSerializer,CodeforcesFriendsSerializer
-from leaderboard.serializers import Cf_Serializer
+from leaderboard.serializers import Cf_Serializer,CC_Serializer,LT_Serializer,GH_Serializer
 from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor,GithubFriends,LeetcodeFriends,CodechefFriends,CodeforcesFriends
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
@@ -154,7 +154,7 @@ def registerUser(request):
 
 """ Insert  Into friend Lists """
 
-@api_view(["GET","POST"])
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def add_GithubFriends(request):
     if request.method=="POST":
@@ -173,10 +173,18 @@ def add_GithubFriends(request):
                 'status':400,
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
-    elif request.method=="GET":
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_GithubFriends(request):
+    if request.method=="GET":
         try:
-            queryset = GithubFriends.objects.all()
-            serializer = GithubFriendsSerializer(queryset,many=True)
+            queryset = GithubFriends.objects.filter(user=request.user).values()
+            fil=[]
+            for i in queryset:
+                fil.append(i['ghFriend_uname'])
+            qs=githubUser.objects.filter(username__in=fil)
+            serializer = GH_Serializer(qs,many=True)
             return Response(serializer.data)
         except Exception as e:
             print(e)
@@ -186,7 +194,28 @@ def add_GithubFriends(request):
             },status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET","POST"])
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def drop_GithubFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ghFriend_uname=request.data['ghFriend_uname']
+            obj=GithubFriends.objects.filter(user=user,ghFriend_uname=ghFriend_uname)
+            obj.delete()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def add_LeetcodeFriends(request):
     if request.method=="POST":
@@ -205,10 +234,18 @@ def add_LeetcodeFriends(request):
                 'status':400,
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
-    elif request.method=="GET":
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_LeetcodeFriends(request):
+    if request.method=="GET":
         try:
-            queryset = LeetcodeFriends.objects.all()
-            serializer = LeetcodeFriendsSerializer(queryset,many=True)
+            queryset = LeetcodeFriends.objects.filter(user=request.user).values()
+            fil=[]
+            for i in queryset:
+                fil.append(i['ltFriend_uname'])
+            qs=LeetcodeUser.objects.filter(username__in=fil)
+            serializer = LT_Serializer(qs,many=True)
             return Response(serializer.data)
         except Exception as e:
             print(e)
@@ -218,7 +255,27 @@ def add_LeetcodeFriends(request):
             },status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET","POST"])
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def drop_LeetcodeFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ltFriend_uname=request.data['ltFriend_uname']
+            obj=LeetcodeFriends.objects.filter(user=user,ltFriend_uname=ltFriend_uname)
+            obj.delete()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def add_CodechefFriends(request):
     if request.method=="POST":
@@ -237,11 +294,42 @@ def add_CodechefFriends(request):
                 'status':400,
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
-    elif request.method=="GET":
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_CodechefFriends(request):
+    if request.method=="GET":
         try:
-            queryset = CodechefFriends.objects.all()
-            serializer = CodechefFriendsSerializer(queryset,many=True)
+            
+            queryset = CodechefFriends.objects.filter(user=request.user).values()
+            fil=[]
+            for i in queryset:
+                fil.append(i['ccFriend_uname'])
+            
+            qs=codechefUser.objects.filter(username__in=fil)
+            serializer = CC_Serializer(qs,many=True)
             return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def drop_CodechefFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            ccFriend_uname=request.data['ccFriend_uname']
+            obj=CodechefFriends.objects.filter(user=user,ccFriend_uname=ccFriend_uname)
+            obj.delete()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({
@@ -262,17 +350,6 @@ def add_CodeforcesFriends(request):
                         'status':200,
                         'message':"Success",
                     },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-    elif request.method=="GET":
-        try:
-            queryset = CodeforcesFriends.objects.all()
-            serializer = CodeforcesFriendsSerializer(queryset,many=True)
-            return Response(serializer.data)
         except Exception as e:
             print(e)
             return Response({
