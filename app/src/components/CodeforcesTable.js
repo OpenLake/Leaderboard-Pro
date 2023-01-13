@@ -13,9 +13,9 @@ import {
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -28,85 +28,84 @@ const useStyles = makeStyles({
   },
 });
 
-export const CodeforcesTable = ({darkmode,
-   codeforcesUsers,codeforcesfriends,setCodeforcesfriends,
-   cfshowfriends,setCfshowfriends}) => {
+export const CodeforcesTable = ({
+  darkmode,
+  codeforcesUsers,
+  codeforcesfriends,
+  setCodeforcesfriends,
+  cfshowfriends,
+  setCfshowfriends,
+}) => {
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
-  const getcffriends= async ()=>{
-    const response=await fetch("http://localhost:8000/api/getcffriends/",{
-      method:'GET',
-      headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+  const getcffriends = async () => {
+    const response = await fetch("http://localhost:8000/api/getcffriends/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
-  });
-  
-    const newData=await response.json();
+    });
+
+    const newData = await response.json();
     setCodeforcesfriends(newData);
     // setTodisplayusers(codeforcesUsers)
     // setFilteredusers(codeforcesUsers)
-  }
+  };
 
-  async function addfriend(e){
-
-    const response=await fetch("http://localhost:8000/api/cffriends/",{
-      method:'POST',
-      headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+  async function addfriend(e) {
+    const response = await fetch("http://localhost:8000/api/cffriends/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
-      body:JSON.stringify({
-        'cfFriend_uname':e.username
-    })
-  });
-    if(response.status!==200)
-    {
-      alert('ERROR!!!!')
-    }
-    else
-    {
-      setCodeforcesfriends(current => [...current, e]);
+      body: JSON.stringify({
+        cfFriend_uname: e.username,
+      }),
+    });
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
+      setCodeforcesfriends((current) => [...current, e]);
     }
   }
-  async function dropfriend(e){
-    const response=await fetch("http://localhost:8000/api/dropcffriends/",{
-      method:'POST',
-      headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+  async function dropfriend(e) {
+    const response = await fetch("http://localhost:8000/api/dropcffriends/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
-      body:JSON.stringify({
-        'cfFriend_uname':e
-    })
-  });
-    if(response.status!==200)
-    {
-      alert('ERROR!!!!')
-    }
-    else{
+      body: JSON.stringify({
+        cfFriend_uname: e,
+      }),
+    });
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
       setCodeforcesfriends((current) =>
-      current.filter((fruit) => fruit.username !== e)
-    );
+        current.filter((fruit) => fruit.username !== e)
+      );
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     getcffriends();
     // eslint-disable-next-line
-  },[])
+  }, []);
 
-  useEffect(()=>{
-    if(cfshowfriends)
-    {
+  useEffect(() => {
+    if (cfshowfriends) {
       setTodisplayusers(codeforcesfriends);
-    }
-    else
-    {
+    } else {
       setTodisplayusers(codeforcesUsers);
     }
     if (searchfield === "") {
-      setFilteredusers(todisplayusers)
+      setFilteredusers(todisplayusers);
     } else {
       // eslint-disable-next-line
       setFilteredusers(
@@ -118,21 +117,21 @@ export const CodeforcesTable = ({darkmode,
       );
     }
     // eslint-disable-next-line
-  },[cfshowfriends,codeforcesfriends,searchfield,codeforcesUsers])
-useEffect(()=>{
-  if (searchfield === "") {
-    setFilteredusers(todisplayusers)
-  } else {
-    // eslint-disable-next-line
-    setFilteredusers(
-      todisplayusers.filter((cfUser) => {
-        return cfUser.username
-          .toLowerCase()
-          .includes(searchfield.toLowerCase());
-      })
-    );
-  }
-},[searchfield,todisplayusers])
+  }, [cfshowfriends, codeforcesfriends, searchfield, codeforcesUsers]);
+  useEffect(() => {
+    if (searchfield === "") {
+      setFilteredusers(todisplayusers);
+    } else {
+      // eslint-disable-next-line
+      setFilteredusers(
+        todisplayusers.filter((cfUser) => {
+          return cfUser.username
+            .toLowerCase()
+            .includes(searchfield.toLowerCase());
+        })
+      );
+    }
+  }, [searchfield, todisplayusers]);
   const StyledTableCell = withStyles({
     root: {
       color: !darkmode ? "Black" : "White",
@@ -200,49 +199,57 @@ useEffect(()=>{
               </TableRow>
             </TableHead>
             <TableBody>
-              {!filteredusers?"no users":filteredusers.sort((a,b)=>a.rating<b.rating?1:-1).map((cfUser) => (
-                <TableRow key={cfUser.id}>
-                  <StyledTableCell>
-                    <Avatar
-                      src={cfUser.avatar}
-                      alt={`${cfUser.username} avatar`}
-                    />
-                    {/* TODO: Lazy load the avatars ? */}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <Link
-                      style={{
-                        fontWeight: "bold",
-                        textDecoration: "none",
-                        color: darkmode ? "#03DAC6" : "",
-                      }}
-                      href={`https://codeforces.com/profile/${cfUser.username}`}
-                      target="_blank"
-                    >
-                      {cfUser.username}
-                    </Link>
-                  </StyledTableCell>
-                  <StyledTableCell>{cfUser.rating}</StyledTableCell>
-                  <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
-                  <StyledTableCell>
-                    {timeConverter(cfUser.last_activity)}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                  <Button variant="contained"
-                  onClick={()=>{
-                    !(codeforcesfriends.some(item=>item.username===cfUser.username))?
-                    addfriend(cfUser):dropfriend(cfUser.username)
-                  }
-                  }
-                  >
-                    {
-                      (codeforcesfriends.some(item=>item.username===cfUser.username))?
-                      "Remove Friend":"Add Friend"
-                    }
-                  </Button>
-                  </StyledTableCell>
-                </TableRow>
-              ))}
+              {!filteredusers
+                ? "no users"
+                : filteredusers
+                    .sort((a, b) => (a.rating < b.rating ? 1 : -1))
+                    .map((cfUser) => (
+                      <TableRow key={cfUser.id}>
+                        <StyledTableCell>
+                          <Avatar
+                            src={cfUser.avatar}
+                            alt={`${cfUser.username} avatar`}
+                          />
+                          {/* TODO: Lazy load the avatars ? */}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          <Link
+                            style={{
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                              color: darkmode ? "#03DAC6" : "",
+                            }}
+                            href={`https://codeforces.com/profile/${cfUser.username}`}
+                            target="_blank"
+                          >
+                            {cfUser.username}
+                          </Link>
+                        </StyledTableCell>
+                        <StyledTableCell>{cfUser.rating}</StyledTableCell>
+                        <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
+                        <StyledTableCell>
+                          {timeConverter(cfUser.last_activity)}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              !codeforcesfriends.some(
+                                (item) => item.username === cfUser.username
+                              )
+                                ? addfriend(cfUser)
+                                : dropfriend(cfUser.username);
+                            }}
+                          >
+                            {codeforcesfriends.some(
+                              (item) => item.username === cfUser.username
+                            )
+                              ? "Remove Friend"
+                              : "Add Friend"}
+                          </Button>
+                        </StyledTableCell>
+                      </TableRow>
+                    ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -276,7 +283,7 @@ useEffect(()=>{
           value="check"
           selected={cfshowfriends}
           onChange={() => {
-            setCfshowfriends(!cfshowfriends)
+            setCfshowfriends(!cfshowfriends);
           }}
           style={{
             backgroundColor: "#2196f3",
@@ -284,7 +291,7 @@ useEffect(()=>{
             marginTop: "4vh",
           }}
         >
-          {cfshowfriends?"Show All":"Show Friends"}
+          {cfshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
     </div>
