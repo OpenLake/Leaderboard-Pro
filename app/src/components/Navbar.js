@@ -75,12 +75,14 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
 }));
-
 export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
   const history=useHistory();
   const manageClick=()=>{
     history.push('/profile')
+  }
+  const tohome=()=>{
+    history.push('/')
   }
   const toLogin=()=>{
     history.push('/login')
@@ -91,7 +93,11 @@ export const Navbar = ({ darkmode, toggle }) => {
       <AppBar position="static" style={{backgroundColor:!darkmode?"#39ace7":"#2F4562",position:"fixed"}}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
+            <Button style={{color:"white"}}
+            onClick={tohome}
+            >
             Leaderboard Pro
+            </Button>
           </Typography>
           <div className={classes.platformButtons}>
           
