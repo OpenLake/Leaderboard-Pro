@@ -152,7 +152,7 @@ export const LeetcodeTable = ({
         display: "flex",
         justifyContent: "space-between",
         marginTop: "9vh",
-        width: "100vw",
+        width: "99vw",
         flexShrink: "0",
       }}
     >

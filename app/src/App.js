@@ -17,6 +17,7 @@ import { LeetcodeTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./Context/AuthContext";
 import GoToTop from "./components/GoToTop";
+import Footer from "./components/Footer"
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -224,6 +225,7 @@ function App() {
               </Grid>
             </Grid>
             <GoToTop/>
+            <Footer/>
           </div>
         </AuthProvider>
       </Router>

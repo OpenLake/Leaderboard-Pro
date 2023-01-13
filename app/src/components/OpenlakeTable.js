@@ -150,7 +150,7 @@ export const OpenlakeTable = ({
         display: "flex",
         justifyContent: "space-between",
         marginTop: "9vh",
-        width: "100vw",
+        width: "99vw",
         flexShrink: "0",
       }}
     >
@@ -163,7 +163,8 @@ export const OpenlakeTable = ({
           >
             <TableHead>
               <TableRow
-                style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
+                style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC",
+               }}
               >
                 <StyledTableCell style={{ textAlign: "center" }}>
                   Username
