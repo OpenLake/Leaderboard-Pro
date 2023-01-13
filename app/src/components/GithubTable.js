@@ -177,7 +177,7 @@ export const GithubTable = ({
             </TableHead>
             <TableBody>
               {filteredusers
-                .sort((a, b) => (a.rating < b.rating ? 1 : -1))
+                .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
                 .map((glUser) => (
                   <TableRow key={glUser.id}>
                     <StyledTableCell>

@@ -6,8 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserNamesSerializer,LeetcodeFriendsSerializer,GithubFriendsSerializer,CodechefFriendsSerializer,CodeforcesFriendsSerializer
-from leaderboard.serializers import Cf_Serializer,CC_Serializer,LT_Serializer,GH_Serializer
-from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor,GithubFriends,LeetcodeFriends,CodechefFriends,CodeforcesFriends
+from leaderboard.serializers import Cf_Serializer,CC_Serializer,LT_Serializer,GH_Serializer,OL_Serializer
+from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor,GithubFriends,LeetcodeFriends,CodechefFriends,CodeforcesFriends,OpenlakeFriends
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -397,3 +397,62 @@ def drop_CodeforcesFriends(request):
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def add_OpenlakeFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            olFriend_uname=request.data['olFriend_uname']
+            obj=OpenlakeFriends(user=user,olFriend_uname=olFriend_uname)
+            obj.save()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_OpenlakeFriends(request):
+    if request.method=="GET":
+        try:
+            queryset = OpenlakeFriends.objects.filter(user=request.user).values()
+            fil=[]
+            for i in queryset:
+                fil.append(i['olFriend_uname'])
+            qs=openlakeContributor.objects.filter(username__in=fil)
+            serializer = OL_Serializer(qs,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def drop_OpenlakeFriends(request):
+    if request.method=="POST":
+        try:
+            user=request.user
+            olFriend_uname=request.data['olFriend_uname']
+            obj=OpenlakeFriends.objects.filter(user=user,olFriend_uname=olFriend_uname)
+            obj.delete()
+            return Response({
+                        'status':200,
+                        'message':"Success",
+                    },status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({
+                'status':400,
+                'message':"Wrong"
+            },status=status.HTTP_400_BAD_REQUEST)

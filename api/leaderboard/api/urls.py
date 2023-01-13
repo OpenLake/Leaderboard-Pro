@@ -26,6 +26,9 @@ urlpatterns=[
     path('dropltfriends/',views.drop_LeetcodeFriends),
     path('getghfriends/',views.get_GithubFriends),
     path('dropghfriends/',views.drop_GithubFriends),
+    path('olfriends/',views.add_OpenlakeFriends),
+    path('getolfriends/',views.get_OpenlakeFriends),
+    path('dropolfriends/',views.drop_OpenlakeFriends),
 ]
 
 

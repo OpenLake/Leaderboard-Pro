@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from leaderboard.models import UserNames,LeetcodeFriends,GithubFriends,CodeforcesFriends,CodechefFriends
+from leaderboard.models import UserNames,LeetcodeFriends,GithubFriends,CodeforcesFriends,CodechefFriends,OpenlakeFriends
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -22,4 +22,8 @@ class LeetcodeFriendsSerializer(ModelSerializer):
 class GithubFriendsSerializer(ModelSerializer):
     class Meta:
         model=GithubFriends
+        fields='__all__'
+class OpenlakeriendsSerializer(ModelSerializer):
+    class Meta:
+        model=OpenlakeFriends
         fields='__all__'

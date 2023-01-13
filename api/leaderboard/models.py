@@ -155,3 +155,6 @@ class CodeforcesFriends(models.Model):
 class CodechefFriends(models.Model):
     user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     ccFriend_uname=models.CharField(max_length=64)
+class OpenlakeFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    olFriend_uname=models.CharField(max_length=64)

@@ -178,7 +178,7 @@ export const LeetcodeTable = ({
             </TableHead>
             <TableBody>
               {filteredusers
-                .sort((a, b) => (a.rating < b.rating ? 1 : -1))
+                .sort((a, b) => (a.ranking < b.ranking ? 1 : -1))
                 .map((cfUser) => (
                   <TableRow key={cfUser.id}>
                     <StyledTableCell>
