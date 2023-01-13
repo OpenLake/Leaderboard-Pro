@@ -51,7 +51,6 @@ export const CodeforcesTable = ({darkmode,
 
   async function addfriend(e){
 
-    setCodeforcesfriends(current => [...current, e]);
     const response=await fetch("http://localhost:8000/api/cffriends/",{
       method:'POST',
       headers:{
@@ -66,11 +65,12 @@ export const CodeforcesTable = ({darkmode,
     {
       alert('ERROR!!!!')
     }
+    else
+    {
+      setCodeforcesfriends(current => [...current, e]);
+    }
   }
   async function dropfriend(e){
-    setCodeforcesfriends((current) =>
-      current.filter((fruit) => fruit.username !== e)
-    );
     const response=await fetch("http://localhost:8000/api/dropcffriends/",{
       method:'POST',
       headers:{
@@ -84,6 +84,11 @@ export const CodeforcesTable = ({darkmode,
     if(response.status!==200)
     {
       alert('ERROR!!!!')
+    }
+    else{
+      setCodeforcesfriends((current) =>
+      current.filter((fruit) => fruit.username !== e)
+    );
     }
   }
   useEffect(()=>{
@@ -195,7 +200,7 @@ useEffect(()=>{
               </TableRow>
             </TableHead>
             <TableBody>
-              {!filteredusers?"no users":filteredusers.map((cfUser) => (
+              {!filteredusers?"no users":filteredusers.sort((a,b)=>a.rating<b.rating?1:-1).map((cfUser) => (
                 <TableRow key={cfUser.id}>
                   <StyledTableCell>
                     <Avatar
