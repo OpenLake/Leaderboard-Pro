@@ -16,6 +16,7 @@ import Register from "./components/Register";
 import { LeetcodeTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./Context/AuthContext";
+import GoToTop from "./components/GoToTop";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -149,7 +150,7 @@ function App() {
       <Router>
         <AuthProvider>
           <div className="App">
-            <Navbar darkmode={darkmode} toggle={toggle} />
+            <Navbar darkmode={darkmode} toggle={toggle}/>
             <Grid container>
               <Grid item xs={6}>
                 <Switch>
@@ -222,6 +223,7 @@ function App() {
                 </Switch>
               </Grid>
             </Grid>
+            <GoToTop/>
           </div>
         </AuthProvider>
       </Router>

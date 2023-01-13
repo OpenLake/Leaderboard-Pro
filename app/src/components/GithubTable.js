@@ -151,7 +151,7 @@ export const GithubTable = ({
       style={{
         display: "flex",
         justifyContent: "space-between",
-        marginTop: "2vh",
+        marginTop: "9vh",
         width: "100vw",
         flexShrink: "0",
       }}
@@ -165,7 +165,7 @@ export const GithubTable = ({
           >
             <TableHead>
               <TableRow
-                style={{ backgroundColor: darkmode ? "#1F2F98" : "#1CA7FC" }}
+                style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
               >
                 <StyledTableCell>Avatar</StyledTableCell>
                 <StyledTableCell>Username</StyledTableCell>
@@ -206,6 +206,7 @@ export const GithubTable = ({
                     <StyledTableCell>
                       <Button
                         variant="contained"
+                        style={{backgroundColor:darkmode?"#146ca4":""}}
                         onClick={() => {
                           !githubfriends.some(
                             (item) => item.username === glUser.username
@@ -259,7 +260,7 @@ export const GithubTable = ({
             setGHshowfriends(!ghshowfriends);
           }}
           style={{
-            backgroundColor: "#2196f3",
+            backgroundColor:darkmode?"#02055a":"#2196f3",
             color: "white",
             marginTop: "4vh",
           }}

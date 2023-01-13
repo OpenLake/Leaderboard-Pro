@@ -88,7 +88,7 @@ export const Navbar = ({ darkmode, toggle }) => {
   let {user,logoutUser}=useContext(AuthContext);
   return (
     <div className={classes.root} >
-      <AppBar position="static" style={{backgroundColor:!darkmode?"#39ace7":"#2F4562"}}>
+      <AppBar position="static" style={{backgroundColor:!darkmode?"#39ace7":"#2F4562",position:"fixed"}}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             Leaderboard Pro
