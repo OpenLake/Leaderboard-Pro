@@ -1,4 +1,4 @@
-import { createContext,useState,useEffect } from "react";
+import { createContext,useState } from "react";
 import jwt_decode from  "jwt-decode"
 import {useHistory} from "react-router-dom"
 
@@ -55,7 +55,6 @@ export const AuthProvider=({children})=>{
                 'lt_uname':e.target.lt_uname.value
             })
         })
-        let data = await response.json()
         if(response.status===200)
         {
             let response=await fetch('http://localhost:8000/api/token/',{
@@ -97,7 +96,6 @@ export const AuthProvider=({children})=>{
                 'lt_uname':e.target.lt_uname.value
             })
         })
-        let data = await response.json()
         if(response.status===201)
         {
             history.push('/')

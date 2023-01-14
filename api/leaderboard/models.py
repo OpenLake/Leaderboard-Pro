@@ -142,3 +142,19 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64,default="")
+
+class GithubFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    ghFriend_uname=models.CharField(max_length=64)
+class LeetcodeFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    ltFriend_uname=models.CharField(max_length=64)
+class CodeforcesFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    cfFriend_uname=models.CharField(max_length=64)
+class CodechefFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    ccFriend_uname=models.CharField(max_length=64)
+class OpenlakeFriends(models.Model):
+    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    olFriend_uname=models.CharField(max_length=64)
