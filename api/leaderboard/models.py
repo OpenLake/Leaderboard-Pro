@@ -9,12 +9,13 @@ from djongo import models
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
-        if not email:
+    def create_user(self,username,first_name,last_name,email, password=None):
+        if not username:
             raise ValueError('Users must have an email address')
-
-        user = self.model(email=self.normalize_email(email))
+#self.normalize_username(username)
+        user = self.model(username= username,first_name = first_name, last_name= last_name, email = email)
         user.set_password(password)
+       
         user.save(using=self._db)
         return user
 
@@ -28,15 +29,18 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser):
     id = models.ObjectIdField(primary_key=True)
     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
+    username = models.CharField(max_length=64, unique=True)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         return True
