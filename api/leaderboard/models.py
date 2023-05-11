@@ -113,6 +113,7 @@ class codeforcesUserRatingUpdate(models.Model):
 
     class Meta:
         ordering = ["timestamp"]
+        
 class LeetcodeUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     ranking = models.PositiveIntegerField(default=0)

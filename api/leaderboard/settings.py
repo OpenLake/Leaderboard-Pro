@@ -149,17 +149,24 @@ DATABASES = {
     "default": {
         "ENGINE": 'djongo',   
         'ENFORCE_SCHEMA': False,
-        "NAME": 'LeaderboardPro',
-        "HOST": 'mongodb+srv://user1:AH2sIxqJywwpAMoy@leaderboarddb.ziz89b7.mongodb.net/?retryWrites=true&w=majority',
-        'USER': 'user1',
-        "PASSWORD": 'AH2sIxqJywwpAMoy',
+        "NAME": 'BHirank',
+            'CLIENT': {
+                'host': 'mongodb+srv://aayush:XknxfaxtZAE8bydB@leaderboarddb.ziz89b7.mongodb.net/?retryWrites=true&w=majority'
+            }
+
+
+        # "HOST": 'mongodb+srv://aayush:XknxfaxtZAE8bydB@leaderboarddb.ziz89b7.mongodb.net/BHirank?retryWrites=true&w=majority',
+        # 'USER': 'aayush',
+        # "PASSWORD": 'XknxfaxtZAE8bydB',
+
+
         # 'CLIENT': {
         #     "name": 'LeaderBoardPro',
         #     'host': 'mongodb+srv://user1:AH2sIxqJywwpAMoy@leaderboarddb.ziz89b7.mongodb.net/LeaderBoardPro?retryWrites=true&w=majority',
         #     'username': 'user1',
         #     'password': 'AH2sIxqJywwpAMoy',
         #     'authMechanism': 'SCRAM-SHA-1',
-        # }
+        # }mongodb+srv://aayush:<password>@leaderboarddb.ziz89b7.mongodb.net/?retryWrites=true&w=majority
 
     }
 }

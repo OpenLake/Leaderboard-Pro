@@ -12,6 +12,11 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 
+
+import logging
+logger = logging.getLogger(__name__)
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -48,6 +53,7 @@ def post_UserNames(request):
     try:
         # data['user']=request.user.username
         # data=request.data
+        
         username_cc=request.data["cc_uname"]
         username_cf=request.data["cf_uname"]
         username_gh=request.data["gh_uname"]
@@ -114,7 +120,9 @@ def post_UserNames(request):
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def registerUser(request):
+    
     try:
+        
         first_name = request.data["first_name"]
         last_name=request.data['last_name']
         email=request.data['email']
@@ -125,6 +133,7 @@ def registerUser(request):
         gh_uname=request.data["gh_uname"]
         lt_uname=request.data["lt_uname"]
         user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
+        logger.error(request.data)
         if first_name!="" and  email!="" and username!="" and password!="":
             user.save()
             userName=UserNames(user=user,cc_uname=cc_uname,cf_uname=cf_uname,gh_uname=gh_uname,lt_uname=lt_uname)
