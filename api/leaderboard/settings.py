@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "leaderboard",
     "rest_framework_simplejwt.token_blacklist",
     "djongo",
+    
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -239,3 +240,6 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=f"*/{OL_INTV}"),
     },
 }
+
+
+AUTH_USER_MODEL = 'leaderboard.CustomUser'

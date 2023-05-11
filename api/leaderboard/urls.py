@@ -19,10 +19,12 @@ from rest_framework_simplejwt.views import (
 )
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import  Group
 from rest_framework import serializers, viewsets, routers, permissions
 from leaderboard import views
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -37,7 +39,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by("-date_joined")
+    queryset = User.objects.all().order_by("-usernames")
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 

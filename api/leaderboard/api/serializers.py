@@ -1,7 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 from leaderboard.models import UserNames,LeetcodeFriends,GithubFriends,CodeforcesFriends,CodechefFriends,OpenlakeFriends
 from rest_framework import serializers
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class UserNamesSerializer(ModelSerializer):
     class Meta:
