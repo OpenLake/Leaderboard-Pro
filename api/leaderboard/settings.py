@@ -194,8 +194,8 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CC_INTV = 1
-GH_INTV = 15
-OL_INTV = 60*24
+GH_INTV = 1
+OL_INTV = 2
 LT_INTV = 5
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"

@@ -109,8 +109,7 @@ class CodeforcesLeaderboard(
         cf_api_response = {}
 
         if len(cf_outdated_users) > 0:
-            url = f"https://codeforces.com/api/user.info?handles=\
-            {';'.join(cf_outdated_users)}"
+            url = f"https://codeforces.com/api/user.info?handles=\{';'.join(cf_outdated_users)}"
             cf_api_response = requests.get(url).json()
             cf_api_response = cf_api_response["result"]
 
@@ -129,8 +128,7 @@ class CodeforcesLeaderboard(
                 cf_user.avatar = user_info.get("avatar", "")
                 cf_user.save()
 
-                url = f"https://codeforces.com/api/user.rating?handle=\
-                {cf_user.username}"
+                url = f"https://codeforces.com/api/user.rating?handle=\{cf_user.username}"
                 rating_update_api_response = requests.get(url).json()
                 if rating_update_api_response.get("status", "FAILED") != "OK":
                     continue
