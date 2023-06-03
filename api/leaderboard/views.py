@@ -17,6 +17,7 @@ from leaderboard.serializers import (
 from knox.models import AuthToken
 from rest_framework.response import Response
 
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.reverse import reverse
 from rest_framework import generics, mixins, status
@@ -26,7 +27,10 @@ from django.contrib.auth import get_user_model
 from datetime import datetime
 import requests
 
-MAX_DATE_TIMESTAMP = datetime.max.timestamp()
+MAX_DATE_TIMESTAMP = datetime.max.timestamp
+
+
+
 
 
 @api_view(["GET"])
@@ -99,6 +103,7 @@ class CodeforcesLeaderboard(
 ):
     queryset = codeforcesUser.objects.all()
     serializer_class = Cf_Serializer
+    # MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
     def _check_for_updates(self, cf_users):
         cf_outdated_users = []

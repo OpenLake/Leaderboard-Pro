@@ -72,8 +72,9 @@ def github_user_update(self):
             ttg = data_gh.findAll("img", class_="avatar avatar-user width-full border color-bg-default")
             gh_user.avatar=ttg[-1]['src']
             stars = 0
-            for i in range(len(response)):
-                stars = stars + response[i]["stargazers_count"]
+            if range(len(response)) !=0:
+                for i in range(len(response)):
+                    stars = stars + response[i]["stargazers_count"]
             gh_user.stars = stars
             gh_user.save()
 
@@ -99,6 +100,8 @@ def leetcode_user_update(self):
             lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
             lt_user.avatar=ttg[-1]['src']
             lt_user.save()
+
+            
 @app.task(bind=True)
 def openlake_contributor__update(self):
     from leaderboard.models import openlakeContributor
@@ -106,7 +109,7 @@ def openlake_contributor__update(self):
     updated_list = {}
     url = "https://api.github.com/users/OpenLake/repos"
     response = requests.get(url).json()
-    logger.info(response)
+    # logger.info(response)
     print(len(response))
     for i in range(len(response)):
         repo_url = str(response[i]["contributors_url"])

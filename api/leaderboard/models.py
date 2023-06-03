@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime, timezone, timedelta
 from django.contrib.auth.models import User
+from datetime import datetime
 
 class githubUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
@@ -47,8 +48,8 @@ class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.PositiveIntegerField(
-        default=datetime.max.timestamp()
+    last_activity = models.BigIntegerField(
+        default=datetime.max
     )
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
@@ -107,7 +108,7 @@ class codeforcesUserRatingUpdate(models.Model):
     index = models.PositiveIntegerField(default=0)
     prev_index = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    timestamp = models.PositiveIntegerField(default=0)
+    timestamp = models.BigIntegerField(default=0)
     def __str__(self):
         return f"{self.cf_user.username}.{self.index} {self.rating}"
 
