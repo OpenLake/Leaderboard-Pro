@@ -47,7 +47,7 @@ def codechef_user_update(self):
                 cc_user.Global_rank = ranks[0].strong.text
                 cc_user.Country_rank = ranks[1].strong.text
                 cc_user.save()
-                logger.info(cc_user)
+                # logger.info(cc_user)
             except:
                 pass
 
@@ -72,6 +72,7 @@ def github_user_update(self):
             ttg = data_gh.findAll("img", class_="avatar avatar-user width-full border color-bg-default")
             gh_user.avatar=ttg[-1]['src']
             stars = 0
+            # logger.info(response)
             for i in range(len(response)):
                 stars = stars + response[i]["stargazers_count"]
             gh_user.stars = stars
@@ -106,8 +107,9 @@ def openlake_contributor__update(self):
     updated_list = {}
     url = "https://api.github.com/users/OpenLake/repos"
     response = requests.get(url).json()
-    logger.info(response)
+    # logger.info(response)
     print(len(response))
+    logger.info(response)
     for i in range(len(response)):
         repo_url = str(response[i]["contributors_url"])
         print(repo_url)

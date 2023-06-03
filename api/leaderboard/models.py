@@ -47,7 +47,7 @@ class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.PositiveIntegerField(
+    last_activity = models.BigIntegerField(
         default=datetime.max.timestamp()
     )
     last_updated = models.DateTimeField(auto_now=True)
