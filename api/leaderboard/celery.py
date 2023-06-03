@@ -111,8 +111,9 @@ def openlake_contributor__update(self):
     updated_list = {}
     url = "https://api.github.com/users/OpenLake/repos"
     response = requests.get(url).json()
-    logger.info(response)
+    # logger.info(response)
     print(len(response))
+    logger.info(response)
     for i in range(len(response)):
         repo_url = str(response[i]["contributors_url"])
         print(repo_url)
