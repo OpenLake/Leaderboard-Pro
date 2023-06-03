@@ -12,6 +12,12 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -83,10 +89,12 @@ def post_UserNames(request):
             if username_cc!="":
                 cc_user = codechefUser(username=username_cc)
                 cc_user.save()
+                logger.info("codechef")
             # username_cf = request.data["cf_uname"]
             if username_cf!="":
                 cf_user = codeforcesUser(username=username_cf)
                 cf_user.save()
+                logger.info("codeforces")
             # username_gh = request.data["gh_uname"]
             if username_gh!="":
                 gh_user = githubUser(username=username_gh)

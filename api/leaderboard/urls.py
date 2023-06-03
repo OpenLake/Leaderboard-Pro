@@ -61,6 +61,7 @@ urlpatterns = [
         views.CodeforcesLeaderboard.as_view(),
         name="codeforces-leaderboard",
     ),
+    path('api/contest-rankings/', views.ContestRankingsAPIView.as_view(), name='contest-rankings'),
     path(
         "leetcode/",
         views.LeetcodeLeaderboard.as_view(),
