@@ -1,9 +1,10 @@
 import os
 from celery import Celery
 import requests
-import logging
+
 from celery import shared_task
 import datetime
+import logging
 logger = logging.getLogger(__name__)
 
 

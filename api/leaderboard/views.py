@@ -29,11 +29,15 @@ from datetime import datetime
 import requests
 
 from django.http import JsonResponse
-from leaderboard.celery import get_ranking
+# from leaderboard.celery import get_ranking
 # from .tasks import get_rankings
 
-MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
+import logging
+logger = logging.getLogger(__name__)
+from django.http import JsonResponse
+
+MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
 
 
@@ -250,6 +254,7 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+        
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
@@ -267,11 +272,65 @@ class LeetcodeLeaderboard(
         return Response(
             LT_Serializer(lt_user).data, status=status.HTTP_201_CREATED
         )
+    
 
-class ContestRankingsAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    def get(self, request):
-        contest = request.GET.get('contest')
-        usernames = request.GET.getlist('usernames[]')
+def get_ranking(contest, usernames):
+    API_URL_FMT = 'https://leetcode.com/contest/api/ranking/{}/?pagination={}&region=global'
+    page = 1
+    total_rank = []
+    retry_cnt = 0
+    
+    while retry_cnt<10:
+        try:
+            logger.info(API_URL_FMT.format(contest, page))
+            url = API_URL_FMT.format(contest, page)
+            if page == 2 :
+                break
+            resp = requests.get(url).json()
+            page_rank = resp['total_rank']
+            if len(page_rank) == 0:
+                break
+            total_rank.extend(page_rank)
+            print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+            page += 1
+            retry_cnt = 0
+        except:
+            print(f'Failed to retrieve data of page {page}...retry...{retry_cnt}')
+            retry_cnt += 1
 
-        task = get_ranking.delay(contest, usernames)
-        return Response({'task_id': task.id})
+    # Discard and transform fields
+    for rank in total_rank:
+        rank.pop('contest_id', None)
+        rank.pop('user_slug', None)
+        rank.pop('country_code', None)
+        rank.pop('global_ranking', None)
+        finish_timestamp = rank.pop('finish_time', None)
+        if finish_timestamp:
+            rank['finish_time'] = datetime.fromtimestamp(int(finish_timestamp)).isoformat()
+
+    # Filter rankings based on usernames
+    filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
+    filtered_rankings.sort(key=lambda obj: obj["rank"])
+    print(filtered_rankings)
+    return filtered_rankings
+
+
+
+# class ContestRankingsAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     queryset = codeforcesUser.objects.all()
+#     def get(self, request):
+#         contest = request.GET.get('contest')
+#         usernames = request.GET.getlist('usernames[]')
+
+#         task = get_ranking.delay(contest, usernames)
+
+#         return Response({'task_id': task.id})
+
+def ContestRankingsAPIView(request):
+        if request.method=="GET":
+            contest = request.GET.get('contest')
+            usernames = request.GET.getlist('usernames[]')
+            logger.error(contest)
+            task = get_ranking(contest, usernames)
+
+        return JsonResponse(task, safe=False)
