@@ -1,1 +1,0 @@
-web: gunicorn 'leaderboard.wsgi'
