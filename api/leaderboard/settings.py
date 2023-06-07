@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    'celery',
+    'flower',
     "rest_framework",
     "knox",
     "rest_framework.authtoken",
@@ -220,8 +222,10 @@ CC_INTV = 1
 GH_INTV = 15
 OL_INTV = 60
 LT_INTV = 4
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_BROKER_URL="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_RESULT_BACKEND="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "cc_update_db_task": {
@@ -240,4 +244,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "leaderboard.celery.openlake_contributor__update",
         "schedule": crontab(minute=f"*/{OL_INTV}"),
     },
+    # Run the `tasks.add` task every minute.
+    'add': {
+        'task': 'tasks.add',
+        'schedule': crontab(minute='*'),
+    },
+
 }

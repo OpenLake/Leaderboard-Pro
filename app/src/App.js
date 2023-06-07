@@ -109,7 +109,7 @@ function App() {
     }
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/codeforces/")
+    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/codeforces/")
       .then((res) => res.json())
       .then((res) => {
         setCodeforcesUsers(res);
@@ -117,21 +117,21 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/codechef/")
+    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/codechef/")
       .then((res) => res.json())
       .then((res) => {
         setCodechefUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/leetcode/")
+    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/leetcode/")
       .then((res) => res.json())
       .then((res) => {
         setLeetcodeUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/openlake/")
+    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/openlake/")
       .then((res) => res.json())
       .then((res) => {
         setOpenlakeContributor(res);
@@ -139,7 +139,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/github/")
+    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/github/")
       .then((res) => res.json())
       .then((res) => {
         setGithubUser(res);

@@ -20,6 +20,7 @@ django-cors-headers==3.7.0
 django-timezone-field==5.0
 djangorestframework==3.12.4
 filelock==3.8.0
+flower==1.2.0
 identify==2.5.5
 idna==3.4
 kombu==5.2.4
@@ -48,3 +49,8 @@ virtualenv==20.16.5
 wcwidth==0.2.5
 wrapt==1.14.1
 
+
+
+
+
+    

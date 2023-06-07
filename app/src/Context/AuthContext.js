@@ -14,7 +14,7 @@ export const AuthProvider=({children})=>{
     let loginUser=async (e)=>
     {
         e.preventDefault();
-        let response=await fetch('http://localhost:8000/api/token/',{
+        let response=await fetch('https://leaderboard-stswe61wi-aditya062003.vercel.app/api/token/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -44,7 +44,7 @@ export const AuthProvider=({children})=>{
     let registerUser=async(e)=>
     {
         e.preventDefault();
-        let response=await fetch('http://localhost:8000/api/register/',{
+        let response=await fetch('https://leaderboard-stswe61wi-aditya062003.vercel.app/api/register/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -57,7 +57,7 @@ export const AuthProvider=({children})=>{
         })
         if(response.status===200)
         {
-            let response=await fetch('http://localhost:8000/api/token/',{
+            let response=await fetch('https://leaderboard-stswe61wi-aditya062003.vercel.app/api/token/',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
@@ -85,7 +85,7 @@ export const AuthProvider=({children})=>{
         e.preventDefault();
         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!")
         // console.log(JSON.parse(localStorage.getItem('authTokens')).access);
-        let response=await fetch('http://localhost:8000/api/insertapi/',{
+        let response=await fetch('https://leaderboard-stswe61wi-aditya062003.vercel.app/api/insertapi/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
