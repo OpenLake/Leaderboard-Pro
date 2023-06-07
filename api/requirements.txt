@@ -12,16 +12,22 @@ click==8.1.3
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
+cryptography==40.0.1
 Deprecated==1.2.13
 distlib==0.3.6
 Django==3.2.4
+django-rest-knox==4.2.0
+djangorestframework-simplejwt==5.2.2
 django-celery-beat==2.3.0
 django-cors-headers==3.7.0
 django-timezone-field==5.0
 djangorestframework==3.12.4
 filelock==3.8.0
+flower==1.2.0
 identify==2.5.5
 idna==3.4
+Jinja2==3.1.2
+knox==0.1.14
 kombu==5.2.4
 nodeenv==1.7.0
 packaging==21.3
@@ -47,4 +53,3 @@ vine==5.0.0
 virtualenv==20.16.5
 wcwidth==0.2.5
 wrapt==1.14.1
-
