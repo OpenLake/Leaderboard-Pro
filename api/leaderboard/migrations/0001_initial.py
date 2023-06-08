@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(max_length=64, unique=True)),
                 ('max_rating', models.PositiveIntegerField(default=0)),
                 ('rating', models.PositiveIntegerField(default=0)),
-                ('last_activity', models.PositiveIntegerField(default=253402300800.0)),
+                ('last_activity', models.PositiveIntegerField(default=0)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
                 ('avatar', models.CharField(default='', max_length=256)),
             ],

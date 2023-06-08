@@ -39,6 +39,12 @@ dotenv.load_dotenv()
 
 
 
+import dotenv,os
+
+dotenv.load_dotenv()
+
+
+
 
 # Application definition
 
