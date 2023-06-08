@@ -17,6 +17,7 @@ import AuthContext from "../Context/AuthContext";
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
 import {useHistory} from "react-router-dom"
+import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -150,7 +151,16 @@ export const Navbar = ({ darkmode, toggle }) => {
               </IconButton>
             </Link>
             
-            
+            <Link style={{ margin: "10px" }} to="leetcoderankings">
+              <IconButton edge="start" color="inherit" aria-label="menu">
+                <img
+                  src={LeetcodeRankingsLogo}
+                  width={25}
+                  height={25}
+                  alt="OpenLake Logo"
+                />
+              </IconButton>
+            </Link>
           </div>
           
         <FormGroup>

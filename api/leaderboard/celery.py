@@ -1,9 +1,6 @@
 import os
 from celery import Celery
 import requests
-
-from celery import shared_task
-import datetime
 import logging
 logger = logging.getLogger(__name__)
 
@@ -103,8 +100,6 @@ def leetcode_user_update(self):
             lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
             lt_user.avatar=ttg[-1]['src']
             lt_user.save()
-
-            
 @app.task(bind=True)
 def openlake_contributor__update(self):
     from leaderboard.models import openlakeContributor
@@ -145,40 +140,3 @@ def openlake_contributor__update(self):
         ol_contributor.username = i
         ol_contributor.contributions = updated_list[i]
         ol_contributor.save()
-
-@shared_task
-def get_ranking(contest, usernames):
-    API_URL_FMT = 'https://leetcode.com/contest/api/ranking/{}/?pagination={}&region=global'
-    page = 1
-    total_rank = []
-    retry_cnt = 0
-    while True:
-        try:
-            url = API_URL_FMT.format(contest, page)
-            logger.info(url)
-            resp = requests.get(url).json()
-            page_rank = resp['total_rank']
-            if len(page_rank) == 0:
-                break
-            total_rank.extend(page_rank)
-            print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
-            page += 1
-            retry_cnt = 0
-        except:
-            print(f'Failed to retrieve data of page {page}...retry...{retry_cnt}')
-            retry_cnt += 1
-
-    # Discard and transform fields
-    for rank in total_rank:
-        rank.pop('contest_id', None)
-        rank.pop('user_slug', None)
-        rank.pop('country_code', None)
-        rank.pop('global_ranking', None)
-        finish_timestamp = rank.pop('finish_time', None)
-        if finish_timestamp:
-            rank['finish_time'] = datetime.datetime.fromtimestamp(int(finish_timestamp)).isoformat()
-
-    # Filter rankings based on usernames
-    filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
-
-    return filtered_rankings

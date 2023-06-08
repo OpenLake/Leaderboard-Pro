@@ -11,6 +11,8 @@ from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+import requests
 
 
 import logging
@@ -51,6 +53,7 @@ def current_user(request):
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
+    
     try:
         # data['user']=request.user.username
         # data=request.data
@@ -59,6 +62,7 @@ def post_UserNames(request):
         username_gh=request.data["gh_uname"]
         username_lt=request.data["lt_uname"]
         user=request.user
+        
         if UserNames.objects.filter(user=user).exists():
             t = UserNames.objects.get(user=user)
             if username_cc!="":
@@ -68,7 +72,7 @@ def post_UserNames(request):
                 cc_user.save()
             if username_cf!="":
                 codeforcesUser.objects.filter(username=t.cf_uname).delete()
-                t.cf_uname=username_cf
+                t.cf_uname=username_cf             
                 cf_user = codeforcesUser(username=username_cf)
                 cf_user.save()
             if username_gh!="":
@@ -89,12 +93,12 @@ def post_UserNames(request):
             if username_cc!="":
                 cc_user = codechefUser(username=username_cc)
                 cc_user.save()
-                logger.info("codechef")
+                
             # username_cf = request.data["cf_uname"]
             if username_cf!="":
                 cf_user = codeforcesUser(username=username_cf)
                 cf_user.save()
-                logger.info("codeforces")
+             
             # username_gh = request.data["gh_uname"]
             if username_gh!="":
                 gh_user = githubUser(username=username_gh)
@@ -122,6 +126,7 @@ def post_UserNames(request):
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def registerUser(request):
+    
     try:
         first_name = request.data["first_name"]
         last_name=request.data['last_name']
@@ -137,11 +142,14 @@ def registerUser(request):
             user.save()
             userName=UserNames(user=user,cc_uname=cc_uname,cf_uname=cf_uname,gh_uname=gh_uname,lt_uname=lt_uname)
             userName.save()
+            
             if cc_uname!="":
                 cc_user = codechefUser(username=cc_uname)
                 cc_user.save()
             if cf_uname!="":
+               
                 cf_user = codeforcesUser(username=cf_uname)
+               
                 cf_user.save()
             if gh_uname!="":
                 gh_user = githubUser(username=gh_uname)
@@ -464,3 +472,61 @@ def drop_OpenlakeFriends(request):
                 'status':400,
                 'message':"Wrong"
             },status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+def get_ranking(contest, usernames):
+    API_URL_FMT = 'https://leetcode.com/contest/api/ranking/{}/?pagination={}&region=global'
+    page = 1
+    total_rank = []
+    retry_cnt = 0
+    
+    while retry_cnt<10:
+        try:
+            
+            url = API_URL_FMT.format(contest, page)
+            # if page == 3 :
+            #     break
+            resp = requests.get(url).json()
+            page_rank = resp['total_rank']
+            if len(page_rank) == 0:
+                break
+            total_rank.extend(page_rank)
+            print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+            
+            # logger.info(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+            page += 1
+            if(page==3):
+                break
+            retry_cnt = 0
+        except:
+            print(f'Failed to retrieve data of page {page}...retry...{retry_cnt}')
+            retry_cnt += 1
+
+    # Discard and transform fields
+    for rank in total_rank:
+        rank.pop('contest_id', None)
+        rank.pop('user_slug', None)
+        rank.pop('country_code', None)
+        rank.pop('global_ranking', None)
+        finish_timestamp = rank.pop('finish_time', None)
+        if finish_timestamp:
+            rank['finish_time'] = datetime.fromtimestamp(int(finish_timestamp)).isoformat()
+
+    # Filter rankings based on usernames
+    
+    filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
+    
+    filtered_rankings.sort(key=lambda obj: obj["rank"])
+    
+    return filtered_rankings
+
+
+def ContestRankingsAPIView(request):
+        if request.method=="GET":
+            contest = request.GET.get('contest')
+            usernames = [user.username for user in LeetcodeUser.objects.all()]
+      
+            task = get_ranking(contest, usernames)
+
+        return JsonResponse(task, safe=False)

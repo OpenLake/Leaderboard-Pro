@@ -109,7 +109,7 @@ function App() {
     }
   }, []);
   useEffect(() => {
-    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/codeforces/")
+    fetch("http://localhost:8000/codeforces/")
       .then((res) => res.json())
       .then((res) => {
         setCodeforcesUsers(res);
@@ -117,21 +117,21 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/codechef/")
+    fetch("http://localhost:8000/codechef/")
       .then((res) => res.json())
       .then((res) => {
         setCodechefUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/leetcode/")
+    fetch("http://localhost:8000/leetcode/")
       .then((res) => res.json())
       .then((res) => {
         setLeetcodeUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/openlake/")
+    fetch("http://localhost:8000/openlake/")
       .then((res) => res.json())
       .then((res) => {
         setOpenlakeContributor(res);
@@ -139,7 +139,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("https://leaderboard-stswe61wi-aditya062003.vercel.app/github/")
+    fetch("http://localhost:8000/github/")
       .then((res) => res.json())
       .then((res) => {
         setGithubUser(res);
@@ -219,9 +219,11 @@ function App() {
                   <PrivateRoute exact path="/profile">
                     <Profile1 darkmode={darkmode} />
                   </PrivateRoute>
+
                   <PrivateRoute exact path="/leetcoderankings">
                     <LeetcodeRankings darkmode={darkmode} />
                   </PrivateRoute>
+                  
                   <Route exact path="/*">
                     <HomePage />
                   </Route>

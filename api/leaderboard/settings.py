@@ -29,7 +29,7 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -39,9 +39,9 @@ dotenv.load_dotenv()
 
 
 
-import dotenv,os
+# import dotenv,os
 
-dotenv.load_dotenv()
+# dotenv.load_dotenv()
 
 
 
@@ -228,10 +228,13 @@ CC_INTV = 1
 GH_INTV = 15
 OL_INTV = 60
 LT_INTV = 4
-# CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_BROKER_URL="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
-# CELERY_RESULT_BACKEND = "redis://localhost:6379"
-CELERY_RESULT_BACKEND="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# CELERY_BROKER_URL="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+# CELERY_RESULT_BACKEND="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "cc_update_db_task": {
@@ -249,11 +252,11 @@ CELERY_BEAT_SCHEDULE = {
     "ol_update_db_task": {
         "task": "leaderboard.celery.openlake_contributor__update",
         "schedule": crontab(minute=f"*/{OL_INTV}"),
-    },
-    # Run the `tasks.add` task every minute.
-    'add': {
-        'task': 'tasks.add',
-        'schedule': crontab(minute='*'),
-    },
-
+    }
+    
 }
+# Run the `tasks.add` task every minute.
+    # 'add': {
+    #     'task': 'tasks.add',
+    #     'schedule': crontab(minute='*'),
+    # },

@@ -62,7 +62,6 @@ urlpatterns = [
         name="codeforces-leaderboard",
     ),
 
-    path('contest-rankings/', views.ContestRankingsAPIView, name='contest-rankings'),
 
     path(
         "leetcode/",

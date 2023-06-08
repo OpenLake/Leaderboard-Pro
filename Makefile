@@ -13,7 +13,7 @@ migrate:
 dev-ui:
 	cd app/ && $(PNPM) run start
 
-dev-server: migrate
+dev-server:
 	cd api/ && $(PYTHON) manage.py runserver &
 
 celery-1:
@@ -22,5 +22,10 @@ celery-1:
 celery-2:
 	cd api/ && celery -A leaderboard beat -l info
 
-dev: dev-server dev-ui celery-1 celery-2
+dev:
 	@echo 'Starting dev servers'
+	$(MAKE) migrate
+	$(MAKE) dev-ui &
+	$(MAKE) dev-server &
+	$(MAKE) celery-1 &
+	$(MAKE) celery-2
