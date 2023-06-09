@@ -475,58 +475,112 @@ def drop_OpenlakeFriends(request):
         
 
 
-def get_ranking(contest, usernames):
-    API_URL_FMT = 'https://leetcode.com/contest/api/ranking/{}/?pagination={}&region=global'
-    page = 1
-    total_rank = []
-    retry_cnt = 0
+# def get_ranking(contest, usernames):
+#     API_URL_FMT = 'https://leetcode.com/contest/api/ranking/{}/?pagination={}&region=global'
+#     page = 1
+#     total_rank = []
+#     retry_cnt = 0
     
-    while retry_cnt<10:
+#     while retry_cnt<10:
+#         try:
+            
+#             url = API_URL_FMT.format(contest, page)
+#             # if page == 3 :
+#             #     break
+#             resp = requests.get(url).json()
+#             page_rank = resp['total_rank']
+#             if len(page_rank) == 0:
+#                 break
+#             total_rank.extend(page_rank)
+#             print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+            
+#             # logger.info(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+#             page += 1
+#             if(page==3):
+#                 break
+#             retry_cnt = 0
+#         except:
+#             print(f'Failed to retrieve data of page {page}...retry...{retry_cnt}')
+#             retry_cnt += 1
+
+#     # Discard and transform fields
+#     for rank in total_rank:
+#         rank.pop('contest_id', None)
+#         rank.pop('user_slug', None)
+#         rank.pop('country_code', None)
+#         rank.pop('global_ranking', None)
+#         finish_timestamp = rank.pop('finish_time', None)
+#         if finish_timestamp:
+#             rank['finish_time'] = datetime.fromtimestamp(int(finish_timestamp)).isoformat()
+
+#     # Filter rankings based on usernames
+    
+#     filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
+    
+#     filtered_rankings.sort(key=lambda obj: obj["rank"])
+    
+#     return filtered_rankings
+
+
+
+import requests
+import urllib.parse
+
+def get_data_from_url(usernames, contestID):
+    base_url = 'https://leetcode.com/graphql'
+    data_list = []
+    contest_data = []
+
+    for username in usernames:
+        # Construct the query parameters
+        query = f'query {{ userContestRankingHistory(username:"{username}") {{ attended ranking contest {{ title startTime }} }} }}'
+        query_params = {'query': query}
+        
+        # Encode the query parameters
+        encoded_params = urllib.parse.urlencode(query_params)
+        
+        # Construct the full URL with the encoded query parameters
+        url = f'{base_url}?{encoded_params}'
+
         try:
+            response = requests.get(url)
+            data = response.json()
             
-            url = API_URL_FMT.format(contest, page)
-            # if page == 3 :
-            #     break
-            resp = requests.get(url).json()
-            page_rank = resp['total_rank']
-            if len(page_rank) == 0:
-                break
-            total_rank.extend(page_rank)
-            print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
+            # Process the retrieved data as per your requirements
             
-            # logger.info(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
-            page += 1
-            if(page==3):
-                break
-            retry_cnt = 0
-        except:
-            print(f'Failed to retrieve data of page {page}...retry...{retry_cnt}')
-            retry_cnt += 1
+            data_object = {
+                'username': username,
+                'data': data
+            }
+            data_list.append(data_object)
+          
+        except requests.exceptions.RequestException as e:
+            # Handle any errors that occurred during the request
+            print(f"Error: {e}")
 
-    # Discard and transform fields
-    for rank in total_rank:
-        rank.pop('contest_id', None)
-        rank.pop('user_slug', None)
-        rank.pop('country_code', None)
-        rank.pop('global_ranking', None)
-        finish_timestamp = rank.pop('finish_time', None)
-        if finish_timestamp:
-            rank['finish_time'] = datetime.fromtimestamp(int(finish_timestamp)).isoformat()
-
-    # Filter rankings based on usernames
+    for item in data_list:
+        username = item['username']
+        user_data = item['data']['data']['userContestRankingHistory']
+      
+        if user_data is not None:
+            for contest in user_data:
+                if contest['contest']['title'] == contestID:
+                    contest_info = {
+                        'username': username,
+                        'ranking': contest['ranking'],
+                        'startTime': contest['contest']['startTime']
+                    }
+                    contest_data.append(contest_info)
+    sorted_contest_data = sorted(contest_data, key=lambda x: x['ranking'], reverse=True)
     
-    filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
-    
-    filtered_rankings.sort(key=lambda obj: obj["rank"])
-    
-    return filtered_rankings
-
+    return sorted_contest_data
 
 def ContestRankingsAPIView(request):
+        
         if request.method=="GET":
             contest = request.GET.get('contest')
             usernames = [user.username for user in LeetcodeUser.objects.all()]
       
-            task = get_ranking(contest, usernames)
+            task = get_data_from_url(usernames,contest)
 
         return JsonResponse(task, safe=False)

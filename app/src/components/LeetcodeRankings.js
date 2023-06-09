@@ -29,6 +29,7 @@ const LeetcodeRankings = ({ darkmode }) => {
       if (response.ok) {
         const data = await response.json();
         setRankings(data);
+        console.log(data)
       } else {
         throw new Error('Request failed');
       }
@@ -75,7 +76,7 @@ const LeetcodeRankings = ({ darkmode }) => {
                 color: darkmode ? 'white' : 'black',
               }}
             >
-              Institute-Rank: {index + 1}, Username: {rank.username}, OverallRank: {rank.rank || 'N/A'}
+              Institute-Rank: {index + 1}, Username: {rank.username}, OverallRank: {rank.ranking}
             </li>
           ))}
         </ul>
