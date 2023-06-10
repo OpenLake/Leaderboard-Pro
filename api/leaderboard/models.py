@@ -3,6 +3,9 @@ from datetime import datetime, timezone, timedelta
 from django.contrib.auth.models import User
 from datetime import datetime
 
+from django.contrib.postgres.fields import ArrayField
+
+
 class githubUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     contributions = models.PositiveIntegerField(default=0)
@@ -160,11 +163,3 @@ class OpenlakeFriends(models.Model):
     user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     olFriend_uname=models.CharField(max_length=64)
 
-
-class Contest(models.Model):
-    name = models.CharField(max_length=200)
-
-class Contestant(models.Model):
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
-    username = models.CharField(max_length=200)
-    ranking = models.IntegerField()

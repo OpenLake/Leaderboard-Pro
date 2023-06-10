@@ -163,6 +163,9 @@ function App() {
                   <Route exact path="/login">
                     <Login darkmode={darkmode} />
                   </Route>
+                  <Route exact path="/leetcoderankingsccps">
+                    <LeetcodeRankingsCCPS darkmode={darkmode} />
+                  </Route>
                   <PrivateRoute exact path="/">
                     <HomePage />
                   </PrivateRoute>
@@ -225,13 +228,14 @@ function App() {
                     <LeetcodeRankings darkmode={darkmode} />
                   </PrivateRoute>
 
-                  <PrivateRoute exact path="/leetcoderankingsccps">
+                  {/* <PrivateRoute exact path="/leetcoderankingsccps">
                     <LeetcodeRankingsCCPS darkmode={darkmode} />
-                  </PrivateRoute>
+                  </PrivateRoute> */}
                   
                   <Route exact path="/*">
                     <HomePage />
                   </Route>
+               
                 </Switch>
               </Grid>
             </Grid>

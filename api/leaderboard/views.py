@@ -5,8 +5,7 @@ from leaderboard.models import (
     codechefUser,
     openlakeContributor,
     LeetcodeUser,
-    Contest,
-    Contestant
+
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -31,9 +30,12 @@ from datetime import datetime
 import requests
 
 from django.http import JsonResponse
-# from leaderboard.celery import get_ranking
-# from .tasks import get_rankings
 
+import requests
+import urllib.parse
+    
+
+import re
 
 import logging
 logger = logging.getLogger(__name__)
@@ -41,6 +43,8 @@ from django.http import JsonResponse
 
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
+from django.db import connection
+from django.db.utils import OperationalError
 
 
 
@@ -276,116 +280,49 @@ class LeetcodeLeaderboard(
         )
 
 
-import requests
-import urllib.parse
-
-# def get_rankings_ccps(usernames, contestID):
-#     base_url = 'https://leetcode.com/graphql'
-#     data_list = []
-#     contest_data = []
-
-#     for username in usernames:
-#         # Construct the query parameters
-#         query = f'query {{ userContestRankingHistory(username:"{username}") {{ attended ranking contest {{ title startTime }} }} }}'
-#         query_params = {'query': query}
+def get_table_data(column):
+    try:
+        with connection.cursor() as cursor:
         
-#         # Encode the query parameters
-#         encoded_params = urllib.parse.urlencode(query_params)
+            cursor.execute("SELECT usernames, {column_name} FROM ccpsleetcoderanking".format(column_name=column))
+            usernames = cursor.fetchall()
+            
+            return usernames
+    except OperationalError as e:
         
-#         # Construct the full URL with the encoded query parameters
-#         url = f'{base_url}?{encoded_params}'
+        print(f"Error: {e}")
 
-#         try:
-#             response = requests.get(url)
-#             data = response.json()
-#             user_rankingdata = data['data']['userContestRankingHistory']
-#             if user_rankingdata is not None:
-#                 for user_data in user_rankingdata:
-#                     if user_data is not None:
-#                         if user_data['attended'] != False:
-#                             if user_data['contest']['title'] == contestID:
-#                                 # print(user_data)
-#                                 contest_info = {
-#                                     'username':username,
-#                                     'ranking':user_data['ranking'],
-#                                     'startTime':user_data['contest']['startTime']
-#                                 }
-#                                 contest_data.append(contest_info)
-            
-            # Process the retrieved data as per your requirements
-            
-            # data_object = {
-            #     'username': username,
-            #     'data': data
-            # }
-            # data_list.append(data_object)
-          
-        # except requests.exceptions.RequestException as e:
-            # Handle any errors that occurred during the request
-            # print(f"Error: {e}")
-
-    # for item in data_list:
-    #     username = item['username']
-    #     user_data = item['data']['data']['userContestRankingHistory']
-      
-    #     if user_data is not None:
-    #         for contest in user_data:
-    #             if contest['contest']['title'] == contestID:
-    #                 contest_info = {
-    #                     'username': username,
-    #                     'ranking': contest['ranking'],
-    #                     'startTime': contest['contest']['startTime']
-    #                 }
-    #                 contest_data.append(contest_info)
-    # sorted_contest_data = sorted(contest_data, key=lambda x: x['ranking'], reverse=False)
-    
-    # return sorted_contest_data
-
-
-
-# class ContestRankingsAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-#     queryset = codeforcesUser.objects.all()
-#     def get(self, request):
-#         contest = request.GET.get('contest')
-#         usernames = request.GET.getlist('usernames[]')
-
-#         task = get_ranking.delay(contest, usernames)
-
-#         return Response({'task_id': task.id})
-# usernames_ccps = ['rutor', 'abhinaykalavakuri1289', 'abhiojha251198', 'divyanshu_k2003', 'akashdeeptemp1', 'AKH9090', 'An333it', 'ankush57', 'anshukumar_729', 'aritradeb', 'Aman_1610', 'AAli001', 'Athulitha', 'sribhanu', 'Chandramalika', 'devildev98', 'dommatirohith', 'Ragzz258', 'gubbalavenugopal', 'hrishik_1208', 'jaysoni3010', 'kammelaaditya', 'mohan_706', 'kotaajaykumar', 'swarupsai112002', 'Manish_5746', '_neha_panjabi', 'Manjeet_2003', 'Dixiebloom', 'poppy21', 'mratunjay095', 'nancyy_24_', 'nbsbharath', 'paruld', 'PiyushPancholi', 'DarkHorse__', 'pra8186', 'prathameshgujar2002', 'attadapravalika', 'priyatomar721', 'proddutooriv', 'rishitha_90', 'riyadhiman', 'riyanshi_goyal', 'sahan_18', 'Sanat_Tudu', 'user7410oi', 'adityadss', 'notshashwat', 'shivam1412', 'TheAlgorithm', 'khairnarshreyash', 'user7576R', '123_sonu', 'Sujata_C11', 'suresh0405bairwa', 'the_detective', 'harveySpector', 'usha_729', 'utkarsh789', 'vaishnavi_2211', 'karthik_leet111', 'Tarun_142333', 'vetsatarun', 'thakurvishesh1', 'dan3121', 'gmansi1811', 'user3679lh', 'Pallavi_Pandey', 'ransh5523', 'prajjwalk', 'Arnav_kiba', 'satyamss2812', 'shaikrahul000', 'vaibhavarora2182', 'siddharthgupta_20', 'Sharishth47', 'maya12_', 'akshaywairagade2', 'mundrusrinidhi', 'kira_11', 'shady7', 'coding_spot', 'sunnny129', 'Randolph_Cole', 'Mayank_Chaturvedi', 'basantsolanky', 'ashmesh', 'user8078yb', 'spandan-04', 'dakshrajsadashiv', 'user3486g', 'imdad18', 'sowdagar3', 'cbcode', 'ShaleenM', 'parzival2_0', 'Amitjakhar', 'Sahithi_Ampolu', 'ayushkd']
-# usernames_ccps=['TheAlgorithm']
-
-# def ContestRankingsAPICCPSView(request):
-#         if request.method=="GET":
-#             contestID = request.GET.get('contest')
-#             usernames = usernames_ccps
-#             # logger.error(contest)
-#             task = get_rankings_ccps(usernames, contestID)
-
-#         return JsonResponse(task, safe=False)
-    
-import os
-import json
-file_path = os.path.join(os.path.dirname(__file__), 'contest_data.json')
-
-with open(file_path, 'r') as file:
-  json_data = json.load(file)
-
-contest_list = json_data[0:]
-
-contest_name = contest_list[0]
-contest = Contest(name=contest_name)
-contest.save()
-
-for contestant in contest_list[1:]:
-    username = contestant['username']
-    ranking = contestant['ranking']
-    start_time = datetime.fromtimestamp(contestant['startTime'])
-    
-    contestant_instance = Contestant(contest=contest, username=username, ranking=ranking, startTime=start_time)
-    contestant_instance.save()
 
 def LeetcodeCCPSAPIView(request):
-    contests = Contest.objects.prefetch_related('contestant_set').values('id', 'name', 'contestant__username', 'contestant__ranking', 'contestant__startTime')
+    
+    
+    contest = request.GET.get('contest')
+    input_string = contest
+    
+    numbers = re.findall(r'\d+', input_string)
 
-    return JsonResponse(list(contests), safe=False)
+    if contest[0] =='W':
+        formatted_string = f"weekly{numbers[0]}" if numbers else ""
+        
+    else:
+        formatted_string = f"biweekly{numbers[0]}" if numbers else ""
+
+
+    data = get_table_data(formatted_string)
+    
+
+    rankings = []
+    for username in data:
+        
+        if username[1] == 0:
+            ranking =None
+        else:
+            ranking = username[1]
+        rankings.append({
+            'username': username[0],
+            'ranking': ranking
+        })
+    sorted_rankings = sorted(rankings, key=lambda x: (x['ranking'] is None, x['ranking']))
+
+    
+    return JsonResponse(list(sorted_rankings), safe=False)

@@ -579,6 +579,7 @@ def ContestRankingsAPIView(request):
         
         if request.method=="GET":
             contest = request.GET.get('contest')
+            
             usernames = [user.username for user in LeetcodeUser.objects.all()]
       
             task = get_data_from_url(usernames,contest)
