@@ -33,9 +33,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-import dotenv,os
-
-dotenv.load_dotenv()
+# import dotenv,os
+import os
+# dotenv.load_dotenv()
 
 
 
@@ -172,7 +172,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        # 'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'PASSWORD':'4xAma06Fi5kwv7YN',
         'HOST': 'db.rpdttenqphkdyvpuoeky.supabase.co',
         'PORT': '5432',
     }
@@ -256,7 +257,7 @@ CELERY_BEAT_SCHEDULE = {
     
 }
 # Run the `tasks.add` task every minute.
-    # 'add': {
-    #     'task': 'tasks.add',
-    #     'schedule': crontab(minute='*'),
-    # },
+#     'add': {
+#         'task': 'tasks.add',
+#         'schedule': crontab(minute='*'),
+#     },
