@@ -18,6 +18,7 @@ import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
 import {useHistory} from "react-router-dom"
 import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
+import CCPS from "../icons/CCPS.jpeg"
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -162,7 +163,16 @@ export const Navbar = ({ darkmode, toggle }) => {
               </IconButton>
             </Link>
           </div>
-          
+          <Link style={{ margin: "10px" }} to="/leetcoderankingsccps">
+              <IconButton edge="start" color="inherit" aria-label="menu">
+                <img
+                  src={CCPS}
+                  width={25}
+                  height={25}
+                  alt=""
+                />
+              </IconButton>
+            </Link>
         <FormGroup>
           <FormControlLabel
               control={

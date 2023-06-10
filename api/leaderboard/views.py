@@ -301,7 +301,7 @@ def LeetcodeCCPSAPIView(request):
     
     numbers = re.findall(r'\d+', input_string)
 
-    if contest[0] =='W':
+    if contest[0] =='W' or 'w':
         formatted_string = f"weekly{numbers[0]}" if numbers else ""
         
     else:
