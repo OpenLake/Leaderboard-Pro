@@ -1,171 +1,250 @@
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { Link } from "react-router-dom";
+import MenuIcon from "@material-ui/icons/Menu";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import { Link, useHistory } from "react-router-dom";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import MaterialUISwitch from "@material-ui/core/Switch";
 import CodechefLogo from "../icons/codechef.png";
+import GitHubIcon from "@material-ui/icons/GitHub";
 import CodeforcesLogo from "../icons/codeforces.svg";
+import LeetcodeLogo from "../icons/leetcode.svg";
 import OpenlakeLogo from "../icons/openlake.svg";
-import LeetcodeLogo from "../icons/leetcode.svg"
-import { useContext } from "react";
+import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
+import CCPS from "../icons/CCPS.jpeg";
 import AuthContext from "../Context/AuthContext";
-import Switch from '@mui/material/Switch';
-import { styled } from '@mui/material/styles';
-import {useHistory} from "react-router-dom"
-const MaterialUISwitch = styled(Switch)(({ theme }) => ({
-  width: 62,
-  height: 34,
-  padding: 7,
-  "& .MuiSwitch-switchBase": {
-      margin: 1,
-      padding: 0,
-      transform: "translateX(6px)",
-      "&.Mui-checked": {
-          color: "#fff",
-          transform: "translateX(22px)",
-          "& .MuiSwitch-thumb:before": {
-              backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-                  "#fff"
-              )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
-          },
-          "& + .MuiSwitch-track": {
-              opacity: 1,
-              backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
-          },
-      },
-  },
-  "& .MuiSwitch-thumb": {
-      backgroundColor: theme.palette.mode === "dark" ? "#003892" : "#001e3c",
-      width: 32,
-      height: 32,
-      "&:before": {
-          content: "''",
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          left: 0,
-          top: 0,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-          "#fff"
-          )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
-      },
-  },
-  "& .MuiSwitch-track": {
-      opacity: 1,
-      backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
-      borderRadius: 20 / 2,
-  },
-}));
+import { useMediaQuery } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  platformButtons: {
-    flexGrow: 1,
-  },
-  title: {
+  menuButton: {
     marginRight: theme.spacing(2),
   },
+  title: {
+    flexGrow: 1,
+    textAlign: "left",
+  },
+  platformButtons: {
+    // display: "flex",
+    // alignItems: "center",
+    // marginLeft:"40px"
+  },
+  desktopLogos: {
+    display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      display: "none",
+    },
+  },
 }));
+
 export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
-  const history=useHistory();
-  const manageClick=()=>{
-    history.push('/profile')
-  }
-  const tohome=()=>{
-    history.push('/')
-  }
-  const toLogin=()=>{
-    history.push('/login')
-  }
-  let {user,logoutUser}=useContext(AuthContext);
+  const history = useHistory();
+  const manageClick = () => {
+    history.push("/profile");
+  };
+  const tohome = () => {
+    history.push("/");
+  };
+  const toLogin = () => {
+    history.push("/login");
+  };
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleMobileMenuOpen = () => {
+    setMobileMenuOpen(true);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuOpen(false);
+  };
+
+  const { user, logoutUser } = useContext(AuthContext);
+
+  const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
+
   return (
-    <div className={classes.root} >
-      <AppBar position="static" style={{backgroundColor:!darkmode?"#39ace7":"#2F4562",position:"fixed"}}>
+    <div className={classes.root}>
+      <AppBar
+        position="static"
+        style={{
+          backgroundColor: !darkmode ? "#39ace7" : "#2F4562",
+          position: "fixed",
+        }}
+      >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button style={{color:"white"}}
-            onClick={tohome}
-            >
-            Leaderboard Pro
+            <Button style={{ color: "white" }} onClick={tohome}>
+              Leaderboard Pro
             </Button>
           </Typography>
-          <div className={classes.platformButtons}>
-          
-            <Link style={{ margin: "10px" }} to="/codechef">
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                <img
-                  src={CodechefLogo}
-                  width={25}
-                  height={25}
-                  alt="Codechef Logo"
-                />
-              </IconButton>
-            </Link>
-            
-            <Link to="/github" style={{ margin: "10px"}}>
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                <GitHubIcon style={{filter:darkmode?"invert(100)":"brightness(20%)"}}/>
-              </IconButton>
-            </Link>
-            
-            <Link style={{ margin: "10px" }} to="/codeforces">
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                <img
-                  src={CodeforcesLogo}
-                  width={25}
-                  height={25}
-                  alt="Codeforces Logo"
-                />
-              </IconButton>
-            </Link>
-            <Link style={{ margin: "10px" }} to="/leetcode">
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                <img
-                  src={LeetcodeLogo}
-                  width={25}
-                  height={25}
-                  alt="LeetCode Logo"
-                  style={{filter:darkmode?"invert(100)":""}}
-                />
-              </IconButton>
-            </Link> 
-            <Link style={{ margin: "10px" }} to="/openlake">
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                <img
-                  src={OpenlakeLogo}
-                  width={25}
-                  height={25}
-                  alt="OpenLake Logo"
-                />
-              </IconButton>
-            </Link>
-            
-            
-          </div>
-          
-        <FormGroup>
-          <FormControlLabel
-              control={
-                  <MaterialUISwitch
-                      sx={{ m: 1 }}
-                      checked={darkmode}
-                      onChange={toggle}
+
+          {isMobile && ( // Render the hamburger icon only in mobile view
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleMobileMenuOpen}
+              className={classes.menuButton}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+
+          {/* Mobile Menu */}
+          <Menu
+            id="mobile-menu"
+            anchorEl={null}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            keepMounted
+            open={mobileMenuOpen}
+            onClose={handleMobileMenuClose}
+          >
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/codechef">Codechef</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/github">GitHub</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/codeforces">Codeforces</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/leetcode">LeetCode</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/openlake">OpenLake</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/leetcoderankings">LeetCode Rankings</Link>
+            </MenuItem>
+            <MenuItem onClick={handleMobileMenuClose}>
+              <Link to="/leetcoderankingsccps">LeetCode Rankings (CCPS)</Link>
+            </MenuItem>
+          </Menu>
+
+          <div className={classes.platformButtons} style={{display:"flex",justifyContent:"center"}}>
+            {/* Logos (hidden in mobile view) */}
+            <div className={classes.desktopLogos}>
+              <Link style={{ margin: "10px" }} to="/codechef">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img
+                    src={CodechefLogo}
+                    width={25}
+                    height={25}
+                    alt="Codechef Logo"
                   />
+                </IconButton>
+              </Link>
+
+              <Link to="/github" style={{ margin: "10px" }}>
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <GitHubIcon
+                    style={{
+                      filter: darkmode ? "invert(100)" : "brightness(20%)",
+                    }}
+                  />
+                </IconButton>
+              </Link>
+
+              <Link style={{ margin: "10px" }} to="/codeforces">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img
+                    src={CodeforcesLogo}
+                    width={25}
+                    height={25}
+                    alt="Codeforces Logo"
+                  />
+                </IconButton>
+              </Link>
+              <Link style={{ margin: "10px" }} to="/leetcode">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img
+                    src={LeetcodeLogo}
+                    width={25}
+                    height={25}
+                    alt="LeetCode Logo"
+                    style={{ filter: darkmode ? "invert(100)" : "" }}
+                  />
+                </IconButton>
+              </Link>
+              <Link style={{ margin: "10px" }} to="/openlake">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img
+                    src={OpenlakeLogo}
+                    width={25}
+                    height={25}
+                    alt="OpenLake Logo"
+                  />
+                </IconButton>
+              </Link>
+
+              <Link style={{ margin: "10px" }} to="leetcoderankings">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img
+                    src={LeetcodeRankingsLogo}
+                    width={25}
+                    height={25}
+                    alt="OpenLake Logo"
+                  />
+                </IconButton>
+              </Link>
+              <Link style={{ margin: "10px" }} to="/leetcoderankingsccps">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <img src={CCPS} width={25} height={25} alt="" />
+                </IconButton>
+              </Link>
+            </div>
+          </div>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <MaterialUISwitch
+                  sx={{ m: 1 }}
+                  checked={darkmode}
+                  onChange={toggle}
+                />
               }
-          />
-      </FormGroup>
-      <Button color="inherit" style={{display:user?"block":"none",margin:"10px 10px"}} onClick={manageClick}>{user?user.username:""}</Button>
-      <Button color="inherit" onClick={user?logoutUser:toLogin}>{user?"Logout":"Login"}</Button>
+            />
+          </FormGroup>
+          <Button
+            color="inherit"
+            style={{ display: user ? "block" : "none", margin: "10px" }}
+            onClick={manageClick}
+          >
+            Profile
+          </Button>
+          <Button
+            color="inherit"
+            style={{ display: user ? "none" : "block", margin: "10px" }}
+            onClick={toLogin}
+          >
+            Login
+          </Button>
+          <Button
+            color="inherit"
+            style={{ display: user ? "block" : "none", margin: "10px" }}
+            onClick={logoutUser}
+          >
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
     </div>

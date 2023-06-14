@@ -4,7 +4,8 @@ from leaderboard.models import (
     githubUser,
     codechefUser,
     openlakeContributor,
-    LeetcodeUser
+    LeetcodeUser,
+
 )
 from leaderboard.serializers import (
     Cf_Serializer,
@@ -17,7 +18,9 @@ from leaderboard.serializers import (
 from knox.models import AuthToken
 from rest_framework.response import Response
 
+
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from rest_framework import generics, mixins, status
 from rest_framework.permissions import IsAuthenticated
@@ -26,7 +29,23 @@ from django.contrib.auth import get_user_model
 from datetime import datetime
 import requests
 
+from django.http import JsonResponse
+
+import requests
+import urllib.parse
+    
+
+import re
+
+import logging
+logger = logging.getLogger(__name__)
+from django.http import JsonResponse
+
 MAX_DATE_TIMESTAMP = datetime.max.timestamp()
+
+from django.db import connection
+from django.db.utils import OperationalError
+
 
 
 @api_view(["GET"])
@@ -99,6 +118,7 @@ class CodeforcesLeaderboard(
 ):
     queryset = codeforcesUser.objects.all()
     serializer_class = Cf_Serializer
+    # MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
     def _check_for_updates(self, cf_users):
         cf_outdated_users = []
@@ -109,8 +129,7 @@ class CodeforcesLeaderboard(
         cf_api_response = {}
 
         if len(cf_outdated_users) > 0:
-            url = f"https://codeforces.com/api/user.info?handles=\
-            {';'.join(cf_outdated_users)}"
+            url = f"https://codeforces.com/api/user.info?handles=\{';'.join(cf_outdated_users)}"
             cf_api_response = requests.get(url).json()
             cf_api_response = cf_api_response["result"]
 
@@ -129,8 +148,7 @@ class CodeforcesLeaderboard(
                 cf_user.avatar = user_info.get("avatar", "")
                 cf_user.save()
 
-                url = f"https://codeforces.com/api/user.rating?handle=\
-                {cf_user.username}"
+                url = f"https://codeforces.com/api/user.rating?handle=\{cf_user.username}"
                 rating_update_api_response = requests.get(url).json()
                 if rating_update_api_response.get("status", "FAILED") != "OK":
                     continue
@@ -242,6 +260,7 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+        
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
@@ -260,3 +279,51 @@ class LeetcodeLeaderboard(
             LT_Serializer(lt_user).data, status=status.HTTP_201_CREATED
         )
 
+
+def get_table_data(column):
+    try:
+        with connection.cursor() as cursor:
+        
+            cursor.execute("SELECT usernames, {column_name} FROM ccpsleetcoderanking".format(column_name=column))
+            usernames = cursor.fetchall()
+            
+            return usernames
+    except OperationalError as e:
+        
+        print(f"Error: {e}")
+
+
+def LeetcodeCCPSAPIView(request):
+    
+    
+    contest = request.GET.get('contest')
+    input_string = contest
+    
+    numbers = re.findall(r'\d+', input_string)
+
+    # if contest[0] =='W' or 'w':
+    if contest[0].lower() == 'w' :
+        formatted_string = f"weekly{numbers[0]}" if numbers else ""
+        
+    else:
+        formatted_string = f"biweekly{numbers[0]}" if numbers else ""
+
+
+    data = get_table_data(formatted_string)
+    
+
+    rankings = []
+    for username in data:
+        
+        if username[1] == 0:
+            ranking =None
+        else:
+            ranking = username[1]
+        rankings.append({
+            'username': username[0],
+            'ranking': ranking
+        })
+    sorted_rankings = sorted(rankings, key=lambda x: (x['ranking'] is None, x['ranking']))
+
+    
+    return JsonResponse(list(sorted_rankings), safe=False)

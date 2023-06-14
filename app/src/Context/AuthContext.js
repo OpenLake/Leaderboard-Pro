@@ -84,7 +84,7 @@ export const AuthProvider=({children})=>{
     {
         e.preventDefault();
         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!")
-        // console.log(JSON.parse(localStorage.getItem('authTokens')).access);
+        // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
         let response=await fetch('http://localhost:8000/api/insertapi/',{
             method:'POST',
             headers:{

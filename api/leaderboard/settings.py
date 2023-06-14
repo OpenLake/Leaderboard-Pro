@@ -14,6 +14,8 @@ from pathlib import Path
 from celery.schedules import crontab
 from datetime import timedelta
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,7 +31,19 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+# import dotenv,os
+import os
+# dotenv.load_dotenv()
+
+
+
+# import dotenv,os
+
+# dotenv.load_dotenv()
+
+
 
 
 # Application definition
@@ -42,6 +56,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    'celery',
+    'flower',
     "rest_framework",
     "knox",
     "rest_framework.authtoken",
@@ -144,12 +160,25 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        # 'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'PASSWORD':'4xAma06Fi5kwv7YN',
+        'HOST': 'db.rpdttenqphkdyvpuoeky.supabase.co',
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
@@ -193,12 +222,20 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+STATICFILES_DIR = os.path.join(BASE_DIR,'static')
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles_build','static')
+
 CC_INTV = 1
 GH_INTV = 15
-OL_INTV = 60*24
-LT_INTV = 5
+OL_INTV = 60
+LT_INTV = 4
+
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# CELERY_BROKER_URL="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+# CELERY_RESULT_BACKEND="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "cc_update_db_task": {
@@ -216,5 +253,11 @@ CELERY_BEAT_SCHEDULE = {
     "ol_update_db_task": {
         "task": "leaderboard.celery.openlake_contributor__update",
         "schedule": crontab(minute=f"*/{OL_INTV}"),
-    },
+    }
+    
 }
+# Run the `tasks.add` task every minute.
+#     'add': {
+#         'task': 'tasks.add',
+#         'schedule': crontab(minute='*'),
+#     },

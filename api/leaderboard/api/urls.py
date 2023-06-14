@@ -29,6 +29,8 @@ urlpatterns=[
     path('olfriends/',views.add_OpenlakeFriends),
     path('getolfriends/',views.get_OpenlakeFriends),
     path('dropolfriends/',views.drop_OpenlakeFriends),
+    path('leetcodecontestrankings/',views.ContestRankingsAPIView),
+    
 ]
 
 

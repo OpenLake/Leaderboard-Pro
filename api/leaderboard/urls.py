@@ -56,11 +56,14 @@ router.register(r"groups", GroupViewSet)
 urlpatterns = [
     path("", views.api_root),
     path('api/',include('leaderboard.api.urls')),
+    # path('contest-rankings/', views.LeetcodeCCPSAPIView, name='contest-rankings'),
     path(
         "codeforces/",
         views.CodeforcesLeaderboard.as_view(),
         name="codeforces-leaderboard",
     ),
+
+    path('contest-rankings/',views.LeetcodeCCPSAPIView),
     path(
         "leetcode/",
         views.LeetcodeLeaderboard.as_view(),

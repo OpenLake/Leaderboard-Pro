@@ -1,0 +1,43 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "leaderboard/wsgi.py",
+        "use": "@vercel/python"
+      },
+      {
+        "src": "api/worker/**",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/worker/celery-1",
+        "dest": "api/worker/celery-1.py"
+      },
+      {
+        "src": "/api/worker/celery-2",
+        "dest": "api/worker/celery-2.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "leaderboard/wsgi.py"
+      }
+    ],
+    "env": {
+      "CELERY_BROKER_URL": "redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982",
+      "CELERY_RESULT_BACKEND": "redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
+    },
+    "functions": {
+      "api/worker/celery-1.py": {
+        "runtime": "python3.9",
+        "memory": 512,
+        "maxDuration": 60
+      },
+      "api/worker/celery-2.py": {
+        "runtime": "python3.9",
+        "memory": 512,
+        "maxDuration": 60
+      }
+    }
+  }
