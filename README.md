@@ -1,7 +1,7 @@
 <h1 align="center">Welcome to the Leaderboard project 👋</h1>
 
 ## 🤔 Problem
-How do people become good at something ? By doing it regularly, right ? That's why this project aims to help all the students in practicing programming regularly by maintaining a leaderboard. The website will be have **4 different leaderboards**
+How do people become good at something ? By doing it regularly, right ? That's why this project aims to help all the students in practicing programming regularly by maintaining a leaderboard. The website will be have **6 different leaderboards**
 
 ## ✨ Features
 - LeaderBoard Website + Django backend to collect data from different sources( APIs and web scraping )
@@ -9,6 +9,8 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Leaderboard type 2 : OpenLake contributions (based on commits/pull requests etc.)
 - Leaderboard type 3 : Codechef ranking
 - Leaderboard type 4 : Codeforces ranking
+- Leaderboard Type 5 : Leetcode ranking
+- Leaderboard type 6 : Leetcode contest ranking
 - Students can also view the rankings of the latest LeetCode contests, as well as their institute ranks.
 - Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
 - Our metrics will promote consistent work instead of bulk work at once.
@@ -27,3 +29,8 @@ How do people become good at something ? By doing it regularly, right ? That's w
 ## Maintainers
 - [Gopal Ramesh Dahale](https://github.com/Gopal-Dahale)
 - [Kumar Shivendu](https://github.com/KShivendu)
+- [Aayush Krishnan](https://github.com/krishnan05)
+- [Aditya Dubey](https://github.com/Aditya062003)
+
+## Hosted App
+[https://openlake-leaderboardpro.vercel.app](https://openlake-leaderboardpro.vercel.app)
