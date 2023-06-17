@@ -280,50 +280,36 @@ class LeetcodeLeaderboard(
         )
 
 
-def get_table_data(column):
+from django.db import connection
+from django.db.utils import OperationalError
+
+def get_table_data():
     try:
         with connection.cursor() as cursor:
-        
-            cursor.execute("SELECT usernames, {column_name} FROM ccpsleetcoderanking".format(column_name=column))
-            usernames = cursor.fetchall()
-            
-            return usernames
-    except OperationalError as e:
-        
-        print(f"Error: {e}")
+            cursor.execute("SELECT * FROM ccpsleetcoderanking")
+            columns = [col[0] for col in cursor.description]  # Get the column names
+            data = cursor.fetchall()
 
+            results = []
+        
+            for row in data:
+                result = {}
+                for i, value in enumerate(row):
+                    result[columns[i]] = value
+                results.append(result)
+
+            return results
+    except OperationalError as e:
+        print(f"Error: {e}")
 
 def LeetcodeCCPSAPIView(request):
     
     
-    contest = request.GET.get('contest')
-    input_string = contest
-    
-    numbers = re.findall(r'\d+', input_string)
+   
 
-    # if contest[0] =='W' or 'w':
-    if contest[0].lower() == 'w' :
-        formatted_string = f"weekly{numbers[0]}" if numbers else ""
-        
-    else:
-        formatted_string = f"biweekly{numbers[0]}" if numbers else ""
-
-
-    data = get_table_data(formatted_string)
+    data = get_table_data()
     
 
-    rankings = []
-    for username in data:
-        
-        if username[1] == 0:
-            ranking =None
-        else:
-            ranking = username[1]
-        rankings.append({
-            'username': username[0],
-            'ranking': ranking
-        })
-    sorted_rankings = sorted(rankings, key=lambda x: (x['ranking'] is None, x['ranking']))
-
-    
-    return JsonResponse(list(sorted_rankings), safe=False)
+   
+   
+    return JsonResponse(data, safe=False)
