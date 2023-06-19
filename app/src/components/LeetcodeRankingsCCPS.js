@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
@@ -9,7 +10,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Link,
+  // Link,
   Select,
   MenuItem,
 } from "@material-ui/core";
@@ -174,8 +175,8 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
                     <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
                       {rank.ranking !== 0 ? index + 1 : "N/A"}
                     </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
-                      {rank.username}
+                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center",cursor:"pointer" }}>
+                      <Link style={{ textDecoration: "none" }} to= {`/leetcoderanking/${rank.username}`}>{rank.username}</Link>
                     </StyledTableCell>
                     <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
                       {rank.ranking !== null ? rank.ranking : "N/A"}

@@ -20,6 +20,7 @@ import GoToTop from "./components/GoToTop";
 import Footer from "./components/Footer"
 import LeetcodeRankings from "./components/LeetcodeRankings";
 import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
+import LeetcodeGraphs from "./components/LeetcodeGraphs";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -226,6 +227,9 @@ function App() {
 
                   <PrivateRoute exact path="/leetcoderankings">
                     <LeetcodeRankings darkmode={darkmode} />
+                  </PrivateRoute>
+                  <PrivateRoute  path="/leetcoderanking/:username">
+                    <LeetcodeGraphs darkmode={darkmode} />
                   </PrivateRoute>
 
                   {/* <PrivateRoute exact path="/leetcoderankingsccps">
