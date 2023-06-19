@@ -11,10 +11,10 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Leaderboard type 4 : Codeforces ranking
 - Leaderboard Type 5 : Leetcode ranking
 - Leaderboard type 6 : Leetcode contest ranking
-- Students can also view the rankings of the latest LeetCode contests, as well as their institute ranks.
+- Students can also view the rankings of the latest LeetCode contests, their institute rank and visualise contest performance through graph.
 - Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
 - Our metrics will promote consistent work instead of bulk work at once.
-- Tech Stack : React, Django, PostgreSQL
+- Tech Stack : React, Django, PostgreSQL(SupaBase)
 
 ## Setup instrunctions
 - Install `pnpm`, `python3.7` and `Make` in your system
