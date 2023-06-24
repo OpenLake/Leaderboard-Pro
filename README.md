@@ -32,5 +32,8 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - [Aayush Krishnan](https://github.com/krishnan05)
 - [Aditya Dubey](https://github.com/Aditya062003)
 
+## Contributing Guidelines
+- Read [contributing guidelines](https://github.com/OpenLake/Leaderboard-Pro/blob/main/.github/CONTRIBUTING.md)
+
 ## Hosted App
 [https://openlake-leaderboardpro.vercel.app](https://openlake-leaderboardpro.vercel.app)
