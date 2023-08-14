@@ -16,7 +16,7 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Our metrics will promote consistent work instead of bulk work at once.
 - Tech Stack : React, Django, PostgreSQL(SupaBase)
 
-## Setup instrunctions
+## Setup instructions
 - Install `pnpm`, `python3.7` and `Make` in your system
 - Run the following commands in the same order:
     ```
