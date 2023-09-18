@@ -173,7 +173,6 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         # 'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'PASSWORD':'4xAma06Fi5kwv7YN',
         'HOST': 'db.rpdttenqphkdyvpuoeky.supabase.co',
         'PORT': '5432',
     }
