@@ -18,6 +18,7 @@ How do people become good at something ? By doing it regularly, right ? That's w
 
 ## 📝 Setup instructions
 - Install `pnpm`, `python3.7` and `Make` in your system
+- Replace database credentials in settings.py with yours database
 - Run the following commands in the same order:
     ```
     make install
