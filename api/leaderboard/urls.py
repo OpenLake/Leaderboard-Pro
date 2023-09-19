@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers, viewsets, routers, permissions
-from leaderboard import views
+from leaderboard import views, root, friends
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -54,26 +54,19 @@ router.register(r"groups", GroupViewSet)
 
 
 urlpatterns = [
-    path("", views.api_root),
+    path("", root.api_root),
     path('api/',include('leaderboard.api.urls')),
-    # path('contest-rankings/', views.LeetcodeCCPSAPIView, name='contest-rankings'),
     path(
         "codeforces/",
         views.CodeforcesLeaderboard.as_view(),
         name="codeforces-leaderboard",
     ),
-
     path('contest-rankings/',views.LeetcodeCCPSAPIView),
     path(
         "leetcode/",
         views.LeetcodeLeaderboard.as_view(),
         name="leetcode-leaderboard",
     ),
-    # path(
-    #     "appuser/",
-    #     views.AppUsers.as_view(),
-    #     name="app-user",
-    # ),
     path(
         "codeforces/<int:pk>",
         views.codeforcesUserAPI.as_view(),
@@ -89,6 +82,11 @@ urlpatterns = [
         "openlake/",
         views.GithubOrganisationAPI.as_view(),
         name="openlake-leaderboard",
+    ),
+    path(
+        "codeforcesFA/",
+        friends.codeforcesFriendAddition,
+        name="codeforcesFA",
     ),
     path("admin/", admin.site.urls),
 ]

@@ -177,6 +177,5 @@ class OL_Serializer(serializers.ModelSerializer):
         model = openlakeContributor
         fields = ["id", "username", "contributions"]
         
-
-
-
+class Name_Serializer(serializers.Serializer):
+    friendName = serializers.CharField(max_length=100)

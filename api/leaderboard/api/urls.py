@@ -17,7 +17,6 @@ urlpatterns=[
     path('ghfriends/',views.add_GithubFriends),
     path('ltfriends/',views.add_LeetcodeFriends),
     path('ccfriends/',views.add_CodechefFriends),
-    path('cffriends/',views.add_CodeforcesFriends),
     path('getcffriends/',views.get_CodeforcesFriends),
     path('dropcffriends/',views.drop_CodeforcesFriends),
     path('getccfriends/',views.get_CodechefFriends),
