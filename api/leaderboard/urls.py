@@ -113,6 +113,21 @@ urlpatterns = [
         friends.codechefFriendList,
         name="codechefFL",
     ),
+    path(
+        "leetcodeFA/",
+        friends.leetcodeFriendAddition,
+        name="leetcodeFA",
+    ),
+    path(
+        "leetcodeFD/",
+        friends.leetcodeFriendDeletion,
+        name="leetcodeFD",
+    ),
+    path(
+        "leetcodeFL/",
+        friends.leetcodeFriendList,
+        name="leetcodeFL",
+    ),
     path("admin/", admin.site.urls),
 ]
 

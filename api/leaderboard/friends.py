@@ -205,3 +205,99 @@ def codechefFriendList(request):
             'status': 400,
             'message': "Wrong"
         }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def leetcodeFriendAddition(request):
+    try:
+        user = request.user.username
+        serializer = Name_Serializer(data=request.data)
+        if (serializer.is_valid()):
+            friendEntry = leetcodeFriends.find_one({"_id" : user})
+            friendName = serializer.validated_data['friendName']
+            if (friendEntry is not None):
+                friendsList = friendEntry["Friends"]
+                if friendName not in friendsList:
+                    friendsList.append(friendName)
+                filter_criteria = {"_id": user} 
+                update_operation = {
+                    "$set": {
+                        "Friends": friendsList
+                    }
+                }
+                leetcodeFriends.update_one(filter_criteria, update_operation)
+            else:
+                friendsList = []
+                friendsList.append(friendName)
+                leetcodeFriends.insert_one({"_id" : user, "Friends" : friendsList})
+            return Response({
+                'status': 200,
+                'message': "Success",
+                }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({
+            'status': 400,
+            'message': "Wrong"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def leetcodeFriendDeletion(request):
+    try:
+        user = request.user.username
+        serializer = Name_Serializer(data=request.data)
+        if (serializer.is_valid()):
+            friendEntry = leetcodeFriends.find_one({"_id" : user})
+            friendName = serializer.validated_data['friendName']
+            if (friendEntry is not None):
+                friendsList = friendEntry["Friends"]
+                if friendName in friendsList:
+                    friendsList.remove(friendName)
+                filter_criteria = {"_id": user} 
+                update_operation = {
+                    "$set": {
+                        "Friends": friendsList
+                    }
+                }
+                leetcodeFriends.update_one(filter_criteria, update_operation)
+            else:
+                return Response({
+                    'status': 400,
+                    'message': "Wrong"
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'status': 200,
+                'message': "Success",
+                }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({
+            'status': 400,
+            'message': "Wrong"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def leetcodeFriendList(request):
+    try:
+        user = request.user.username
+        friendEntry = leetcodeFriends.find_one({"_id" : user})
+        friendList = []
+        for i in friendEntry["Friends"]:
+            friendList.append({"friendName" : i})
+        serialier = Name_Serializer(friendList, many=True)
+        return Response(serialier.data)
+    except Exception as e:
+        return Response({
+            'status': 400,
+            'message': "Wrong"
+        }, status=status.HTTP_400_BAD_REQUEST)

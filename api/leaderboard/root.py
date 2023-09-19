@@ -39,6 +39,15 @@ def api_root(request, format=None):
             "codechef-friend-list" : reverse(
                 "codechefFL", request=request, format=format
             ),
+            "leetcode-friend-addition" : reverse(
+                "leetcodeFA", request=request, format=format
+            ),
+            "leetcode-friend-deletion" : reverse(
+                "leetcodeFD", request=request, format=format
+            ),
+            "leetcode-friend-list" : reverse(
+                "leetcodeFL", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),
