@@ -30,6 +30,15 @@ def api_root(request, format=None):
             "codeforces-friend-list" : reverse(
                 "codeforcesFL", request=request, format=format
             ),
+            "codechef-friend-addition" : reverse(
+                "codechefFA", request=request, format=format
+            ),
+            "codechef-friend-deletion" : reverse(
+                "codechefFD", request=request, format=format
+            ),
+            "codechef-friend-list" : reverse(
+                "codechefFL", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),

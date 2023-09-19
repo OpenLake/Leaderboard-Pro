@@ -293,68 +293,6 @@ def drop_LeetcodeFriends(request):
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
-def add_CodechefFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            ccFriend_uname=request.data['ccFriend_uname']
-            obj=CodechefFriends(user=user,ccFriend_uname=ccFriend_uname)
-            obj.save()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(["GET"])
-@permission_classes([permissions.IsAuthenticated])
-def get_CodechefFriends(request):
-    if request.method=="GET":
-        try:
-            
-            queryset = CodechefFriends.objects.filter(user=request.user).values()
-            fil=[]
-            for i in queryset:
-                fil.append(i['ccFriend_uname'])
-            
-            qs=codechefUser.objects.filter(username__in=fil)
-            serializer = CC_Serializer(qs,many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
-def drop_CodechefFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            ccFriend_uname=request.data['ccFriend_uname']
-            obj=CodechefFriends.objects.filter(user=user,ccFriend_uname=ccFriend_uname)
-            obj.delete()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
 def add_OpenlakeFriends(request):
     if request.method=="POST":
         try:
