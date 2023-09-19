@@ -48,6 +48,15 @@ def api_root(request, format=None):
             "leetcode-friend-list" : reverse(
                 "leetcodeFL", request=request, format=format
             ),
+            "github-friend-addition" : reverse(
+                "githubFA", request=request, format=format
+            ),
+            "github-friend-deletion" : reverse(
+                "githubFD", request=request, format=format
+            ),
+            "github-friend-list" : reverse(
+                "githubFL", request=request, format=format
+            ),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),
             "groups": reverse("group-list", request=request, format=format),

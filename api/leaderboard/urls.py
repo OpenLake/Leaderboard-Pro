@@ -128,6 +128,21 @@ urlpatterns = [
         friends.leetcodeFriendList,
         name="leetcodeFL",
     ),
+    path(
+        "githubFA/",
+        friends.githubFriendAddition,
+        name="githubFA",
+    ),
+    path(
+        "githubFD/",
+        friends.githubFriendDeletion,
+        name="githubFD",
+    ),
+    path(
+        "githubFL/",
+        friends.githubFriendList,
+        name="githubFL",
+    ),
     path("admin/", admin.site.urls),
 ]
 

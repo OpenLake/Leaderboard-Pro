@@ -168,68 +168,6 @@ def registerUser(request):
             'message':"Wrong"
         },status=status.HTTP_400_BAD_REQUEST)
 
-""" Insert  Into friend Lists """
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
-def add_GithubFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            ghFriend_uname=request.data['ghFriend_uname']
-            obj=GithubFriends(user=user,ghFriend_uname=ghFriend_uname)
-            obj.save()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(["GET"])
-@permission_classes([permissions.IsAuthenticated])
-def get_GithubFriends(request):
-    if request.method=="GET":
-        try:
-            queryset = GithubFriends.objects.filter(user=request.user).values()
-            fil=[]
-            for i in queryset:
-                fil.append(i['ghFriend_uname'])
-            qs=githubUser.objects.filter(username__in=fil)
-            serializer = GH_Serializer(qs,many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
-def drop_GithubFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            ghFriend_uname=request.data['ghFriend_uname']
-            obj=GithubFriends.objects.filter(user=user,ghFriend_uname=ghFriend_uname)
-            obj.delete()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def add_OpenlakeFriends(request):
