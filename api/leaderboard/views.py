@@ -46,32 +46,6 @@ MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 from django.db import connection
 from django.db.utils import OperationalError
 
-
-
-@api_view(["GET"])
-@permission_classes((AllowAny,))
-def api_root(request, format=None):
-    return Response(
-        {
-            "codeforces": reverse(
-                "codeforces-leaderboard", request=request, format=format
-            ),
-            "codechef": reverse(
-                "codechef-leaderboard", request=request, format=format
-            ),
-            "github": reverse(
-                "github-leaderboard", request=request, format=format
-            ),
-            "openlake": reverse(
-                "openlake-leaderboard", request=request, format=format
-            ),
-            # urls from from router:
-            "users": reverse("user-list", request=request, format=format),
-            "groups": reverse("group-list", request=request, format=format),
-        }
-    )
-
-
 class GithubUserAPI(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
