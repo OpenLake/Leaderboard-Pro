@@ -167,66 +167,6 @@ def registerUser(request):
             'status':400,
             'message':"Wrong"
         },status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
-def add_OpenlakeFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            olFriend_uname=request.data['olFriend_uname']
-            obj=OpenlakeFriends(user=user,olFriend_uname=olFriend_uname)
-            obj.save()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(["GET"])
-@permission_classes([permissions.IsAuthenticated])
-def get_OpenlakeFriends(request):
-    if request.method=="GET":
-        try:
-            queryset = OpenlakeFriends.objects.filter(user=request.user).values()
-            fil=[]
-            for i in queryset:
-                fil.append(i['olFriend_uname'])
-            qs=openlakeContributor.objects.filter(username__in=fil)
-            serializer = OL_Serializer(qs,many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
-def drop_OpenlakeFriends(request):
-    if request.method=="POST":
-        try:
-            user=request.user
-            olFriend_uname=request.data['olFriend_uname']
-            obj=OpenlakeFriends.objects.filter(user=user,olFriend_uname=olFriend_uname)
-            obj.delete()
-            return Response({
-                        'status':200,
-                        'message':"Success",
-                    },status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({
-                'status':400,
-                'message':"Wrong"
-            },status=status.HTTP_400_BAD_REQUEST)
         
 
 

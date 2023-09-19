@@ -14,9 +14,6 @@ urlpatterns=[
     path('insertapi/',views.post_UserNames),
     path('tripathi/',views.current_user),
     path('register/',views.registerUser),
-    path('olfriends/',views.add_OpenlakeFriends),
-    path('getolfriends/',views.get_OpenlakeFriends),
-    path('dropolfriends/',views.drop_OpenlakeFriends),
     path('leetcodecontestrankings/',views.ContestRankingsAPIView),
     
 ]
