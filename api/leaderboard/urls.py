@@ -143,6 +143,21 @@ urlpatterns = [
         friends.githubFriendList,
         name="githubFL",
     ),
+    path(
+        "openlakeFA/",
+        friends.openlakeFriendAddition,
+        name="openlakeFA",
+    ),
+    path(
+        "openlakeFD/",
+        friends.openlakeFriendDeletion,
+        name="openlakeFD",
+    ),
+    path(
+        "openlakeFL/",
+        friends.openlakeFriendList,
+        name="openlakeFL",
+    ),
     path("admin/", admin.site.urls),
 ]
 
