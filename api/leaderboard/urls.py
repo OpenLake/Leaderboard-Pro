@@ -88,6 +88,16 @@ urlpatterns = [
         friends.codeforcesFriendAddition,
         name="codeforcesFA",
     ),
+    path(
+        "codeforcesFD/",
+        friends.codeforcesFriendDeletion,
+        name="codeforcesFD",
+    ),
+    path(
+        "codeforcesFL/",
+        friends.codeforcesFriendList,
+        name="codeforcesFL",
+    ),
     path("admin/", admin.site.urls),
 ]
 
