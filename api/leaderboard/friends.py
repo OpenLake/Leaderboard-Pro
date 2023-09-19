@@ -285,7 +285,7 @@ def leetcodeFriendDeletion(request):
             'message': "Wrong"
         }, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET", "PUT"])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def leetcodeFriendList(request):
     try:
@@ -381,7 +381,7 @@ def githubFriendDeletion(request):
             'message': "Wrong"
         }, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET", "PUT"])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def githubFriendList(request):
     try:
@@ -477,7 +477,7 @@ def openlakeFriendDeletion(request):
             'message': "Wrong"
         }, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET", "PUT"])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def openlakeFriendList(request):
     try:
