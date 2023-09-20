@@ -14,6 +14,9 @@ leetcodeFriends = myDB["Leetcode"]
 githubFriends = myDB["Github"]
 openlakeFriends = myDB['Openlake']
 
+import logging
+logger = logging.getLogger(__name__)
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def codeforcesFriendAddition(request):
@@ -97,6 +100,7 @@ def codeforcesFriendDeletion(request):
 @permission_classes([IsAuthenticated])
 def codeforcesFriendList(request):
     try:
+        
         user = request.user.username
         friendEntry = codeforcesFriends.find_one({"_id" : user})
         friendList = []
@@ -114,8 +118,10 @@ def codeforcesFriendList(request):
 @permission_classes([IsAuthenticated])
 def codechefFriendAddition(request):
     try:
+        
         user = request.user.username
         serializer = Name_Serializer(data=request.data)
+        
         if (serializer.is_valid()):
             friendEntry = codechefFriends.find_one({"_id" : user})
             friendName = serializer.validated_data['friendName']

@@ -39,7 +39,7 @@ export const CodechefTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getccfriends = async () => {
-    const response = await fetch("http://localhost:8000/api/getccfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/codechefFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export const CodechefTable = ({
 
   async function addfriend(e) {
     
-    const response = await fetch("http://localhost:8000/api/ccfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/codechefFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const CodechefTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ccFriend_uname: e.username,
+        friendName: e.username,
       }),
     });
     if (response.status !== 200) {
@@ -77,7 +77,7 @@ export const CodechefTable = ({
   }
   async function dropfriend(e) {
     
-    const response = await fetch("http://localhost:8000/api/dropccfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/codechefFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export const CodechefTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ccFriend_uname: e,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
