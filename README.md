@@ -14,7 +14,7 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Students can also view the rankings of the latest LeetCode contests, their institute rank and visualise contest performance through graph.
 - Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
 - Our metrics will promote consistent work instead of bulk work at once.
-- Tech Stack : React, Django, PostgreSQL(SupaBase)
+- Tech Stack : React, Django, PostgreSQL, MongoDB (for Friend's Table)
 
 ## 📝 Setup instructions
 - Install `pnpm`, `python3.7` and `Make` in your system
