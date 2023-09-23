@@ -124,24 +124,45 @@ def github_user_update(self):
 def leetcode_user_update(self):
     from leaderboard.models import LeetcodeUser
     from bs4 import BeautifulSoup
+    from leaderboard.serializers import LT_Update_Serializer
 
     lt_users = LeetcodeUser.objects.all()
-    
+    updates = []  
     for i, lt_user in enumerate(lt_users):
       
-        if lt_user.is_outdated:
-            url = "https://leetcode.com/{}".format(lt_user.username)
-            page = requests.get(url)
-            data_cc = BeautifulSoup(page.text, "html.parser")
+        url = "https://leetcode.com/{}".format(lt_user.username)
+        page = requests.get(url)
+        data_cc = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+
+        try:
             ttg = data_cc.findAll("img", class_="h-20 w-20 rounded-lg object-cover")
             lt_ranking = data_cc.find("span", class_="ttext-label-1 dark:text-dark-label-1 font-medium")
-            lt_questions=data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
-            lt_user.ranking = int(listToString(lt_ranking.text.split(',')))
-            lt_user.easy_solved=int(listToString(lt_questions[0].text.split(',')))
-            lt_user.medium_solved=int(listToString(lt_questions[1].text.split(',')))
-            lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
-            lt_user.avatar=ttg[-1]['src']
-            lt_user.save()
+            lt_questions = data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
+            instance["ranking"] = int(listToString(lt_ranking.text.split(',')))
+            instance["easy_solved"] = int(listToString(lt_questions[0].text.split(',')))
+            instance["medium_solved"] = int(listToString(lt_questions[1].text.split(',')))
+            instance["hard_solved"] = int(listToString(lt_questions[2].text.split(',')))
+            instance["avatar"] = ttg[-1]['src']
+            instance["username"] = lt_user.username
+            updates.append(instance)
+        
+        except:
+            instance = {
+                "username" : lt_user.username,
+                "ranking" : lt_user.users,
+                "easy_solved" : lt_user.avatar,
+                "medium_solved" : lt_user.repositories,
+                "hard_solved" : lt_user.contributions,
+                "avatar" : lt_user.avatar,
+            }
+            updates.append(instance)
+    
+    serializer = LT_Update_Serializer(lt_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
 
 @app.task(bind=True)
 def openlake_contributor__update(self):
