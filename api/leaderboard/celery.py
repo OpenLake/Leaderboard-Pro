@@ -21,35 +21,55 @@ def listToString(s):
 def codechef_user_update(self):
     from leaderboard.models import codechefUser
     from bs4 import BeautifulSoup
+    from leaderboard.serializers import CC_Update_Serializer
 
     cc_users = codechefUser.objects.all()
+    updates = []
     for i, cc_user in enumerate(cc_users):
-        if cc_user.is_outdated:
-            url = "https://www.codechef.com/users/{}".format(cc_user.username)
-            page = requests.get(url)
+        url = "https://www.codechef.com/users/{}".format(cc_user.username)
+        page = requests.get(url)
+        
+        data_cc = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+        try:
+            instance["rating"] = int(data_cc.find("div", class_="rating-number").text)
+            container_highest_rating = data_cc.find(
+                "div", class_="rating-header"
+            )
+            ttg = data_cc.findAll("img", class_="profileImage")
+            instance["avatar"]=ttg[-1]['src']
+            instance["max_rating"] = (
+                container_highest_rating.find_next("small")
+                .text.split()[-1]
+                .rstrip(")")
+            )
+            container_ranks = data_cc.find("div", class_="rating-ranks")
+            ranks = container_ranks.find_all("a")
+            instance["Global_rank"] = ranks[0].strong.text
+            instance["Country_rank"] = ranks[1].strong.text
+            instance["username"] = cc_user.username
+            updates.append(instance)
             
-            data_cc = BeautifulSoup(page.text, "html.parser")
-            
-            try:
-                cc_user.rating = data_cc.find("div", class_="rating-number").text
-                container_highest_rating = data_cc.find(
-                    "div", class_="rating-header"
-                )
-                ttg = data_cc.findAll("img", class_="profileImage")
-                cc_user.avatar=ttg[-1]['src']
-                cc_user.max_rating = (
-                    container_highest_rating.find_next("small")
-                    .text.split()[-1]
-                    .rstrip(")")
-                )
-                container_ranks = data_cc.find("div", class_="rating-ranks")
-                ranks = container_ranks.find_all("a")
-                cc_user.Global_rank = ranks[0].strong.text
-                cc_user.Country_rank = ranks[1].strong.text
-                cc_user.save()
-               
-            except:
-                pass
+        except:
+            value = cc_user.avatar
+            if (len(value) == 0):
+                value = "https://cdn.codechef.com/sites/all/themes/abessive/images/user_default_thumb.jpg"
+            instance = {
+                "username" : cc_user.username,
+                "rating" : cc_user.rating,
+                "avatar" : value,
+                "max_rating" : cc_user.max_rating,
+                "Global_rank" : cc_user.Global_rank,
+                "Country_rank" : cc_user.Country_rank,
+            }
+            updates.append(instance)
+
+    serializer = CC_Update_Serializer(cc_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
+
 
 
 @app.task(bind=True)
