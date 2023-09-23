@@ -26,11 +26,12 @@ def codechef_user_update(self):
     cc_users = codechefUser.objects.all()
     updates = []
     for i, cc_user in enumerate(cc_users):
+
         url = "https://www.codechef.com/users/{}".format(cc_user.username)
-        page = requests.get(url)
-        
+        page = requests.get(url)        
         data_cc = BeautifulSoup(page.text, "html.parser")
         instance = {}
+
         try:
             instance["rating"] = int(data_cc.find("div", class_="rating-number").text)
             container_highest_rating = data_cc.find(
@@ -74,29 +75,50 @@ def codechef_user_update(self):
 
 @app.task(bind=True)
 def github_user_update(self):
+    from leaderboard.serializers import GH_Update_Serializer
     from leaderboard.models import githubUser
     from bs4 import BeautifulSoup
 
     gh_users = githubUser.objects.all()
+    updates = []
     for i, gh_user in enumerate(gh_users):
-        if gh_user.is_outdated:
-            url = "https://github.com/{}".format(gh_user.username)
-            page = requests.get(url)
-            data_gh = BeautifulSoup(page.text, "html.parser")
+
+        url = "https://github.com/{}".format(gh_user.username)
+        page = requests.get(url)
+        data_gh = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+
+        try:
             a = data_gh.find("div", class_="js-yearly-contributions")
             b = a.find("h2", class_="f4 text-normal mb-2").text
-            gh_user.contributions = int(b.split(" ")[6])
+            instance["contributions"] = int(b.split(" ")[6])
             url = f"https://api.github.com/users/{gh_user.username}/repos"
             response = requests.get(url).json()
-            gh_user.repositories = len(response)
+            instance["repositories"] = len(response)
             ttg = data_gh.findAll("img", class_="avatar avatar-user width-full border color-bg-default")
-            gh_user.avatar=ttg[-1]['src']
-            stars = 0
-           
+            instance["avatar"]=ttg[-1]['src']
+            stars = 0            
             for i in range(len(response)):
                 stars = stars + response[i]["stargazers_count"]
-            gh_user.stars = stars
-            gh_user.save()
+            instance["stars"] = stars
+            instance["username"] = gh_user.username
+            updates.append(instance)
+        
+        except:
+            instance = {
+                "username" : gh_user.username,
+                "stars" : gh_user.users,
+                "avatar" : gh_user.avatar,
+                "repositories" : gh_user.repositories,
+                "contributions" : gh_user.contributions,
+            }
+            updates.append(instance)
+    
+    serializer = GH_Update_Serializer(gh_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
 
 @app.task(bind=True)
 def leetcode_user_update(self):
@@ -120,6 +142,7 @@ def leetcode_user_update(self):
             lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
             lt_user.avatar=ttg[-1]['src']
             lt_user.save()
+
 @app.task(bind=True)
 def openlake_contributor__update(self):
     from leaderboard.models import openlakeContributor
