@@ -21,85 +21,154 @@ def listToString(s):
 def codechef_user_update(self):
     from leaderboard.models import codechefUser
     from bs4 import BeautifulSoup
+    from leaderboard.serializers import CC_Update_Serializer
 
     cc_users = codechefUser.objects.all()
+    updates = []
     for i, cc_user in enumerate(cc_users):
-        if cc_user.is_outdated:
-            url = "https://www.codechef.com/users/{}".format(cc_user.username)
-            page = requests.get(url)
+
+        url = "https://www.codechef.com/users/{}".format(cc_user.username)
+        page = requests.get(url)        
+        data_cc = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+
+        try:
+            instance["rating"] = int(data_cc.find("div", class_="rating-number").text)
+            container_highest_rating = data_cc.find(
+                "div", class_="rating-header"
+            )
+            ttg = data_cc.findAll("img", class_="profileImage")
+            instance["avatar"]=ttg[-1]['src']
+            instance["max_rating"] = (
+                container_highest_rating.find_next("small")
+                .text.split()[-1]
+                .rstrip(")")
+            )
+            container_ranks = data_cc.find("div", class_="rating-ranks")
+            ranks = container_ranks.find_all("a")
+            instance["Global_rank"] = ranks[0].strong.text
+            instance["Country_rank"] = ranks[1].strong.text
+            instance["username"] = cc_user.username
+            updates.append(instance)
             
-            data_cc = BeautifulSoup(page.text, "html.parser")
-            
-            try:
-                cc_user.rating = data_cc.find("div", class_="rating-number").text
-                container_highest_rating = data_cc.find(
-                    "div", class_="rating-header"
-                )
-                ttg = data_cc.findAll("img", class_="profileImage")
-                cc_user.avatar=ttg[-1]['src']
-                cc_user.max_rating = (
-                    container_highest_rating.find_next("small")
-                    .text.split()[-1]
-                    .rstrip(")")
-                )
-                container_ranks = data_cc.find("div", class_="rating-ranks")
-                ranks = container_ranks.find_all("a")
-                cc_user.Global_rank = ranks[0].strong.text
-                cc_user.Country_rank = ranks[1].strong.text
-                cc_user.save()
-               
-            except:
-                pass
+        except:
+            value = cc_user.avatar
+            if (len(value) == 0):
+                value = "https://cdn.codechef.com/sites/all/themes/abessive/images/user_default_thumb.jpg"
+            instance = {
+                "username" : cc_user.username,
+                "rating" : cc_user.rating,
+                "avatar" : value,
+                "max_rating" : cc_user.max_rating,
+                "Global_rank" : cc_user.Global_rank,
+                "Country_rank" : cc_user.Country_rank,
+            }
+            updates.append(instance)
+
+    serializer = CC_Update_Serializer(cc_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
+
 
 
 @app.task(bind=True)
 def github_user_update(self):
+    from leaderboard.serializers import GH_Update_Serializer
     from leaderboard.models import githubUser
     from bs4 import BeautifulSoup
 
     gh_users = githubUser.objects.all()
+    updates = []
     for i, gh_user in enumerate(gh_users):
-        if gh_user.is_outdated:
-            url = "https://github.com/{}".format(gh_user.username)
-            page = requests.get(url)
-            data_gh = BeautifulSoup(page.text, "html.parser")
+
+        url = "https://github.com/{}".format(gh_user.username)
+        page = requests.get(url)
+        data_gh = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+
+        try:
             a = data_gh.find("div", class_="js-yearly-contributions")
             b = a.find("h2", class_="f4 text-normal mb-2").text
-            gh_user.contributions = int(b.split(" ")[6])
+            instance["contributions"] = int(b.split(" ")[6])
             url = f"https://api.github.com/users/{gh_user.username}/repos"
             response = requests.get(url).json()
-            gh_user.repositories = len(response)
+            instance["repositories"] = len(response)
             ttg = data_gh.findAll("img", class_="avatar avatar-user width-full border color-bg-default")
-            gh_user.avatar=ttg[-1]['src']
-            stars = 0
-           
+            instance["avatar"]=ttg[-1]['src']
+            stars = 0            
             for i in range(len(response)):
                 stars = stars + response[i]["stargazers_count"]
-            gh_user.stars = stars
-            gh_user.save()
+            instance["stars"] = stars
+            instance["username"] = gh_user.username
+            updates.append(instance)
+        
+        except Exception as e:
+            value = gh_user.avatar
+            if (len(value) == 0):
+                value = "https://avatars.githubusercontent.com/u/109169835?v=4"
+            instance = {
+                "username" : gh_user.username,
+                "stars" : gh_user.stars,
+                "avatar" : value,
+                "repositories" : gh_user.repositories,
+                "contributions" : gh_user.contributions,
+            }
+            updates.append(instance)
+    serializer = GH_Update_Serializer(gh_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
 
 @app.task(bind=True)
 def leetcode_user_update(self):
     from leaderboard.models import LeetcodeUser
     from bs4 import BeautifulSoup
+    from leaderboard.serializers import LT_Update_Serializer
 
     lt_users = LeetcodeUser.objects.all()
-    
+    updates = []  
     for i, lt_user in enumerate(lt_users):
       
-        if lt_user.is_outdated:
-            url = "https://leetcode.com/{}".format(lt_user.username)
-            page = requests.get(url)
-            data_cc = BeautifulSoup(page.text, "html.parser")
+        url = "https://leetcode.com/{}".format(lt_user.username)
+        page = requests.get(url)
+        data_cc = BeautifulSoup(page.text, "html.parser")
+        instance = {}
+
+        try:
             ttg = data_cc.findAll("img", class_="h-20 w-20 rounded-lg object-cover")
             lt_ranking = data_cc.find("span", class_="ttext-label-1 dark:text-dark-label-1 font-medium")
-            lt_questions=data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
-            lt_user.ranking = int(listToString(lt_ranking.text.split(',')))
-            lt_user.easy_solved=int(listToString(lt_questions[0].text.split(',')))
-            lt_user.medium_solved=int(listToString(lt_questions[1].text.split(',')))
-            lt_user.hard_solved=int(listToString(lt_questions[2].text.split(',')))
-            lt_user.avatar=ttg[-1]['src']
-            lt_user.save()
+            lt_questions = data_cc.findAll("span", class_="mr-[5px] text-base font-medium leading-[20px] text-label-1 dark:text-dark-label-1")
+            instance["ranking"] = int(listToString(lt_ranking.text.split(',')))
+            instance["easy_solved"] = int(listToString(lt_questions[0].text.split(',')))
+            instance["medium_solved"] = int(listToString(lt_questions[1].text.split(',')))
+            instance["hard_solved"] = int(listToString(lt_questions[2].text.split(',')))
+            instance["avatar"] = ttg[-1]['src']
+            instance["username"] = lt_user.username
+            updates.append(instance)
+        
+        except Exception as e:
+            value = lt_user.avatar
+            if (len(value) == 0):
+                value = "https://s3-us-west-1.amazonaws.com/s3-lc-upload/assets/default_avatar.jpg"
+            instance = {
+                "username" : lt_user.username,
+                "ranking" : lt_user.ranking,
+                "easy_solved" : lt_user.easy_solved,
+                "medium_solved" : lt_user.medium_solved,
+                "hard_solved" : lt_user.hard_solved,
+                "avatar" : value,
+            }
+            updates.append(instance)
+    
+    serializer = LT_Update_Serializer(lt_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
+
 @app.task(bind=True)
 def openlake_contributor__update(self):
     from leaderboard.models import openlakeContributor

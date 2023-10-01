@@ -8,6 +8,15 @@ from leaderboard.models import (
     LeetcodeUser
 )
 
+class UpdateListSerializer(serializers.ListSerializer):
+  
+    def update(self, instances, validated_data):      
+        instance_hash = {index: instance for index, instance in enumerate(instances)}
+        result = [
+            self.child.update(instance_hash[index], attrs)
+            for index, attrs in enumerate(validated_data)
+        ]
+        return result
 
 class Cf_Serializer(serializers.ModelSerializer):
     """
@@ -67,91 +76,51 @@ class Cf_User_Serializer(Cf_Serializer):
 
 
 class CC_Serializer(serializers.ModelSerializer):
-    """
-    TODO
-    """
-
-    def create(self, validated_data):
-        return codechefUser.objects.create(**validated_data)
-
-    # def update(self, instance, validated_data):
-    #     """
-    #     Update and return an existing `codechefUser`
-    #     instance, given the validated data.
-    #     """
-    #     instance.rating = validated_data.get("rating", instance.rating)
-    #     instance.max_rating = validated_data.get("maxRating",
-    #     instance.max_rating)
-    #     instance.Global_rank = validated_data.get("globalrank",
-    #     instance.Global_rank)
-    #     instance.Country_rank = validated_data.get("countryrank",
-    #     instance.Country_rank)
-    #     instance.save()
-    #     return instance
 
     class Meta:
         model = codechefUser
-        fields = [
-            "id",
-            "username",
-            "rating",
-            "max_rating",
-            "Global_rank",
-            "Country_rank",
-            "avatar",
-        ]
+        fields = '__all__'
+
+
+class CC_Update_Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = codechefUser
+        fields = '__all__'
+        read_only_fields = ("username",)
+        list_serializer_class = UpdateListSerializer
+
+
 class LT_Serializer(serializers.ModelSerializer):
-    """
-    TODO
-    """
-
-    def create(self, validated_data):
-        return LeetcodeUser.objects.create(**validated_data)
-
-    # def update(self, instance, validated_data):
-    #     """
-    #     Update and return an existing `codechefUser`
-    #     instance, given the validated data.
-    #     """
-    #     instance.rating = validated_data.get("rating", instance.rating)
-    #     instance.max_rating = validated_data.get("maxRating",
-    #     instance.max_rating)
-    #     instance.Global_rank = validated_data.get("globalrank",
-    #     instance.Global_rank)
-    #     instance.Country_rank = validated_data.get("countryrank",
-    #     instance.Country_rank)
-    #     instance.save()
-    #     return instance
 
     class Meta:
         model = LeetcodeUser
-        fields='__all__'
+        fields = '__all__'
+
+
+class LT_Update_Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeetcodeUser
+        fields = '__all__'
+        read_only_fields = ("username",)
+        list_serializer_class = UpdateListSerializer
 
 
 class GH_Serializer(serializers.ModelSerializer):
-    """
-    TODO
-    """
-
-    def create(self, validated_data):
-        return githubUser.objects.create(**validated_data)
-
-    # def update(self, instance, validated_data):
-    #     """
-    #     Update and return an existing `GithubUser`
-    #     instance, given the validated data.
-    #     """
-    #     instance.contributions = validated_data.get("contributions",
-    #     instance.contributions)
-    #     instance.repositories = validated_data.get("repositories",
-    #     instance.repositories)
-    #     instance.stars = validated_data.get("stars", instance.stars)
-    #     instance.save()
-    #     return instance
 
     class Meta:
         model = githubUser
-        fields = ["id", "username", "contributions", "repositories", "stars","avatar",]
+        fields = '__all__'
+
+
+class GH_Update_Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = githubUser
+        fields = '__all__'
+        read_only_fields = ("username",)
+        list_serializer_class = UpdateListSerializer
 
 
 class OL_Serializer(serializers.ModelSerializer):
