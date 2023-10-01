@@ -104,16 +104,18 @@ def github_user_update(self):
             instance["username"] = gh_user.username
             updates.append(instance)
         
-        except:
+        except Exception as e:
+            value = gh_user.avatar
+            if (len(value) == 0):
+                value = "https://avatars.githubusercontent.com/u/109169835?v=4"
             instance = {
                 "username" : gh_user.username,
-                "stars" : gh_user.users,
-                "avatar" : gh_user.avatar,
+                "stars" : gh_user.stars,
+                "avatar" : value,
                 "repositories" : gh_user.repositories,
                 "contributions" : gh_user.contributions,
             }
             updates.append(instance)
-    
     serializer = GH_Update_Serializer(gh_users, data=updates, many=True)
     if serializer.is_valid():
         serializer.save()
@@ -147,14 +149,17 @@ def leetcode_user_update(self):
             instance["username"] = lt_user.username
             updates.append(instance)
         
-        except:
+        except Exception as e:
+            value = lt_user.avatar
+            if (len(value) == 0):
+                value = "https://s3-us-west-1.amazonaws.com/s3-lc-upload/assets/default_avatar.jpg"
             instance = {
                 "username" : lt_user.username,
-                "ranking" : lt_user.users,
-                "easy_solved" : lt_user.avatar,
-                "medium_solved" : lt_user.repositories,
-                "hard_solved" : lt_user.contributions,
-                "avatar" : lt_user.avatar,
+                "ranking" : lt_user.ranking,
+                "easy_solved" : lt_user.easy_solved,
+                "medium_solved" : lt_user.medium_solved,
+                "hard_solved" : lt_user.hard_solved,
+                "avatar" : value,
             }
             updates.append(instance)
     

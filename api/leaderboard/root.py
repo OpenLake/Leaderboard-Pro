@@ -21,6 +21,9 @@ def api_root(request, format=None):
             "openlake": reverse(
                 "openlake-leaderboard", request=request, format=format
             ),
+            "leetcode": reverse(
+                "leetcode-leaderboard", request=request, format=format
+            ),
             "codeforces-friend-addition" : reverse(
                 "codeforcesFA", request=request, format=format
             ),
