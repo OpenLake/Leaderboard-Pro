@@ -39,10 +39,11 @@ export default function SignUp({ registerUser }) {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: '5rem',
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
