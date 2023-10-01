@@ -84,7 +84,7 @@ export const Navbar = ({ darkmode, toggle }) => {
       >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button style={{ color: "white" }} onClick={tohome}>
+            <Button style={{ color: "white", fontSize:'1.3rem', fontWeight:'900' }} onClick={tohome}>
               Leaderboard Pro
             </Button>
           </Typography>
@@ -143,7 +143,7 @@ export const Navbar = ({ darkmode, toggle }) => {
           <div className={classes.platformButtons} style={{display:"flex",justifyContent:"center"}}>
             {/* Logos (hidden in mobile view) */}
             <div className={classes.desktopLogos}>
-              <Link style={{ margin: "10px" }} to="/codechef">
+              <Link style={{ margin: "12px" }} to="/codechef">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img
                     src={CodechefLogo}
@@ -154,7 +154,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
 
-              <Link to="/github" style={{ margin: "10px" }}>
+              <Link to="/github" style={{ margin: "12px" }}>
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <GitHubIcon
                     style={{
@@ -164,7 +164,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
 
-              <Link style={{ margin: "10px" }} to="/codeforces">
+              <Link style={{ margin: "12px" }} to="/codeforces">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img
                     src={CodeforcesLogo}
@@ -174,7 +174,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                   />
                 </IconButton>
               </Link>
-              <Link style={{ margin: "10px" }} to="/leetcode">
+              <Link style={{ margin: "12px" }} to="/leetcode">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img
                     src={LeetcodeLogo}
@@ -185,7 +185,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                   />
                 </IconButton>
               </Link>
-              <Link style={{ margin: "10px" }} to="/openlake">
+              <Link style={{ margin: "12px" }} to="/openlake">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img
                     src={OpenlakeLogo}
@@ -196,7 +196,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
 
-              <Link style={{ margin: "10px" }} to="leetcoderankings">
+              <Link style={{ margin: "12px" }} to="leetcoderankings">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img
                     src={LeetcodeRankingsLogo}
@@ -206,7 +206,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                   />
                 </IconButton>
               </Link>
-              <Link style={{ margin: "10px" }} to="/leetcoderankingsccps">
+              <Link style={{ margin: "12px" }} to="/leetcoderankingsccps">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <img src={CCPS} width={25} height={25} alt="" />
                 </IconButton>
@@ -226,21 +226,21 @@ export const Navbar = ({ darkmode, toggle }) => {
           </FormGroup>
           <Button
             color="inherit"
-            style={{ display: user ? "block" : "none", margin: "10px" }}
+            style={{ display: user ? "block" : "none", margin: "12px" }}
             onClick={manageClick}
           >
             Profile
           </Button>
           <Button
             color="inherit"
-            style={{ display: user ? "none" : "block", margin: "10px" }}
+            style={{ display: user ? "none" : "block", margin: "12px" }}
             onClick={toLogin}
           >
             Login
           </Button>
           <Button
             color="inherit"
-            style={{ display: user ? "block" : "none", margin: "10px" }}
+            style={{ display: user ? "block" : "none", margin: "12px" }}
             onClick={logoutUser}
           >
             Logout
