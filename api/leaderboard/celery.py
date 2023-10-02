@@ -2,6 +2,7 @@ import os
 from celery import Celery
 import requests
 import logging
+from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -16,6 +17,7 @@ def listToString(s):
     for ele in s:
         str1 += ele
     return str1
+TIMESTAMP_NOW = datetime.now()
 
 @app.task(bind=True)
 def codechef_user_update(self):
@@ -71,7 +73,39 @@ def codechef_user_update(self):
     else:
         print(serializer.errors)
 
+@app.task(bind=True)
+def codeforces_user_update(self):
+    from leaderboard.models import codeforcesUser
+    from leaderboard.serializers import CF_Update_Serializer
 
+    cf_users = codeforcesUser.objects.all()
+    updates = []
+
+    try:
+        cf_usernames = []
+        for i in range(len(cf_users)):
+            cf_usernames.append(cf_users[i].username)
+        url = f"https://codeforces.com/api/user.info?handles=\{';'.join(cf_usernames)}"
+        response = requests.get(url).json()["result"]
+        for i in range(len(response)):
+            user_data = response[i]
+            instance = {}
+            instance["username"] = cf_usernames[i]
+            instance["maxRating"] = user_data.get("maxRating", 0)
+            instance["rating"] = user_data.get("rating", 0)
+            instance["last_activity"] = user_data.get(
+                    "lastOnlineTimeSeconds", TIMESTAMP_NOW
+                )
+            instance["avatar"] = user_data.get("avatar", "https://userpic.codeforces.org/no-avatar.jpg")
+            updates.append(instance)
+        serializer = CF_Update_Serializer(cf_users, data=updates, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            print("done")
+        else:
+            print(serializer.errors)
+    except:
+        pass
 
 @app.task(bind=True)
 def github_user_update(self):
