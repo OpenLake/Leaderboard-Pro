@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 /**
- *  This hooks will return a boolean state that will be tru
+ *  This hooks will return a boolean state that will be true if screen width is less than assigned value else false
+ * @param {number} ScreenWidthLimit - Limit of the screen width in pixel.
+ *
  */
+
 const useScreenWidth = (ScreenWidthLimit) => {
   const [isLessThanLimit,setisLessThanLimit] = useState(()=>window.innerWidth < ScreenWidthLimit);
 
