@@ -15,6 +15,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
+import useScreenWidth from "../hooks/useScreeWidth";
+
 const useStyles = makeStyles({
   table: {
     minWidth: 500,
@@ -24,6 +26,25 @@ const useStyles = makeStyles({
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
+  },
+  medium_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"column-reverse",
+    paddingLeft:"2.5vw",
+    paddingRight:"2.5vw",
+    marginTop: "9vh",
+    width: "100vw",
+    flexShrink: "0",
+  },
+  large_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"row",
+    padding:"auto",
+    marginTop: "10vh",
+    width: "99vw",
+    flexShrink: "0",
   },
 });
 
@@ -47,15 +68,15 @@ export const OpenlakeTable = ({
             "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
         },
       });
-  
+
       const newData = await response.json();
       setCodecheffriends(newData);
       // setTodisplayusers(codeforcesUsers)
       // setFilteredusers(codeforcesUsers)
     };
-  
+
     async function addfriend(e) {
-      
+
       const response = await fetch("http://localhost:8000/api/olfriends/", {
         method: "POST",
         headers: {
@@ -76,7 +97,7 @@ export const OpenlakeTable = ({
       }
     }
     async function dropfriend(e) {
-      
+
       const response = await fetch("http://localhost:8000/api/dropolfriends/", {
         method: "POST",
         headers: {
@@ -102,7 +123,7 @@ export const OpenlakeTable = ({
       getccfriends();
       // eslint-disable-next-line
     }, []);
-  
+
     useEffect(() => {
       if (ccshowfriends) {
         setTodisplayusers(codecheffriends);
@@ -143,23 +164,24 @@ export const OpenlakeTable = ({
       color: !darkmode ? "Black" : "White",
     },
   })(TableCell);
+  const isMobile = useScreenWidth(786);
+
   return (
     <div
-      className="codechef"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "9vh",
-        width: "99vw",
-        flexShrink: "0",
-      }}
+      className = {`openlake ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{ visibility: "hidden", marginRight: "18vw" }}></div>
-      <div>
+      <div style={{
+        width: "18vw",
+        maxWidth:"200px",
+        marginBottom:"10px",
+      }}></div>{" "}
+      <div style={{
+        marginBottom:"1px",
+      }}>
         <TableContainer component={Paper}>
           <Table
             className={darkmode ? classes.table_dark : classes.table}
-            aria-label="codeforces-table"
+            aria-label="openlake-table"
           >
             <TableHead>
               <TableRow
@@ -223,9 +245,9 @@ export const OpenlakeTable = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: "5vw",
           marginTop: "2vh",
           position: "relative",
+          marginBottom:"10px",
         }}
       >
         <TextField
@@ -251,10 +273,10 @@ export const OpenlakeTable = ({
             setCCshowfriends(!ccshowfriends);
           }}
           style={{
-            
+
             backgroundColor:darkmode?"#02055a":"#2196f3",
             color: "white",
-            marginTop: "4vh",
+            marginTop:isMobile ? "2vh" : "4vh",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}
