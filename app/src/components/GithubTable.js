@@ -61,7 +61,7 @@ export const GithubTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getghfriends = async () => {
-    const response = await fetch("http://localhost:8000/api/getghfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/githubFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -78,7 +78,8 @@ export const GithubTable = ({
 
   async function addfriend(e) {
 
-    const response = await fetch("http://localhost:8000/api/ghfriends/", {
+    const response = await fetch("http://localhost:8000/githubFA/", {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +87,7 @@ export const GithubTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ghFriend_uname: e.username,
+        friendName: e.username,
       }),
     });
     if (response.status !== 200) {
@@ -99,7 +100,9 @@ export const GithubTable = ({
   }
   async function dropfriend(e) {
 
-    const response = await fetch("http://localhost:8000/api/dropghfriends/", {
+    const response = await fetch("http://localhost:8000/githubFD/", {
+
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,7 +110,7 @@ export const GithubTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ghFriend_uname: e,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
