@@ -68,11 +68,6 @@ urlpatterns = [
         name="leetcode-leaderboard",
     ),
     path(
-        "codeforces/<int:pk>",
-        views.codeforcesUserAPI.as_view(),
-        name="codeforces-user-details",
-    ),
-    path(
         "codechef/",
         views.CodechefLeaderboard.as_view(),
         name="codechef-leaderboard",
