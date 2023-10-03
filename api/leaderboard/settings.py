@@ -228,6 +228,7 @@ CC_INTV = 5
 GH_INTV = 10
 OL_INTV = 60
 LT_INTV = 5
+CF_INTV = 5
 
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
@@ -252,6 +253,10 @@ CELERY_BEAT_SCHEDULE = {
     "ol_update_db_task": {
         "task": "leaderboard.celery.openlake_contributor__update",
         "schedule": crontab(minute=f"*/{OL_INTV}"),
+    },
+    "cf_update_db_task": {
+        "task": "leaderboard.celery.codeforces_user_update",
+        "schedule": crontab(minute=f"*/{CF_INTV}"),
     }
     
 }

@@ -6,7 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserNamesSerializer,LeetcodeFriendsSerializer,GithubFriendsSerializer,CodechefFriendsSerializer,CodeforcesFriendsSerializer
-from leaderboard.serializers import Cf_Serializer,CC_Serializer,LT_Serializer,GH_Serializer,OL_Serializer
+from leaderboard.serializers import CF_Serializer,CC_Serializer,LT_Serializer,GH_Serializer,OL_Serializer
 from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor,GithubFriends,LeetcodeFriends,CodechefFriends,CodeforcesFriends,OpenlakeFriends
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.contrib.auth.models import User
