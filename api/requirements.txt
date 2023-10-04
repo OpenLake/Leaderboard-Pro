@@ -15,7 +15,7 @@ click-repl==0.2.0
 cryptography==40.0.1
 Deprecated==1.2.13
 distlib==0.3.6
-Django==3.2.4
+Django==3.2.20
 django-rest-knox==4.2.0
 djangorestframework-simplejwt==5.2.2
 django-celery-beat==2.3.0
