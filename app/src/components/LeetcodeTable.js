@@ -61,7 +61,7 @@ export const LeetcodeTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getltfriends = async () => {
-    const response = await fetch("http://localhost:8000/api/getltfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/leetcodeFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -78,7 +78,7 @@ export const LeetcodeTable = ({
 
   async function addfriend(e) {
 
-    const response = await fetch("http://localhost:8000/api/ltfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/leetcodeFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const LeetcodeTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ltFriend_uname: e.username,
+        friendName: e.username,
       }),
     });
     if (response.status !== 200) {
@@ -99,7 +99,7 @@ export const LeetcodeTable = ({
   }
   async function dropfriend(e) {
 
-    const response = await fetch("http://localhost:8000/api/dropltfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/leetcodeFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export const LeetcodeTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ltFriend_uname: e,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
