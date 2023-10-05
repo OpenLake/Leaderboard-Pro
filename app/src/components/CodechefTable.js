@@ -16,6 +16,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
+import useScreenWidth from "../hooks/useScreeWidth";
+
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
@@ -26,7 +28,27 @@ const useStyles = makeStyles({
     border: "2px solid White",
     borderRadius: "10px",
   },
+    medium_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"column-reverse",
+    paddingLeft:"2.5vw",
+    paddingRight:"2.5vw",
+    marginTop: "9vh",
+    width: "100vw",
+    flexShrink: "0",
+  },
+  large_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"row",
+    padding:"auto",
+    marginTop: "10vh",
+    width: "99vw",
+    flexShrink: "0",
+  },
 });
+
 export const CodechefTable = ({
   darkmode,
   codechefUsers,
@@ -55,7 +77,7 @@ export const CodechefTable = ({
   };
 
   async function addfriend(e) {
-    
+
     const response = await fetch("http://127.0.0.1:8000/codechefFA/", {
       method: "POST",
       headers: {
@@ -76,7 +98,7 @@ export const CodechefTable = ({
     }
   }
   async function dropfriend(e) {
-    
+
     const response = await fetch("http://127.0.0.1:8000/codechefFD/", {
       method: "POST",
       headers: {
@@ -142,19 +164,19 @@ export const CodechefTable = ({
       color: !darkmode ? "Black" : "White",
     },
   })(TableCell);
+
+  const isMobile = useScreenWidth(786);
+
   const classes = useStyles();
   return (
     <div
-      className="codechef"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "9vh",
-        width: "99vw",
-        flexShrink: "0",
-      }}
+      className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{ marginRight: "18vw" }}></div>{" "}
+      <div style={{
+        width: "18vw",
+        maxWidth:"200px",
+        marginBottom:"10px",
+      }}></div>{" "}
       <div>
         <TableContainer component={Paper}>
           <Table
@@ -232,7 +254,7 @@ export const CodechefTable = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: "5vw",
+          marginRight: isMobile ? "0px": "5vw",
           marginTop: "2vh",
           position: "relative",
         }}
@@ -261,8 +283,9 @@ export const CodechefTable = ({
           }}
           style={{
             color: "white",
-            marginTop: "4vh",
+            marginTop: isMobile ? "2vh" : "4vh",
             backgroundColor:darkmode?"#02055a":"#2196f3",
+            marginBottom:"10px",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}

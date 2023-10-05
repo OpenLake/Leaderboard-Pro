@@ -16,6 +16,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
+import useScreenWidth from "../hooks/useScreeWidth";
 
 const useStyles = makeStyles({
   table: {
@@ -26,6 +27,25 @@ const useStyles = makeStyles({
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
+  },
+  medium_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"column-reverse",
+    paddingLeft:"2.5vw",
+    paddingRight:"2.5vw",
+    marginTop: "9vh",
+    width: "100vw",
+    flexShrink: "0",
+  },
+  large_page: {
+    display: "flex",
+    justifyContent: "space-around",
+    flexDirection:"row",
+    padding:"auto",
+    marginTop: "10vh",
+    width: "99vw",
+    flexShrink: "0",
   },
 });
 
@@ -41,7 +61,7 @@ export const GithubTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getghfriends = async () => {
-    const response = await fetch("http://localhost:8000/api/getghfriends/", {
+    const response = await fetch("http://127.0.0.1:8000/githubFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -57,8 +77,9 @@ export const GithubTable = ({
   };
 
   async function addfriend(e) {
-    
-    const response = await fetch("http://localhost:8000/api/ghfriends/", {
+
+    const response = await fetch("http://localhost:8000/githubFA/", {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +87,7 @@ export const GithubTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ghFriend_uname: e.username,
+        friendName: e.username,
       }),
     });
     if (response.status !== 200) {
@@ -78,8 +99,10 @@ export const GithubTable = ({
     }
   }
   async function dropfriend(e) {
-    
-    const response = await fetch("http://localhost:8000/api/dropghfriends/", {
+
+    const response = await fetch("http://localhost:8000/githubFD/", {
+
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +110,7 @@ export const GithubTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        ghFriend_uname: e,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
@@ -145,23 +168,25 @@ export const GithubTable = ({
       color: !darkmode ? "Black" : "White",
     },
   })(TableCell);
+
+  const isMobile = useScreenWidth(786);
+
   return (
     <div
-      className="codechef"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "9vh",
-        width: "99vw",
-        flexShrink: "0",
-      }}
+      className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{ visibility: "hidden", marginRight: "18vw" }}></div>{" "}
-      <div>
+      <div style={{
+        width: "18vw",
+        maxWidth:"200px",
+        marginBottom:"10px",
+      }}></div>{" "}
+      <div style={{
+        marginBottom:"1px",
+      }}>
         <TableContainer component={Paper}>
           <Table
             className={darkmode ? classes.table_dark : classes.table}
-            aria-label="codeforces-table"
+            aria-label="github-table"
           >
             <TableHead>
               <TableRow
@@ -232,9 +257,9 @@ export const GithubTable = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: "5vw",
           marginTop: "2vh",
           position: "relative",
+          marginBottom:"10px",
         }}
       >
         <TextField
@@ -262,7 +287,7 @@ export const GithubTable = ({
           style={{
             backgroundColor:darkmode?"#02055a":"#2196f3",
             color: "white",
-            marginTop: "4vh",
+            marginTop:isMobile ? "2vh" : "4vh",
           }}
         >
           {ghshowfriends ? "Show All" : "Show Friends"}
