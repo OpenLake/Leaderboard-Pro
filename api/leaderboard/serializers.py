@@ -5,7 +5,8 @@ from leaderboard.models import (
     codechefUser,
     githubUser,
     openlakeContributor,
-    LeetcodeUser
+    LeetcodeUser,
+    UserNames
 )
 
 class UpdateListSerializer(serializers.ListSerializer):
@@ -78,6 +79,11 @@ class GH_Update_Serializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ("username",)
         list_serializer_class = UpdateListSerializer
+
+class UserNamesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=UserNames
+        fields='__all__'
 
 
 class OL_Serializer(serializers.ModelSerializer):

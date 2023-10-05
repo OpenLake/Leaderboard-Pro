@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers, viewsets, routers, permissions
-from leaderboard import views, root, friends
+from leaderboard import views, root, friends, users
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -152,6 +152,11 @@ urlpatterns = [
         "openlakeFL/",
         friends.openlakeFriendList,
         name="openlakeFL",
+    ),
+    path(
+        "userDetails/",
+        users.getUserDetails,
+        name="userDetails",
     ),
     path("admin/", admin.site.urls),
 ]
