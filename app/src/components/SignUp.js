@@ -1,4 +1,4 @@
-import {React,useContext} from 'react'
+import { React, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,7 +10,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AuthContext from '../Context/AuthContext.js';
+import AuthContext from "../Context/AuthContext.js";
 function Copyright(props) {
   return (
     <Typography
@@ -31,18 +31,19 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignUp({registerUser}) {
-  let {toLogin}=useContext(AuthContext);
+export default function SignUp({ registerUser }) {
+  let { toLogin } = useContext(AuthContext);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: '5rem',
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -96,7 +97,6 @@ export default function SignUp({registerUser}) {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                
                   required
                   fullWidth
                   size="small"
@@ -157,7 +157,7 @@ export default function SignUp({registerUser}) {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                size="small"
+                  size="small"
                   fullWidth
                   name="LeetCode Username "
                   label="LeetCode Username  "
@@ -178,16 +178,18 @@ export default function SignUp({registerUser}) {
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
-                <Button  variant="body2" style={{color:"red"}} onClick={toLogin}>
+                <Button
+                  variant="body2"
+                  style={{ color: "red" }}
+                  onClick={toLogin}
+                >
                   Already have an account? Sign in
                 </Button>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );
 }
-
