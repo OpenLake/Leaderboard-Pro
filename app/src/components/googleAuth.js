@@ -18,7 +18,7 @@ const GoogleAuth = () => {
     
     
       useEffect(()=>{
-        console.log(profile)
+        
         if(user){
             axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,{
                 headers: {
