@@ -60,7 +60,7 @@ export const OpenlakeTable = ({
     const [filteredusers, setFilteredusers] = useState([]);
     const [todisplayusers, setTodisplayusers] = useState([]);
     const getccfriends = async () => {
-      const response = await fetch("http://localhost:8000/api/getolfriends/", {
+      const response = await fetch("http://localhost:8000/openlakeFL/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export const OpenlakeTable = ({
 
     async function addfriend(e) {
 
-      const response = await fetch("http://localhost:8000/api/olfriends/", {
+      const response = await fetch("http://localhost:8000/openlakeFA/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export const OpenlakeTable = ({
             "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
         },
         body: JSON.stringify({
-          olFriend_uname: e.username,
+          friendName: e.username,
         }),
       });
       if (response.status !== 200) {
@@ -98,7 +98,7 @@ export const OpenlakeTable = ({
     }
     async function dropfriend(e) {
 
-      const response = await fetch("http://localhost:8000/api/dropolfriends/", {
+      const response = await fetch("http://localhost:8000/openlakeFD/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export const OpenlakeTable = ({
             "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
         },
         body: JSON.stringify({
-          olFriend_uname: e,
+          friendName: e,
         }),
       });
       if (response.status !== 200) {

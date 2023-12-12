@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 def codeforcesFriendAddition(request):
     try:
+        logger.error(request.user)
         user = request.user.username
         serializer = Name_Serializer(data=request.data)
         if (serializer.is_valid()):
@@ -60,6 +61,7 @@ def codeforcesFriendAddition(request):
 @permission_classes([IsAuthenticated])
 def codeforcesFriendDeletion(request):
     try:
+        logger.error(request)
         user = request.user.username
         serializer = Name_Serializer(data=request.data)
         if (serializer.is_valid()):
@@ -99,14 +101,15 @@ def codeforcesFriendDeletion(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def codeforcesFriendList(request):
-    try:
-        
+    try:  
         user = request.user.username
         friendEntry = codeforcesFriends.find_one({"_id" : user})
+        logger.error(friendEntry)
         friendList = []
         for i in friendEntry["Friends"]:
             friendList.append({"friendName" : i})
         serialier = Name_Serializer(friendList, many=True)
+        logger.error(serialier.data)
         return Response(serialier.data)
     except Exception as e:
         return Response({
@@ -316,6 +319,7 @@ def githubFriendAddition(request):
         serializer = Name_Serializer(data=request.data)
         if (serializer.is_valid()):
             friendEntry = githubFriends.find_one({"_id" : user})
+            
             friendName = serializer.validated_data['friendName']
             if (friendEntry is not None):
                 friendsList = friendEntry["Friends"]
@@ -409,6 +413,7 @@ def githubFriendList(request):
 def openlakeFriendAddition(request):
     try:
         user = request.user.username
+        logger.error(user)
         serializer = Name_Serializer(data=request.data)
         if (serializer.is_valid()):
             friendEntry = openlakeFriends.find_one({"_id" : user})

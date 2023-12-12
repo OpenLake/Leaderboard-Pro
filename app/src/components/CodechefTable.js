@@ -94,6 +94,7 @@ export const CodechefTable = ({
     }
     else
     {
+      console.log(response)
       setCodecheffriends((current) => [...current, e]);
     }
   }

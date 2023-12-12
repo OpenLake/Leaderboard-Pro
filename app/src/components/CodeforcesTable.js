@@ -61,7 +61,7 @@ export const CodeforcesTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getcffriends = async () => {
-    const response = await fetch("http://localhost:8000/api/getcffriends/", {
+    const response = await fetch("http://localhost:8000/codeforcesFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -69,15 +69,15 @@ export const CodeforcesTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
-
     const newData = await response.json();
     setCodeforcesfriends(newData);
+    console.log(newData)
     // setTodisplayusers(codeforcesUsers)
     // setFilteredusers(codeforcesUsers)
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://localhost:8000/api/cffriends/", {
+    const response = await fetch("http://localhost:8000/codeforcesFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export const CodeforcesTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        cfFriend_uname: e.username,
+        friendName: e.username,
       }),
     });
     if (response.status !== 200) {
@@ -95,7 +95,7 @@ export const CodeforcesTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://localhost:8000/api/dropcffriends/", {
+    const response = await fetch("http://localhost:8000/codeforcesFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export const CodeforcesTable = ({
           "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        cfFriend_uname: e,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
