@@ -46,7 +46,6 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Run the following commands in the same order:
     ```
     make install
-    make migrate
     make dev
     ```
 - Visit http://localhost:8000/ and http://localhost:3000/
