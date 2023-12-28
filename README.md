@@ -34,9 +34,13 @@ How do people become good at something ? By doing it regularly, right ? That's w
         sudo apt update
         sudo apt install make
         ```
+    - For Mac OS:
+        - In the terminal window, run the command ```xcode-select --install```
+        - In the windows that pops up, click Install, and agree to the Terms of Service.
     - For Windows, follow the [link](https://linuxhint.com/install-use-make-windows/)
 - Install Redis 
     - For Ubuntu, follow the [link](https://redis.io/docs/install/install-redis/install-redis-on-linux/)
+    - For MacOS, follow the [link](https://redis.io/docs/install/install-redis/install-redis-on-mac-os/)
     - For Windows, follow the [link](https://redis.io/docs/install/install-redis/install-redis-on-windows/)
 - Replace database credentials
     - Create a new project on Supabase
