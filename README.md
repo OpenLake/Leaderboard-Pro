@@ -50,6 +50,43 @@ How do people become good at something ? By doing it regularly, right ? That's w
     ```
 - Visit http://localhost:8000/ and http://localhost:3000/
 
+## 🐳 Running with Docker
+
+Docker provides a consistent and isolated environment for running the Leaderboard project, ensuring that it works the same way on every machine. Follow these steps to get the application up and running with Docker:
+
+### Prerequisites
+- Ensure you have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
+
+### Building the Docker Image
+1. Clone the repository (if you haven't already):
+    ```
+    git clone https://github.com/your-repository/Leaderboard-Pro.git
+    cd Leaderboard-Pro
+    ```
+
+2. Build the Docker image:
+    ```
+    docker build -t leaderboard-pro .
+    ```
+
+   This command builds a Docker image named `leaderboard-pro` based on the instructions in the Dockerfile.
+
+### Running the Application in a Docker Container
+1. To start the application in a Docker container, run:
+    ```
+    docker run -p 8000:8000 -p 3000:3000 leaderboard-pro
+    ```
+
+   This command starts the Docker container and maps the ports so that you can access the Django backend at `http://localhost:8000/` and the React frontend at `http://localhost:3000/`.
+
+2. Visit the URLs in your web browser to interact with the application:
+    - Django Backend: [http://localhost:8000/](http://localhost:8000/)
+    - React Frontend: [http://localhost:3000/](http://localhost:3000/)
+
+### Stopping the Container
+- To stop the Docker container, you can press `Ctrl+C` in the terminal where the container is running. Alternatively, you can stop the container from another terminal using the `docker stop` command with the container ID.
+
+
 ## 🧑‍💻 Maintainers
 - [Gopal Ramesh Dahale](https://github.com/Gopal-Dahale)
 - [Kumar Shivendu](https://github.com/KShivendu)
