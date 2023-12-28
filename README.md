@@ -60,7 +60,7 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 ### Building the Docker Image
 1. Clone the repository (if you haven't already):
     ```
-    git clone https://github.com/your-repository/Leaderboard-Pro.git
+    git clone https://github.com/your-username/Leaderboard-Pro.git
     cd Leaderboard-Pro
     ```
 
