@@ -13,7 +13,10 @@ const Footer = () => {
         {...props}
       >
         {'Copyright © '}
-        <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
+        <Link
+          color="inherit"
+          href="https://github.com/OpenLake/Leaderboard-Pro/"
+        >
           LeaderBoard-Pro
         </Link>{' '}
         {new Date().getFullYear()}
@@ -26,7 +29,7 @@ const Footer = () => {
     <div
       style={{
         backgroundColor: '#1976d2',
-        padding:'0.5rem',
+        padding: '0.5rem',
         color: 'white',
         position: 'fixed',
         bottom: 0, // Align to the bottom

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 const LeetcodeRankings = ({ darkmode }) => {
   const [contestId, setContestId] = useState('');
   const [usernames, setUsernames] = useState([]);
@@ -16,7 +15,7 @@ const LeetcodeRankings = ({ darkmode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
       const url = `http://localhost:8000/api/leetcodecontestrankings/?contest=${contestId}`;
       const response = await fetch(url, {
@@ -25,11 +24,11 @@ const LeetcodeRankings = ({ darkmode }) => {
           Authorization: `Bearer ${localStorage.getItem('authTokens')}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setRankings(data);
-        console.log(data)
+        console.log(data);
       } else {
         throw new Error('Request failed');
       }
@@ -37,10 +36,10 @@ const LeetcodeRankings = ({ darkmode }) => {
       console.log(error);
     }
   };
-  
+
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ marginTop:'100px' }}>
+      <form onSubmit={handleSubmit} style={{ marginTop: '100px' }}>
         <label style={{ display: 'block', marginBottom: '10px' }}>
           Contest ID:
           <input
@@ -76,7 +75,8 @@ const LeetcodeRankings = ({ darkmode }) => {
                 color: darkmode ? 'white' : 'black',
               }}
             >
-              Institute-Rank: {index + 1}, Username: {rank.username}, OverallRank: {rank.ranking}
+              Institute-Rank: {index + 1}, Username: {rank.username},
+              OverallRank: {rank.ranking}
             </li>
           ))}
         </ul>
