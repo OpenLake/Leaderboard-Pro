@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime, timezone, timedelta
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.utils import timezone
 
 from django.contrib.postgres.fields import ArrayField
 
@@ -52,7 +53,7 @@ class codeforcesUser(models.Model):
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     last_activity = models.BigIntegerField(
-        default=datetime.max.timestamp()
+        default=timezone.datetime.max.replace(tzinfo=timezone.utc).timestamp()
     )
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")

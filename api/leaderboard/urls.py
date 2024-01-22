@@ -22,6 +22,7 @@ from django.urls import path, include
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers, viewsets, routers, permissions
 from leaderboard import views, root, friends, users
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -56,6 +57,9 @@ router.register(r"groups", GroupViewSet)
 urlpatterns = [
     path("", root.api_root),
     path('api/',include('leaderboard.api.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('api/token/', obtain_auth_token, name='api_token_auth'),
+    #path('accounts/profile/', views.UserProfileView.as_view(), name='user_profile'),
     path(
         "codeforces/",
         views.CodeforcesLeaderboard.as_view(),
