@@ -282,6 +282,7 @@ CELERY_BEAT_SCHEDULE = {
 #     },
 
 # Django AllAuth Settings
+from decouple import config
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
@@ -289,8 +290,8 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '476983501237-k3qsql8im66vhtabuldk8r213ba52tbs.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': config('GOOGLE_CLIENT_ID', default=''),
+            'secret': config('GOOGLE_CLIENT_SECRET', default=''),
             'key': '',
         }
     }

@@ -40,7 +40,7 @@ import logging
 logger = logging.getLogger(__name__)
 from django.http import JsonResponse
 
-MAX_DATE_TIMESTAMP = datetime.max.timestamp()
+#MAX_DATE_TIMESTAMP = datetime.max.timestamp()
 
 from django.db import connection
 from django.db.utils import OperationalError
