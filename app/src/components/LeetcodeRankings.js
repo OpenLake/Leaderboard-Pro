@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-
+import React, { useState } from "react";
 
 const LeetcodeRankings = ({ darkmode }) => {
-  const [contestId, setContestId] = useState('');
+  const [contestId, setContestId] = useState("");
   const [usernames, setUsernames] = useState([]);
   const [rankings, setRankings] = useState([]);
 
@@ -11,43 +10,45 @@ const LeetcodeRankings = ({ darkmode }) => {
   };
 
   const handleUsernameChange = (event) => {
-    setUsernames(event.target.value.split(','));
+    setUsernames(event.target.value.split(","));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-      const url = `http://localhost:8000/api/leetcodecontestrankings/?contest=${contestId}`;
+      const url =
+        process.env.REACT_APP_BACKEND_URL +
+        `/api/leetcodecontestrankings/?contest=${contestId}`;
       const response = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authTokens')}`,
+          Authorization: `Bearer ${localStorage.getItem("authTokens")}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setRankings(data);
-        console.log(data)
+        console.log(data);
       } else {
-        throw new Error('Request failed');
+        throw new Error("Request failed");
       }
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ marginTop:'100px' }}>
-        <label style={{ display: 'block', marginBottom: '10px' }}>
+      <form onSubmit={handleSubmit} style={{ marginTop: "100px" }}>
+        <label style={{ display: "block", marginBottom: "10px" }}>
           Contest ID:
           <input
             type="text"
             value={contestId}
             onChange={handleContestIdChange}
-            style={{ marginLeft: '10px' }}
+            style={{ marginLeft: "10px" }}
           />
         </label>
         {/* <label style={{ display: 'block', marginBottom: '10px' }}>
@@ -59,7 +60,7 @@ const LeetcodeRankings = ({ darkmode }) => {
             style={{ marginLeft: '10px' }}
           />
         </label> */}
-        <button type="submit" style={{ marginLeft: '10px', marginTop: '10px' }}>
+        <button type="submit" style={{ marginLeft: "10px", marginTop: "10px" }}>
           Get Rankings
         </button>
       </form>
@@ -71,12 +72,13 @@ const LeetcodeRankings = ({ darkmode }) => {
             <li
               key={rank.username}
               style={{
-                marginBottom: '5px',
-                backgroundColor: darkmode ? 'black' : 'white',
-                color: darkmode ? 'white' : 'black',
+                marginBottom: "5px",
+                backgroundColor: darkmode ? "black" : "white",
+                color: darkmode ? "white" : "black",
               }}
             >
-              Institute-Rank: {index + 1}, Username: {rank.username}, OverallRank: {rank.ranking}
+              Institute-Rank: {index + 1}, Username: {rank.username},
+              OverallRank: {rank.ranking}
             </li>
           ))}
         </ul>

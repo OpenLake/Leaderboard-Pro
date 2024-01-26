@@ -28,12 +28,12 @@ const useStyles = makeStyles({
     border: "2px solid White",
     borderRadius: "10px",
   },
-    medium_page: {
+  medium_page: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"column-reverse",
-    paddingLeft:"2.5vw",
-    paddingRight:"2.5vw",
+    flexDirection: "column-reverse",
+    paddingLeft: "2.5vw",
+    paddingRight: "2.5vw",
     marginTop: "9vh",
     width: "100vw",
     flexShrink: "0",
@@ -41,8 +41,8 @@ const useStyles = makeStyles({
   large_page: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"row",
-    padding:"auto",
+    flexDirection: "row",
+    padding: "auto",
     marginTop: "10vh",
     width: "99vw",
     flexShrink: "0",
@@ -61,14 +61,17 @@ export const CodechefTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getccfriends = async () => {
-    const response = await fetch("http://127.0.0.1:8000/codechefFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/codechefFL/",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+        },
+      }
+    );
 
     const newData = await response.json();
     setCodecheffriends(newData);
@@ -77,48 +80,48 @@ export const CodechefTable = ({
   };
 
   async function addfriend(e) {
-
-    const response = await fetch("http://127.0.0.1:8000/codechefFA/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e.username,
-      }),
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/codechefFA/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+        },
+        body: JSON.stringify({
+          friendName: e.username,
+        }),
+      }
+    );
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
-      console.log(response)
+    } else {
+      console.log(response);
       setCodecheffriends((current) => [...current, e]);
     }
   }
   async function dropfriend(e) {
-
-    const response = await fetch("http://127.0.0.1:8000/codechefFD/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/codechefFD/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      }
+    );
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
+    } else {
       setCodecheffriends((current) =>
-      current.filter((fruit) => fruit.username !== e)
-    );
+        current.filter((fruit) => fruit.username !== e)
+      );
     }
   }
   useEffect(() => {
@@ -171,13 +174,17 @@ export const CodechefTable = ({
   const classes = useStyles();
   return (
     <div
-      className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
+      className={`codechef ${
+        isMobile ? classes.medium_page : classes.large_page
+      }`}
     >
-      <div style={{
-        width: "18vw",
-        maxWidth:"200px",
-        marginBottom:"10px",
-      }}></div>{" "}
+      <div
+        style={{
+          width: "18vw",
+          maxWidth: "200px",
+          marginBottom: "10px",
+        }}
+      ></div>{" "}
       <div>
         <TableContainer component={Paper}>
           <Table
@@ -229,7 +236,7 @@ export const CodechefTable = ({
                     <StyledTableCell>
                       <Button
                         variant="contained"
-                        style={{backgroundColor:darkmode?"#146ca4":""}}
+                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
                         onClick={() => {
                           !codecheffriends.some(
                             (item) => item.username === cfUser.username
@@ -255,7 +262,7 @@ export const CodechefTable = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: isMobile ? "0px": "5vw",
+          marginRight: isMobile ? "0px" : "5vw",
           marginTop: "2vh",
           position: "relative",
         }}
@@ -285,8 +292,8 @@ export const CodechefTable = ({
           style={{
             color: "white",
             marginTop: isMobile ? "2vh" : "4vh",
-            backgroundColor:darkmode?"#02055a":"#2196f3",
-            marginBottom:"10px",
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
+            marginBottom: "10px",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}
@@ -295,4 +302,3 @@ export const CodechefTable = ({
     </div>
   );
 };
-

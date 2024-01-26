@@ -61,14 +61,17 @@ export const GithubTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getghfriends = async () => {
-    const response = await fetch("http://127.0.0.1:8000/githubFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/githubFL/",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+        },
+      }
+    );
 
     const newData = await response.json();
     setGithubfriends(newData);
