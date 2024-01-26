@@ -29,7 +29,6 @@ const useStyles = makeStyles({
   tableCell: {
     padding: "16px", // Adjust the padding as per your requirement
   },
- 
 });
 
 const LeetcodeRankingsCCPS = ({ darkmode }) => {
@@ -38,32 +37,32 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
 
   const handleContestIdChange = (event) => {
     const selectedContest = event.target.value;
-    const convertedContestId = selectedContest.replace(/\s/g, "").replace("Contest", "").toLowerCase();
-    
+    const convertedContestId = selectedContest
+      .replace(/\s/g, "")
+      .replace("Contest", "")
+      .toLowerCase();
+
     setContestId(convertedContestId);
   };
   const [contestOptions, setcontestoptions] = useState([]);
-  
-  
+
   useEffect(() => {
     const fetchRankings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/contest-rankings/"
+          process.env.REACT_APP_BACKEND_URL + "/contest-rankings/"
         );
         const data = response.data;
-        
-        
+
         const contestRankings = data.map((rank) => ({
           username: rank.usernames,
           ranking: rank[contestId],
         }));
-        
 
         const columnNames = Object.keys(data[0]);
-        columnNames.shift()
-        setcontestoptions(columnNames)
-        
+        columnNames.shift();
+        setcontestoptions(columnNames);
+
         // Sort the rankings based on the contest ranking and whether the ranking is zero or not
         const sortedRankings = contestRankings.sort((a, b) => {
           if (a.ranking === 0 && b.ranking === 0) {
@@ -76,17 +75,15 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
             return a.ranking - b.ranking;
           }
         });
-  
+
         setRankings(sortedRankings);
       } catch (error) {
         console.log(error);
       }
     };
-  
+
     fetchRankings();
   }, [contestId]);
-
-  
 
   const classes = useStyles();
   const StyledTableCell = withStyles({
@@ -105,7 +102,6 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
           marginTop: "9vh",
           width: "99vw",
           flexShrink: "0",
-          
         }}
       >
         <form style={{ textAlign: "center", marginTop: "100px" }}>
@@ -121,21 +117,20 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
               value={contestId}
               onChange={handleContestIdChange}
               style={{
-              marginLeft: "15px",
-              color: darkmode ? "white" : "black",
-              backgroundColor: darkmode ? "#333" : "white",
+                marginLeft: "15px",
+                color: darkmode ? "white" : "black",
+                backgroundColor: darkmode ? "#333" : "white",
               }}
             >
-            <MenuItem value="" disabled>
-            Select a Contest
-            </MenuItem>
-            {contestOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-          
-              {option}
-          </MenuItem>
-          ))}
-          </Select>
+              <MenuItem value="" disabled>
+                Select a Contest
+              </MenuItem>
+              {contestOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
           </label>
         </form>
       </div>
@@ -153,37 +148,75 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
         <div>
           <div style={{ visibility: "hidden", marginRight: "18vw" }}></div>
           <TableContainer component={Paper}>
-            <Table className={darkmode ? classes.table_dark : classes.table} aria-label="codeforces-table">
+            <Table
+              className={darkmode ? classes.table_dark : classes.table}
+              aria-label="codeforces-table"
+            >
               <TableHead>
-                <TableRow style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                <TableRow
+                  style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
+                >
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                  >
                     Institute Rank
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                  >
                     Username
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                  >
                     Rank
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell}></StyledTableCell>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                  ></StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rankings.length > 0 ? (
                   rankings.map((rank, index) => (
-                    <TableRow key={rank.username} style={{ marginBottom: "5px", backgroundColor: darkmode ? "black" : "white", color: darkmode ? "white" : "black" }}>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
-                      {rank.ranking !== 0 ? index + 1 : "N/A"}
-                    </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center",cursor:"pointer" }}>
-                      <Link style={{ textDecoration: "none" }} to= {`/leetcoderanking/${rank.username}`}>{rank.username}</Link>
-                    </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
-                      {rank.ranking !== null ? rank.ranking : "N/A"}
-                    </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell}></StyledTableCell>
-                  </TableRow>
-                  
+                    <TableRow
+                      key={rank.username}
+                      style={{
+                        marginBottom: "5px",
+                        backgroundColor: darkmode ? "black" : "white",
+                        color: darkmode ? "white" : "black",
+                      }}
+                    >
+                      <StyledTableCell
+                        className={classes.tableCell}
+                        style={{ textAlign: "center" }}
+                      >
+                        {rank.ranking !== 0 ? index + 1 : "N/A"}
+                      </StyledTableCell>
+                      <StyledTableCell
+                        className={classes.tableCell}
+                        style={{ textAlign: "center", cursor: "pointer" }}
+                      >
+                        <Link
+                          style={{ textDecoration: "none" }}
+                          to={`/leetcoderanking/${rank.username}`}
+                        >
+                          {rank.username}
+                        </Link>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        className={classes.tableCell}
+                        style={{ textAlign: "center" }}
+                      >
+                        {rank.ranking !== null ? rank.ranking : "N/A"}
+                      </StyledTableCell>
+                      <StyledTableCell
+                        className={classes.tableCell}
+                      ></StyledTableCell>
+                    </TableRow>
                   ))
                 ) : (
                   <TableRow>

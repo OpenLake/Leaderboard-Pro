@@ -30,9 +30,9 @@ const useStyles = makeStyles({
   medium_page: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"column-reverse",
-    paddingLeft:"2.5vw",
-    paddingRight:"2.5vw",
+    flexDirection: "column-reverse",
+    paddingLeft: "2.5vw",
+    paddingRight: "2.5vw",
     marginTop: "9vh",
     width: "100vw",
     flexShrink: "0",
@@ -40,8 +40,8 @@ const useStyles = makeStyles({
   large_page: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"row",
-    padding:"auto",
+    flexDirection: "row",
+    padding: "auto",
     marginTop: "10vh",
     width: "99vw",
     flexShrink: "0",
@@ -56,28 +56,32 @@ export const OpenlakeTable = ({
   ccshowfriends,
   setCCshowfriends,
 }) => {
-    const [searchfield, setSearchfield] = useState("");
-    const [filteredusers, setFilteredusers] = useState([]);
-    const [todisplayusers, setTodisplayusers] = useState([]);
-    const getccfriends = async () => {
-      const response = await fetch("http://localhost:8000/openlakeFL/", {
+  const [searchfield, setSearchfield] = useState("");
+  const [filteredusers, setFilteredusers] = useState([]);
+  const [todisplayusers, setTodisplayusers] = useState([]);
+  const getccfriends = async () => {
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/openlakeFL/",
+      {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization:
             "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
         },
-      });
+      }
+    );
 
-      const newData = await response.json();
-      setCodecheffriends(newData);
-      // setTodisplayusers(codeforcesUsers)
-      // setFilteredusers(codeforcesUsers)
-    };
+    const newData = await response.json();
+    setCodecheffriends(newData);
+    // setTodisplayusers(codeforcesUsers)
+    // setFilteredusers(codeforcesUsers)
+  };
 
-    async function addfriend(e) {
-
-      const response = await fetch("http://localhost:8000/openlakeFA/", {
+  async function addfriend(e) {
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/openlakeFA/",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,18 +91,18 @@ export const OpenlakeTable = ({
         body: JSON.stringify({
           friendName: e.username,
         }),
-      });
-      if (response.status !== 200) {
-        alert("ERROR!!!!");
       }
-      else
-      {
-        setCodecheffriends((current) => [...current, e]);
-      }
+    );
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
+      setCodecheffriends((current) => [...current, e]);
     }
-    async function dropfriend(e) {
-
-      const response = await fetch("http://localhost:8000/openlakeFD/", {
+  }
+  async function dropfriend(e) {
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_URL + "/openlakeFD/",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -108,56 +112,55 @@ export const OpenlakeTable = ({
         body: JSON.stringify({
           friendName: e,
         }),
-      });
-      if (response.status !== 200) {
-        alert("ERROR!!!!");
       }
-      else
-      {
-        setCodecheffriends((current) =>
+    );
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
+      setCodecheffriends((current) =>
         current.filter((fruit) => fruit.username !== e)
       );
-      }
     }
-    useEffect(() => {
-      getccfriends();
-      // eslint-disable-next-line
-    }, []);
+  }
+  useEffect(() => {
+    getccfriends();
+    // eslint-disable-next-line
+  }, []);
 
-    useEffect(() => {
-      if (ccshowfriends) {
-        setTodisplayusers(codecheffriends);
-      } else {
-        setTodisplayusers(codechefUsers);
-      }
-      if (searchfield === "") {
-        setFilteredusers(todisplayusers);
-      } else {
-        // eslint-disable-next-line
-        setFilteredusers(
-          todisplayusers.filter((cfUser) => {
-            return cfUser.username
-              .toLowerCase()
-              .includes(searchfield.toLowerCase());
-          })
-        );
-      }
+  useEffect(() => {
+    if (ccshowfriends) {
+      setTodisplayusers(codecheffriends);
+    } else {
+      setTodisplayusers(codechefUsers);
+    }
+    if (searchfield === "") {
+      setFilteredusers(todisplayusers);
+    } else {
       // eslint-disable-next-line
-    }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
-    useEffect(() => {
-      if (searchfield === "") {
-        setFilteredusers(todisplayusers);
-      } else {
-        // eslint-disable-next-line
-        setFilteredusers(
-          todisplayusers.filter((cfUser) => {
-            return cfUser.username
-              .toLowerCase()
-              .includes(searchfield.toLowerCase());
-          })
-        );
-      }
-    }, [searchfield, todisplayusers]);
+      setFilteredusers(
+        todisplayusers.filter((cfUser) => {
+          return cfUser.username
+            .toLowerCase()
+            .includes(searchfield.toLowerCase());
+        })
+      );
+    }
+    // eslint-disable-next-line
+  }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
+  useEffect(() => {
+    if (searchfield === "") {
+      setFilteredusers(todisplayusers);
+    } else {
+      // eslint-disable-next-line
+      setFilteredusers(
+        todisplayusers.filter((cfUser) => {
+          return cfUser.username
+            .toLowerCase()
+            .includes(searchfield.toLowerCase());
+        })
+      );
+    }
+  }, [searchfield, todisplayusers]);
   const classes = useStyles();
   const StyledTableCell = withStyles({
     root: {
@@ -168,16 +171,22 @@ export const OpenlakeTable = ({
 
   return (
     <div
-      className = {`openlake ${isMobile ? classes.medium_page : classes.large_page}`}
+      className={`openlake ${
+        isMobile ? classes.medium_page : classes.large_page
+      }`}
     >
-      <div style={{
-        width: "18vw",
-        maxWidth:"200px",
-        marginBottom:"10px",
-      }}></div>{" "}
-      <div style={{
-        marginBottom:"1px",
-      }}>
+      <div
+        style={{
+          width: "18vw",
+          maxWidth: "200px",
+          marginBottom: "10px",
+        }}
+      ></div>{" "}
+      <div
+        style={{
+          marginBottom: "1px",
+        }}
+      >
         <TableContainer component={Paper}>
           <Table
             className={darkmode ? classes.table_dark : classes.table}
@@ -185,8 +194,7 @@ export const OpenlakeTable = ({
           >
             <TableHead>
               <TableRow
-                style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC",
-               }}
+                style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
               >
                 <StyledTableCell style={{ textAlign: "center" }}>
                   Username
@@ -198,28 +206,30 @@ export const OpenlakeTable = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredusers.sort((a, b) => (a.contributions < b.contributions ? 1 : -1)).map((olUser) => (
-                <TableRow key={olUser.id}>
-                  <StyledTableCell style={{ textAlign: "center" }}>
-                    <Link
-                      style={{
-                        fontWeight: "bold",
-                        textDecoration: "none",
-                        color: darkmode ? "#03DAC6" : "",
-                      }}
-                      href={`https://github.com/${olUser.username}`}
-                      target="_blank"
-                    >
-                      {olUser.username}
-                    </Link>
-                  </StyledTableCell>
-                  <StyledTableCell style={{ textAlign: "center" }}>
-                    {olUser.contributions}
-                  </StyledTableCell>
-                  <StyledTableCell>
+              {filteredusers
+                .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
+                .map((olUser) => (
+                  <TableRow key={olUser.id}>
+                    <StyledTableCell style={{ textAlign: "center" }}>
+                      <Link
+                        style={{
+                          fontWeight: "bold",
+                          textDecoration: "none",
+                          color: darkmode ? "#03DAC6" : "",
+                        }}
+                        href={`https://github.com/${olUser.username}`}
+                        target="_blank"
+                      >
+                        {olUser.username}
+                      </Link>
+                    </StyledTableCell>
+                    <StyledTableCell style={{ textAlign: "center" }}>
+                      {olUser.contributions}
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <Button
                         variant="contained"
-                        style={{backgroundColor:darkmode?"#146ca4":""}}
+                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
                         onClick={() => {
                           !codecheffriends.some(
                             (item) => item.username === olUser.username
@@ -235,8 +245,8 @@ export const OpenlakeTable = ({
                           : "Add Friend"}
                       </Button>
                     </StyledTableCell>
-                </TableRow>
-              ))}
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -247,7 +257,7 @@ export const OpenlakeTable = ({
           flexDirection: "column",
           marginTop: "2vh",
           position: "relative",
-          marginBottom:"10px",
+          marginBottom: "10px",
         }}
       >
         <TextField
@@ -273,10 +283,9 @@ export const OpenlakeTable = ({
             setCCshowfriends(!ccshowfriends);
           }}
           style={{
-
-            backgroundColor:darkmode?"#02055a":"#2196f3",
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
             color: "white",
-            marginTop:isMobile ? "2vh" : "4vh",
+            marginTop: isMobile ? "2vh" : "4vh",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}

@@ -14,7 +14,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     const fetchRankings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/contest-rankings/"
+          process.env.REACT_APP_BACKEND_URL + "/contest-rankings/"
         );
         const data = response.data;
 
@@ -81,8 +81,8 @@ const LeetcodeGraphs = ({ darkmode }) => {
         // yaxis: {
         //   reversed: true,
         // },
-        tooltip:{
-            fillSeriesColor:true,
+        tooltip: {
+          fillSeriesColor: true,
         },
       });
     }
