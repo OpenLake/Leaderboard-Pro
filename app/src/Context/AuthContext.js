@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
-import jwt_decode from "jwt-decode";
-import { useHistory } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 export default AuthContext;
@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
       : null
   );
   let [user, setUser] = useState(
-    authTokens ? jwt_decode(authTokens.access) : null
+    authTokens ? jwtDecode(authTokens.access) : null
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   let loginUser = async (e) => {
     e.preventDefault();
     let response = await fetch(
@@ -33,9 +33,9 @@ export const AuthProvider = ({ children }) => {
     let data = await response.json();
     if (response.status === 200) {
       setAuthTokens(data);
-      setUser(jwt_decode(data.access));
+      setUser(jwtDecode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
-      history.push("/");
+      navigate.push("/");
     } else {
       alert("ERROR!!!!");
     }
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
-    history.push("/login");
+    navigate.push("/login");
   };
   let registerUser = async (e) => {
     e.preventDefault();
@@ -86,9 +86,9 @@ export const AuthProvider = ({ children }) => {
       let data = await response.json();
       if (response.status === 200) {
         setAuthTokens(data);
-        setUser(jwt_decode(data.access));
+        setUser(jwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
-        history.push("/");
+        navigate.push("/");
       } else {
         alert("ERROR!!!!");
       }
@@ -118,16 +118,16 @@ export const AuthProvider = ({ children }) => {
       }
     );
     if (response.status === 201) {
-      history.push("/");
+      navigate.push("/");
     } else {
       alert("ERROR!!!!");
     }
   };
   let toLogin = () => {
-    history.push("/login");
+    navigate.push("/login");
   };
   let toRegister = () => {
-    history.push("/register");
+    navigate.push("/register");
   };
   let contextData = {
     user: user,

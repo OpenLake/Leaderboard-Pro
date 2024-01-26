@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import MaterialUISwitch from "@material-ui/core/Switch";
@@ -48,15 +48,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const manageClick = () => {
-    history.push("/profile");
+    navigate.push("/profile");
   };
   const tohome = () => {
-    history.push("/");
+    navigate.push("/");
   };
   const toLogin = () => {
-    history.push("/login");
+    navigate.push("/login");
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -84,7 +84,10 @@ export const Navbar = ({ darkmode, toggle }) => {
       >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button style={{ color: "white", fontSize:'1.3rem', fontWeight:'900' }} onClick={tohome}>
+            <Button
+              style={{ color: "white", fontSize: "1.3rem", fontWeight: "900" }}
+              onClick={tohome}
+            >
               Leaderboard Pro
             </Button>
           </Typography>
@@ -140,7 +143,10 @@ export const Navbar = ({ darkmode, toggle }) => {
             </MenuItem>
           </Menu>
 
-          <div className={classes.platformButtons} style={{display:"flex",justifyContent:"center"}}>
+          <div
+            className={classes.platformButtons}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             {/* Logos (hidden in mobile view) */}
             <div className={classes.desktopLogos}>
               <Link style={{ margin: "12px" }} to="/codechef">
