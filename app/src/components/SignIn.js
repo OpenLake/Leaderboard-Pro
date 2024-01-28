@@ -1,4 +1,4 @@
-import {React,useContext} from 'react'
+import { React, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AuthContext from '../Context/AuthContext.js';
+import AuthContext from "../utils/AuthContext.js";
 function Copyright(props) {
   return (
     <Typography
@@ -33,8 +33,8 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn({loginUser}) {
-  let {toRegister}=useContext(AuthContext);
+export default function SignIn({ loginUser }) {
+  let { toRegister } = useContext(AuthContext);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -53,12 +53,7 @@ export default function SignIn({loginUser}) {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box
-            component="form"
-            onSubmit={loginUser}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={loginUser} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -93,16 +88,18 @@ export default function SignIn({loginUser}) {
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
-                <Button variant="body2" style={{color:"red"}} onClick={toRegister}>
+                <Button
+                  variant="body2"
+                  style={{ color: "red" }}
+                  onClick={toRegister}
+                >
                   {"Don't have an account? Sign Up"}
                 </Button>
               </Grid>
             </Grid>
           </Box>
         </Box>
-       
       </Container>
     </ThemeProvider>
   );
 }
-

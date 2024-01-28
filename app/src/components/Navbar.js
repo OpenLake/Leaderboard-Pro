@@ -19,7 +19,7 @@ import LeetcodeLogo from "../assets/leetcode.svg";
 import OpenlakeLogo from "../assets/openlake.svg";
 import LeetcodeRankingsLogo from "../assets/leetcodecontest.png";
 import CCPS from "../assets/CCPS.jpeg";
-import AuthContext from "../Context/AuthContext";
+import AuthContext from "../utils/AuthContext";
 import { useMediaQuery } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({

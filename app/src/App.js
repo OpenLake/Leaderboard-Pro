@@ -15,7 +15,7 @@ import HomePage from "./components/HomePage";
 import Register from "./components/Register";
 import { LeetcodeTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
-import { AuthProvider } from "./Context/AuthContext";
+import { AuthProvider } from "./utils/AuthContext";
 import GoToTop from "./components/GoToTop";
 import Footer from "./components/Footer";
 import LeetcodeRankings from "./components/LeetcodeRankings";

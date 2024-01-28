@@ -10,7 +10,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AuthContext from "../Context/AuthContext.js";
+import AuthContext from "../utils/AuthContext.js";
 function Copyright(props) {
   return (
     <Typography
@@ -39,11 +39,10 @@ export default function SignUp({ registerUser }) {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: '5rem',
+            marginTop: "5rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>

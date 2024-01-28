@@ -15,7 +15,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
-import useScreenWidth from "../hooks/useScreeWidth";
+import useScreenWidth from "../utils/useScreeWidth";
 
 const useStyles = makeStyles({
   table: {
