@@ -50,13 +50,13 @@ export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const manageClick = () => {
-    navigate.push("/profile");
+    navigate("/profile");
   };
   const tohome = () => {
-    navigate.push("/");
+    navigate("/");
   };
   const toLogin = () => {
-    navigate.push("/login");
+    navigate("/login");
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

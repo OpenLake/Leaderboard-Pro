@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
-      navigate.push("/");
+      navigate("/");
     } else {
       alert("ERROR!!!!");
     }
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
-    navigate.push("/login");
+    navigate("/login");
   };
   let registerUser = async (e) => {
     e.preventDefault();
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
-        navigate.push("/");
+        navigate("/");
       } else {
         alert("ERROR!!!!");
       }
@@ -118,16 +118,16 @@ export const AuthProvider = ({ children }) => {
       }
     );
     if (response.status === 201) {
-      navigate.push("/");
+      navigate("/");
     } else {
       alert("ERROR!!!!");
     }
   };
   let toLogin = () => {
-    navigate.push("/login");
+    navigate("/login");
   };
   let toRegister = () => {
-    navigate.push("/register");
+    navigate("/register");
   };
   let contextData = {
     user: user,
