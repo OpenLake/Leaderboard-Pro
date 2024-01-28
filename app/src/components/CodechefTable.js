@@ -126,7 +126,6 @@ export const CodechefTable = ({
   }
   useEffect(() => {
     getccfriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -138,7 +137,6 @@ export const CodechefTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
@@ -147,13 +145,11 @@ export const CodechefTable = ({
         })
       );
     }
-    // eslint-disable-next-line
   }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username

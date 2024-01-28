@@ -124,7 +124,6 @@ export const LeetcodeTable = ({
   }
   useEffect(() => {
     getltfriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -136,7 +135,6 @@ export const LeetcodeTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
@@ -145,13 +143,11 @@ export const LeetcodeTable = ({
         })
       );
     }
-    // eslint-disable-next-line
   }, [ltshowfriends, leetcodefriends, searchfield, leetcodeUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username

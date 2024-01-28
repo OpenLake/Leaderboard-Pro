@@ -1,6 +1,7 @@
-import React from 'react';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
+import React from "react";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import styles from "../styles/Footer.module.css";
 
 const Footer = () => {
   function Copyright(props) {
@@ -9,32 +10,29 @@ const Footer = () => {
         variant="body2"
         color="text.secondary"
         align="center"
-        style={{ color: 'white' }}
+        className={styles.textContainer}
         {...props}
       >
-        {'Copyright © '}
-        <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
-          LeaderBoard-Pro
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
+        <Link
+          color="inherit"
+          href="https://github.com/OpenLake/Leaderboard-Pro"
+          className={styles.link}
+        >
+          Leaderboard-Pro
+        </Link>
+        {" | Made with 🤍 by "}
+        <Link color="inherit" href="https://github.com/OpenLake/" className={styles.link}>
+          OpenLake
+        </Link>
       </Typography>
     );
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#1976d2',
-        padding:'0.5rem',
-        color: 'white',
-        position: 'fixed',
-        bottom: 0, // Align to the bottom
-        left: 0, // Optional, align to the left
-        right: 0, // Optional, align to the right
-      }}
-    >
-      <Copyright />
+    <div className={styles.container}>
+      <div className={styles.textContainer}>
+        <Copyright />
+      </div>
     </div>
   );
 };

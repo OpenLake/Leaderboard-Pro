@@ -1,21 +1,17 @@
-import { React, useContext } from "react";
+import React, { useContext } from "react";
 import AuthContext from "../utils/AuthContext.js";
 import SignUp from "./SignUp.js";
+import styles from "../styles/Register.module.css";
+
 const Register = ({ darkmode }) => {
   let { registerUser } = useContext(AuthContext);
   return (
-    <div
-      style={{
-        position: "absolute",
-        backgroundColor: darkmode ? "black" : "",
-        width: "100vw",
-        height: "93vh",
-      }}
-    >
-      <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
+    <div className={`${styles.container} ${darkmode && styles.darkmode}`}>
+      <div className={`${styles.content} ${darkmode && styles.darkmode}`}>
         <SignUp registerUser={registerUser} />
       </div>
     </div>
   );
 };
+
 export default Register;

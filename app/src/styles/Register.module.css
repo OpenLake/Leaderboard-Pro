@@ -1,0 +1,15 @@
+.container {
+  position: absolute;
+}
+
+.container.darkmode {
+  background-color: black;
+}
+
+.content {
+  width: 100vw;
+}
+
+.content.darkmode {
+  filter: invert(100);
+}
