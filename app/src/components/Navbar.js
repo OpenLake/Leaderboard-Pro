@@ -71,7 +71,7 @@ export const Navbar = ({ darkmode, toggle }) => {
 
   const { user, logoutUser } = useContext(AuthContext);
 
-  const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
+  const isMobile = useMediaQuery("(max-width: 860px)"); // Set the maximum width for mobile view
 
   return (
     <div className={classes.root}>
