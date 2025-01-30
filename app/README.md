@@ -3,21 +3,27 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Installations
+
 We need **pnpm** to run this application. ( you can simply use pnpm instead of yarn)
 
 For **linux**<br>
+
 #### `curl -f https://get.pnpm.io/v6.6.js | node - add --global pnpm`
 
 For **Windows** (Powershell)<br>
+
 #### `(Invoke-WebRequest 'https://get.pnpm.io/v6.6.js' -UseBasicParsing).Content | node - add --global pnpm`
 
 ## Using npm
+
 #### `npm install -g pnpm`
 
 ## To run the application
 
 #### `pnpm install` <br>
+
 In the project directory, you can run:<br>
+
 #### `pnpm start`
 
 This runs the app in the development mode.
@@ -73,4 +79,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 ### Deployment
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-

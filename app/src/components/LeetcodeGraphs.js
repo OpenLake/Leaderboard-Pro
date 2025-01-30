@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import Chart from "react-apexcharts";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import Chart from 'react-apexcharts';
 
 const LeetcodeGraphs = ({ darkmode }) => {
   const { username } = useParams();
@@ -14,7 +14,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     const fetchRankings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/contest-rankings/"
+          'http://localhost:8000/contest-rankings/'
         );
         const data = response.data;
 
@@ -22,7 +22,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
           .filter((rank) => rank.usernames === username)
           .map((rank) => {
             const variableNames = Object.keys(rank).filter(
-              (key) => key !== "usernames"
+              (key) => key !== 'usernames'
             );
             setContestID(variableNames);
             return {
@@ -33,7 +33,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
 
         setRankings(contestRankings);
       } catch (error) {
-        console.log("error", error);
+        console.log('error', error);
       }
     };
 
@@ -53,25 +53,25 @@ const LeetcodeGraphs = ({ darkmode }) => {
       setOptions({
         chart: {
           height: 350,
-          type: "line",
+          type: 'line',
           zoom: {
             enabled: false,
           },
-          ...(darkmode && { background: "#252f3d", foreColor: "#fff" }), // Set background and foreColor for dark mode
+          ...(darkmode && { background: '#252f3d', foreColor: '#fff' }), // Set background and foreColor for dark mode
         },
         dataLabels: {
           enabled: false,
         },
         stroke: {
-          curve: "straight",
+          curve: 'straight',
         },
         title: {
-          text: "Leetocde Contest Rankings",
-          align: "left",
+          text: 'Leetocde Contest Rankings',
+          align: 'left',
         },
         grid: {
           row: {
-            colors: ["#f3f3f3", "transparent"],
+            colors: ['#f3f3f3', 'transparent'],
             opacity: 0.5,
           },
         },
@@ -81,15 +81,15 @@ const LeetcodeGraphs = ({ darkmode }) => {
         // yaxis: {
         //   reversed: true,
         // },
-        tooltip:{
-            fillSeriesColor:true,
+        tooltip: {
+          fillSeriesColor: true,
         },
       });
     }
   }, [rankings, darkmode]);
 
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div style={{ marginTop: '100px' }}>
       {username}
       <Chart options={options} series={series} type="line" height={350} />
     </div>

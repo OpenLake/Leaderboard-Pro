@@ -6,12 +6,14 @@ import { useState, useEffect } from 'react';
  */
 
 const useScreenWidth = (ScreenWidthLimit) => {
-  const [isLessThanLimit,setisLessThanLimit] = useState(()=>window.innerWidth < ScreenWidthLimit);
+  const [isLessThanLimit, setisLessThanLimit] = useState(
+    () => window.innerWidth < ScreenWidthLimit
+  );
 
   useEffect(() => {
     const handleResize = () => {
-      setisLessThanLimit(()=>{
-          return window.innerWidth < ScreenWidthLimit;
+      setisLessThanLimit(() => {
+        return window.innerWidth < ScreenWidthLimit;
       });
     };
 
