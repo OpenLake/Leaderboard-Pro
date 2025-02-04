@@ -33,9 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# import dotenv,os
-import os
-# dotenv.load_dotenv()
+import dotenv,os
+dotenv.load_dotenv()
 
 
 
@@ -166,18 +165,33 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+POSTGRES_ENGINE = str(os.getenv("POSTGRES_ENGINE"))
+POSTGRES_NAME = str(os.getenv("POSTGRES_NAME"))
+POSTGRES_USER = str(os.getenv("POSTGRES_USER"))
+POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
+POSTGRES_HOST = str(os.getenv("POSTGRES_HOST"))
+POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '4xAma06Fi5kwv7YN',
-        'HOST': 'db.rpdttenqphkdyvpuoeky.supabase.co',
-        'PORT': '5432',
+        'ENGINE': POSTGRES_ENGINE,
+        'NAME': POSTGRES_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': '4xAma06Fi5kwv7YN',
+#         'HOST': 'db.rpdttenqphkdyvpuoeky.supabase.co',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
