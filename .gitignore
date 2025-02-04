@@ -1,7 +1,58 @@
-node_modules
-*.env
-*.lock
+# Global ignores (applies to the entire repo)
+.DS_Store
+Thumbs.db
 *.log
-*.env
-*.pyc
-*.sqlite3
+*.log.*
+*.lock
+*.bak
+*.tmp
+*.swp
+*.swo
+coverage/
+
+# -----------------------------
+# React Frontend (/app)
+# -----------------------------
+app/node_modules/
+app/.cache/
+app/.next/
+app/build/
+app/dist/
+app/yarn.lock
+app/pnpm-lock.yaml
+app/npm-debug.log*
+app/yarn-debug.log*
+app/yarn-error.log*
+app/.env
+app/.env.local
+app/.env.development
+app/.env.production
+app/.env.test
+app/.vscode/
+app/.idea/
+
+# -----------------------------
+# Django Backend (/api)
+# -----------------------------
+api/__pycache__/
+api/*.pyc
+api/*.pyo
+api/*.pyd
+api/db.sqlite3
+api/.venv/
+api/venv/
+api/.mypy_cache/
+api/.pytest_cache/
+api/.coverage
+api/htmlcov/
+api/.env
+api/.env.local
+api/.env.development
+api/.env.production
+api/.env.test
+api/.vscode/
+api/.idea/
+api/migrations/**  # Ignore Django migrations, except __init__.py (handled below)
+
+# Don't ignore __init__.py in migrations
+!api/**/migrations/__init__.py

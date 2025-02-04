@@ -119,50 +119,84 @@ def post_UserNames(request):
             'message':"Wrong"
         },status=status.HTTP_400_BAD_REQUEST)
         
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def registerUser(request):
+    logger.info("Received a request to register a user")
     
     try:
-        first_name = request.data["first_name"]
-        last_name=request.data['last_name']
-        email=request.data['email']
-        username = request.data["username"]
-        password = request.data["password"]
-        cc_uname=request.data["cc_uname"]
-        cf_uname=request.data["cf_uname"]
-        gh_uname=request.data["gh_uname"]
-        lt_uname=request.data["lt_uname"]
-        user = User.objects.create_user(username=username, password=password, first_name=first_name,last_name=last_name,email=email)
-        if first_name!="" and  email!="" and username!="" and password!="":
-            user.save()
-            userName=UserNames(user=user,cc_uname=cc_uname,cf_uname=cf_uname,gh_uname=gh_uname,lt_uname=lt_uname)
-            userName.save()
-            
-            if cc_uname!="":
-                cc_user = codechefUser(username=cc_uname)
-                cc_user.save()
-            if cf_uname!="":
-               
-                cf_user = codeforcesUser(username=cf_uname)
-               
-                cf_user.save()
-            if gh_uname!="":
-                gh_user = githubUser(username=gh_uname)
-                gh_user.save()
-            if lt_uname!="":
-                lt_user = LeetcodeUser(username=lt_uname)
-                lt_user.save()
+        # Log incoming data
+        logger.debug(f"Request data: {request.data}")
+        
+        first_name = request.data.get("first_name", "")
+        last_name = request.data.get("last_name", "")
+        email = request.data.get("email", "")
+        username = request.data.get("username", "")
+        password = request.data.get("password", "")
+        cc_uname = request.data.get("cc_uname", "")
+        cf_uname = request.data.get("cf_uname", "")
+        gh_uname = request.data.get("gh_uname", "")
+        lt_uname = request.data.get("lt_uname", "")
+        
+        if not all([first_name, email, username, password]):
+            logger.error("Missing required fields: first_name, email, username, or password")
             return Response({
-                    'status':200,
-                    'message':"Success",
-                },status=status.HTTP_200_OK)
-    except Exception as e:
-        print(e)
+                'status': 400,
+                'message': "Missing required fields"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create user
+        user = User.objects.create_user(
+            username=username, password=password, 
+            first_name=first_name, last_name=last_name, 
+            email=email
+        )
+        user.save()
+        logger.info(f"User {username} created successfully")
+        
+        # Save usernames
+        userName = UserNames(
+            user=user, cc_uname=cc_uname, 
+            cf_uname=cf_uname, gh_uname=gh_uname, 
+            lt_uname=lt_uname
+        )
+        userName.save()
+        logger.info(f"Usernames for {username} saved successfully")
+        
+        # Save platform-specific usernames
+        if cc_uname:
+            cc_user = codechefUser(username=cc_uname)
+            cc_user.save()
+            logger.info(f"CodeChef username {cc_uname} saved")
+        if cf_uname:
+            cf_user = codeforcesUser(username=cf_uname)
+            cf_user.save()
+            logger.info(f"Codeforces username {cf_uname} saved")
+        if gh_uname:
+            gh_user = githubUser(username=gh_uname)
+            gh_user.save()
+            logger.info(f"GitHub username {gh_uname} saved")
+        if lt_uname:
+            lt_user = LeetcodeUser(username=lt_uname)
+            lt_user.save()
+            logger.info(f"LeetCode username {lt_uname} saved")
+        
         return Response({
-            'status':400,
-            'message':"Wrong"
-        },status=status.HTTP_400_BAD_REQUEST)
+            'status': 200,
+            'message': "Success",
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.exception("An error occurred while registering the user")
+        return Response({
+            'status': 400,
+            'message': "An error occurred"
+        }, status=status.HTTP_400_BAD_REQUEST)
         
 
 
