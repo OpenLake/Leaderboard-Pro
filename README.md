@@ -92,10 +92,8 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 
 
 ## 🧑‍💻 Maintainers
-- [Gopal Ramesh Dahale](https://github.com/Gopal-Dahale)
-- [Kumar Shivendu](https://github.com/KShivendu)
-- [Aayush Krishnan](https://github.com/krishnan05)
-- [Aditya Dubey](https://github.com/Aditya062003)
+- [Bassam Adnan](https://github.com/bassamadnan)
+- [Amay Dixit](https://github.com/amaydixit11)
 
 ## 💻 Contributing Guidelines
 - Read [contributing guidelines](https://github.com/OpenLake/Leaderboard-Pro/blob/main/.github/CONTRIBUTING.md)
