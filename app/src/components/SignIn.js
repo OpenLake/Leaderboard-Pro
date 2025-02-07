@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AuthContext from '../Context/AuthContext.js';
+import { useAuth } from '../firebase/AuthContext.js';
+import { useNavigate } from 'react-router-dom';
 function Copyright(props) {
   return (
     <Typography
@@ -34,7 +36,13 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn({loginUser}) {
-  let {toRegister}=useContext(AuthContext);
+  let {toRegister}=useAuth();
+  const navigate = useNavigate();
+  const handleLogIn = async (e) => {
+    e.preventDefault();
+    await loginUser();
+    navigate("/");
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -55,7 +63,6 @@ export default function SignIn({loginUser}) {
           </Typography>
           <Box
             component="form"
-            onSubmit={loginUser}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -87,6 +94,7 @@ export default function SignIn({loginUser}) {
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleLogIn}
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In

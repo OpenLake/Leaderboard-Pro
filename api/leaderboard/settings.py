@@ -165,12 +165,12 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
-POSTGRES_ENGINE = str(os.getenv("POSTGRES_ENGINE"))
-POSTGRES_NAME = str(os.getenv("POSTGRES_NAME"))
-POSTGRES_USER = str(os.getenv("POSTGRES_USER"))
-POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
-POSTGRES_HOST = str(os.getenv("POSTGRES_HOST"))
-POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
+POSTGRES_ENGINE = "django.db.backends.postgresql"
+POSTGRES_NAME = "postgres"
+POSTGRES_USER = "postgres.rgusvtmhhyjhrgsakktd"
+POSTGRES_PASSWORD = "yuvrajrathod1202"
+POSTGRES_HOST = "aws-0-ap-south-1.pooler.supabase.com"
+POSTGRES_PORT = "5432"
 
 DATABASES = {
     'default': {

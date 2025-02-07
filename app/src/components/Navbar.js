@@ -1,17 +1,17 @@
 import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@mui/styles";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Link, useHistory } from "react-router-dom";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import MaterialUISwitch from "@material-ui/core/Switch";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { Link, useNavigate } from "react-router-dom";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import MaterialUISwitch from "@mui/material/Switch";
 import CodechefLogo from "../icons/codechef.png";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import CodeforcesLogo from "../icons/codeforces.svg";
@@ -20,7 +20,8 @@ import OpenlakeLogo from "../icons/openlake.svg";
 import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
 import CCPS from "../icons/CCPS.jpeg";
 import AuthContext from "../Context/AuthContext";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery } from "@mui/material";
+import { useAuth } from "../firebase/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,15 +49,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const Navbar = ({ darkmode, toggle }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const manageClick = () => {
-    history.push("/profile");
+    navigate("/profile");
   };
   const tohome = () => {
-    history.push("/");
+    navigate("/");
   };
   const toLogin = () => {
-    history.push("/login");
+    navigate("/login");
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -69,7 +70,7 @@ export const Navbar = ({ darkmode, toggle }) => {
     setMobileMenuOpen(false);
   };
 
-  const { user, logoutUser } = useContext(AuthContext);
+  const { user, logout } = useAuth();
 
   const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
 
@@ -241,7 +242,7 @@ export const Navbar = ({ darkmode, toggle }) => {
           <Button
             color="inherit"
             style={{ display: user ? "block" : "none", margin: "12px" }}
-            onClick={logoutUser}
+            onClick={logout}
           >
             Logout
           </Button>
