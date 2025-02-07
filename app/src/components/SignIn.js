@@ -66,7 +66,7 @@ export default function SignIn({loginUser}) {
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
+            {/* <TextField
               margin="normal"
               required
               fullWidth
@@ -85,11 +85,11 @@ export default function SignIn({loginUser}) {
               type="password"
               id="password"
               autoComplete="current-password"
-            />
-            <FormControlLabel
+            /> */}
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
@@ -97,7 +97,7 @@ export default function SignIn({loginUser}) {
               onClick={handleLogIn}
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Sign In With Google
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useAuth } from "../firebase/AuthContext.js";
+import { useNavigate } from "react-router-dom";
 function Copyright(props) {
   return (
     <Typography
@@ -33,6 +34,14 @@ const theme = createTheme();
 
 export default function SignUp({ registerUser }) {
   let { toLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleregisterUser = async (e) => {
+    e.preventDefault();
+    await registerUser();
+    navigate("/");
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -55,11 +64,10 @@ export default function SignUp({ registerUser }) {
           <Box
             component="form"
             noValidate
-            onSubmit={registerUser}
             sx={{ mt: 3 }}
           >
             <Grid2 container spacing={1}>
-              <Grid2 item xs={12} sm={6}>
+              {/* <Grid2 item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
                   size="small"
@@ -166,15 +174,16 @@ export default function SignUp({ registerUser }) {
                   autoComplete="new-lt_uname"
                   defaultValue=""
                 />
-              </Grid2>
+              </Grid2> */}
             </Grid2>
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleregisterUser}
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Sign Up With Google
             </Button>
             <Grid2 container alignItems="center" justifyContent="center">
               <Grid2 item>
