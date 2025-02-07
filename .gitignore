@@ -8,6 +8,7 @@ Thumbs.db
 *.tmp
 *.swp
 *.swo
+*.cpython-312.pyc
 coverage/
 
 # -----------------------------
