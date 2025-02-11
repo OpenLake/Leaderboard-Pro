@@ -179,10 +179,39 @@ class CodechefLeaderboard(
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+    
+    def get_leetcode_data(self, username):
+        url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                "ranking": data.get("ranking", 0),
+                "easy_solved": data.get("easySolved", 0),
+                "medium_solved": data.get("mediumSolved", 0),
+                "hard_solved": data.get("hardSolved", 0),
+                "avatar": data.get("avatar", ""),
+                "last_updated": datetime.now().timestamp(),
+            }
+
     queryset = LeetcodeUser.objects.all()
     serializer_class = LT_Serializer
     def get(self, request):
         lt_users = LeetcodeUser.objects.all()
+
+        for user in lt_users:
+            if user.is_outdated:
+                user_data = self.get_leetcode_data(user.username)
+                if user_data:
+                    user.ranking = user_data["ranking"]
+                    user.easy_solved = user_data["easy_solved"]
+                    user.medium_solved = user_data["medium_solved"]
+                    user.hard_solved = user_data["hard_solved"]
+                    user.avatar = user_data["avatar"]
+                    user.last_updated = datetime.now()
+                    user.save()
+
         serializer = LT_Serializer(lt_users, many=True)
         return Response(serializer.data)
 
