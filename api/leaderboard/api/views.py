@@ -116,7 +116,7 @@ def post_UserNames(request):
         print(e)
         return Response({
             'status':400,
-            'message':"Wrong"
+            'message':e,
         },status=status.HTTP_400_BAD_REQUEST)
         
 import logging

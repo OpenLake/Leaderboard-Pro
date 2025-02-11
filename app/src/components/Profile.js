@@ -3,11 +3,11 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
   import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Grid2 } from "@mui/material";
 
 function Copyright(props) {
   return (
@@ -51,8 +51,8 @@ export default function Profile({darkmode,update_addUsernames}) {
             onSubmit={update_addUsernames}
             sx={{ mt: 3 }}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid2 container spacing={2}>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   name="CodeChef Username"
@@ -61,8 +61,8 @@ export default function Profile({darkmode,update_addUsernames}) {
                   id="cc_uname"
                   autoComplete="new-cc_uname"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   name="Codeforces Username"
@@ -71,8 +71,8 @@ export default function Profile({darkmode,update_addUsernames}) {
                   id="cf_uname"
                   autoComplete="new-cf_uname"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   name="Github Username "
@@ -81,8 +81,8 @@ export default function Profile({darkmode,update_addUsernames}) {
                   id="gh_uname"
                   autoComplete="new-gh_uname"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   name="LeetCode Username "
@@ -91,8 +91,8 @@ export default function Profile({darkmode,update_addUsernames}) {
                   id="lt_uname"
                   autoComplete="new-lt_uname"
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
             <Button
               type="submit"
               fullWidth
@@ -102,8 +102,8 @@ export default function Profile({darkmode,update_addUsernames}) {
             >
               Update
             </Button>
-            <Grid container alignItems="center" justifyContent="center">
-            </Grid>
+            <Grid2 container alignItems="center" justifyContent="center">
+            </Grid2>
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />

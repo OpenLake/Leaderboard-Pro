@@ -45,29 +45,74 @@ MAX_DATE_TIMESTAMP = datetime.now().timestamp()
 from django.db import connection
 from django.db.utils import OperationalError
 
-class GithubUserAPI(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
-):
+import requests
+from rest_framework import generics, mixins, status
+from rest_framework.response import Response
+from .models import githubUser
+from .serializers import GH_Serializer
+
+class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for registered users
     """
-
     queryset = githubUser.objects.all()
     serializer_class = GH_Serializer
 
+    def fetch_github_data(self, username):
+        url = f"https://api.github.com/users/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                "avatar": data.get("avatar_url", ""),
+                "repositories": data.get("public_repos", 0),
+                "stars": self.fetch_starred_repos(username),
+            }
+        return None
+
+    def fetch_starred_repos(self, username):
+        url = f"https://api.github.com/users/{username}/starred"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return len(response.json())  # Count starred repos
+        return 0
+
     def get(self, request):
         gh_users = githubUser.objects.all()
+        if not gh_users.exists():
+            return Response({"message": "No users found"}, status=status.HTTP_404_NOT_FOUND)
+
+        for user in gh_users:
+            github_data = self.fetch_github_data(user.username)
+            if github_data:
+                user.avatar = github_data["avatar"]
+                user.repositories = github_data["repositories"]
+                user.stars = github_data["stars"]
+                user.save()
+
         serializer = GH_Serializer(gh_users, many=True)
-        return Response(serializer.data)    
+        return Response(serializer.data)
 
     def post(self, request):
-        username = request.data["username"]
-        gh_user = githubUser(username=username)
-        
-        gh_user.save()
-        return Response(
-            GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
+        username = request.data.get("username")
+        if not username:
+            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create user and fetch GitHub data
+        github_data = self.fetch_github_data(username)
+        if not github_data:
+            return Response({"error": "GitHub user not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        gh_user = githubUser(
+            username=username,
+            avatar=github_data["avatar"],
+            repositories=github_data["repositories"],
+            stars=github_data["stars"],
         )
+        gh_user.save()
+
+        return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
 
 
 class GithubOrganisationAPI(
