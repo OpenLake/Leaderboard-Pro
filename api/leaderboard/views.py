@@ -68,6 +68,8 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
                 "avatar": data.get("avatar_url", ""),
                 "repositories": data.get("public_repos", 0),
                 "stars": self.fetch_starred_repos(username),
+                "contributions": data.get("contributions", 0),
+                "last_updated": datetime.now().timestamp(),
             }
         return None
 
@@ -89,6 +91,8 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
                 user.avatar = github_data["avatar"]
                 user.repositories = github_data["repositories"]
                 user.stars = github_data["stars"]
+                user.contributions = github_data["contributions"]
+                user.last_updated = github_data["last_updated"]
                 user.save()
 
         serializer = GH_Serializer(gh_users, many=True)
@@ -109,6 +113,8 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
             avatar=github_data["avatar"],
             repositories=github_data["repositories"],
             stars=github_data["stars"],
+            contributions=github_data["contributions"],
+            last_updated=github_data["last_updated"],
         )
         gh_user.save()
 
