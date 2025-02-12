@@ -58,6 +58,14 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
     queryset = githubUser.objects.all()
     serializer_class = GH_Serializer
 
+    def fetch_github_contributions(self, username):
+        url = f"https://github-contributions-api.deno.dev/{username}.json"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("totalContributions", 0)
+        return 0
+
     def fetch_github_data(self, username):
         url = f"https://api.github.com/users/{username}"
         response = requests.get(url)
@@ -68,7 +76,7 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
                 "avatar": data.get("avatar_url", ""),
                 "repositories": data.get("public_repos", 0),
                 "stars": self.fetch_starred_repos(username),
-                "contributions": data.get("contributions", 0),
+                "contributions": self.fetch_github_contributions(username),
                 "last_updated": datetime.now().timestamp(),
             }
         return None
