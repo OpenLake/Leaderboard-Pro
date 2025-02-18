@@ -1,6 +1,7 @@
 PNPM ?= pnpm
 PYTHON ?= python3
 PIP ?= pip3
+MAKE ?= make
 
 install:
 	cd api/ && $(PIP) install -r requirements.txt

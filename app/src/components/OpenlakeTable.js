@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@mui/styles";
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableRow,
   Paper,
   Link,
-} from "@material-ui/core";
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";

@@ -8,6 +8,7 @@ Thumbs.db
 *.tmp
 *.swp
 *.swo
+*.cpython-312.pyc
 coverage/
 
 # -----------------------------
@@ -56,3 +57,4 @@ api/migrations/**  # Ignore Django migrations, except __init__.py (handled below
 
 # Don't ignore __init__.py in migrations
 !api/**/migrations/__init__.py
+node_modules
