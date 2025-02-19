@@ -203,10 +203,40 @@ class CodeforcesLeaderboard(
 class CodechefLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+
+    def get_codechef_data(self, username):
+        url = f"https://codechef-api.vercel.app/handle/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == 200:
+                return {
+                    "rating": data.get("currentRating", 0),
+                    "highest_rating": data.get("highestRating", 0),
+                    "global_rank": data.get("globalRank", -1),
+                    "country_rank": data.get("countryRank", -1),
+                    "avatar": data.get("profile", ""),
+                    "last_updated": datetime.now().timestamp(),
+                }
+
     queryset = codechefUser.objects.all()
     serializer_class = CC_Serializer
+
     def get(self, request):
         cc_users = codechefUser.objects.all()
+
+        for user in cc_users:
+            user_data = self.get_codechef_data(user.username)
+            if user_data:
+                user.rating = user_data["rating"]
+                user.max_rating = user_data["highest_rating"]
+                user.Global_rank = user_data["global_rank"]
+                user.Country_rank = user_data["country_rank"]
+                user.avatar = user_data["avatar"]
+                user.last_updated = datetime.now()
+                user.save()
+
         serializer = CC_Serializer(cc_users, many=True)
         return Response(serializer.data)
 
@@ -217,6 +247,7 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+
         
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
