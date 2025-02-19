@@ -1,6 +1,6 @@
 import { createContext,useState } from "react";
-import jwt_decode from  "jwt-decode"
-import {useHistory} from "react-router-dom"
+import {jwtDecode} from  "jwt-decode"
+import {useNavigate} from "react-router-dom"
 
 
 
@@ -9,8 +9,8 @@ export default AuthContext;
 
 export const AuthProvider=({children})=>{
     let [authTokens,setAuthTokens]=useState(localStorage.getItem('authTokens')?JSON.parse(localStorage.getItem('authTokens')):null)
-    let [user,setUser]=useState(authTokens?jwt_decode(authTokens.access):null)
-    const history=useHistory()
+    let [user,setUser]=useState(authTokens?jwtDecode(authTokens.access):null)
+    const history=useNavigate()
     let loginUser=async (e)=>
     {
         e.preventDefault();
@@ -27,7 +27,7 @@ export const AuthProvider=({children})=>{
         if(response.status===200)
         {
             setAuthTokens(data)
-            setUser(jwt_decode(data.access))
+            setUser(jwtDecode(data.access))
             localStorage.setItem('authTokens',JSON.stringify(data))
             history.push('/')
         }else{
@@ -70,7 +70,7 @@ export const AuthProvider=({children})=>{
             if(response.status===200)
             {
                 setAuthTokens(data)
-                setUser(jwt_decode(data.access))
+                setUser(jwtDecode(data.access))
                 localStorage.setItem('authTokens',JSON.stringify(data))
                 history.push('/')
             }else{

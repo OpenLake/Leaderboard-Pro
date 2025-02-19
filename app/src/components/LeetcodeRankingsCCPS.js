@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@mui/styles";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   // Link,
   Select,
   MenuItem,
-} from "@material-ui/core";
+} from "@mui/material";
 
 const useStyles = makeStyles({
   table: {
