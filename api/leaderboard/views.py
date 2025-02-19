@@ -145,14 +145,48 @@ class GithubOrganisationAPI(
         return Response(serializer.data)
 
 
+from rest_framework import mixins, generics, status
+from rest_framework.response import Response
+import requests
+from .models import codeforcesUser
+from .serializers import CF_Serializer
+
+MAX_DATE_TIMESTAMP = 0  # Define this if needed
+
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+
+    def get_codeforces_data(self, username):
+        url = f"https://codeforces.com/api/user.info?handles={username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK" and data.get("result"):
+                user_data = data["result"][0]
+                return {
+                    "rating": user_data.get("rating", 0),
+                    "max_rating": user_data.get("maxRating", 0),
+                    "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
+                    "avatar": user_data.get("titlePhoto", ""),
+                }
+
     queryset = codeforcesUser.objects.all()
     serializer_class = CF_Serializer
 
     def get(self, request):
         cf_users = codeforcesUser.objects.all()
+
+        for user in cf_users:
+            user_data = self.get_codeforces_data(user.username)
+            if user_data:
+                user.rating = user_data["rating"]
+                user.max_rating = user_data["max_rating"]
+                user.last_activity = user_data["last_activity"]
+                user.avatar = user_data["avatar"]
+                user.save()
+
         serializer = CF_Serializer(cf_users, many=True)
         return Response(serializer.data)
 
@@ -160,10 +194,10 @@ class CodeforcesLeaderboard(
         username = request.data["username"]
         cf_user = codeforcesUser(username=username)
         cf_user.save()
-
         return Response(
             CF_Serializer(cf_user).data, status=status.HTTP_201_CREATED
         )
+
 
 
 class CodechefLeaderboard(
