@@ -218,6 +218,7 @@ export const CodeforcesTable = ({
                 <StyledTableCell>Rating</StyledTableCell>
                 <StyledTableCell>Max rating</StyledTableCell>
                 <StyledTableCell>Last activity</StyledTableCell>
+                <StyledTableCell>Total Solved</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
@@ -253,6 +254,7 @@ export const CodeforcesTable = ({
                         <StyledTableCell>
                           {timeConverter(cfUser.last_activity)}
                         </StyledTableCell>
+                        <StyledTableCell>{cfUser.total_solved}</StyledTableCell>
                         <StyledTableCell>
                           <Button
                             variant="contained"
