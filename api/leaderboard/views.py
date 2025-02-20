@@ -156,6 +156,36 @@ MAX_DATE_TIMESTAMP = 0  # Define this if needed
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+    def get_codeforces_submission_stats(self, username):
+        """
+        Fetches the total number of submissions and unique solved problems for a given Codeforces username.
+        
+        Returns:
+            dict: {
+                "total_solved": int,
+                "total_submissions": int
+            }
+        """
+        url = f"https://codeforces.com/api/user.status?handle={username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK":
+                total_submissions = len(data["result"])  # Count all submissions
+                solved_problems = set()
+
+                for submission in data["result"]:
+                    if submission.get("verdict") == "OK":
+                        problem_id = f"{submission['problem'].get('contestId', '')}{submission['problem'].get('index', '')}"
+                        solved_problems.add(problem_id)
+
+                return {
+                    "total_solved": len(solved_problems),  # Count unique problems solved
+                    "total_submissions": total_submissions
+                }
+        
+        return {"total_solved": 0, "total_submissions": 0}
 
     def get_codeforces_data(self, username):
         url = f"https://codeforces.com/api/user.info?handles={username}"
@@ -180,12 +210,16 @@ class CodeforcesLeaderboard(
 
         for user in cf_users:
             user_data = self.get_codeforces_data(user.username)
+            user_submission_stats = self.get_codeforces_submission_stats(user.username)
+            if user_submission_stats:
+                user.total_solved = user_submission_stats["total_solved"]
+                user.total_submissions = user_submission_stats["total_submissions"]
             if user_data:
                 user.rating = user_data["rating"]
                 user.max_rating = user_data["max_rating"]
                 user.last_activity = user_data["last_activity"]
                 user.avatar = user_data["avatar"]
-                user.save()
+            user.save()
 
         serializer = CF_Serializer(cf_users, many=True)
         return Response(serializer.data)
