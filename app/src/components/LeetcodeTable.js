@@ -196,6 +196,7 @@ export const LeetcodeTable = ({
                 <StyledTableCell>Easy Solved</StyledTableCell>
                 <StyledTableCell>Medium Solved</StyledTableCell>
                 <StyledTableCell>Hard Solved</StyledTableCell>
+                <StyledTableCell>Total Solved</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
@@ -229,6 +230,7 @@ export const LeetcodeTable = ({
                     <StyledTableCell>{cfUser.medium_solved}</StyledTableCell>
 
                     <StyledTableCell>{cfUser.hard_solved}</StyledTableCell>
+                    <StyledTableCell>{cfUser.total_solved}</StyledTableCell>
                     <StyledTableCell>
                       <Button
                         variant="contained"

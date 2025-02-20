@@ -300,6 +300,7 @@ class LeetcodeLeaderboard(
                 "hard_solved": data.get("hardSolved", 0),
                 "avatar": data.get("avatar", ""),
                 "last_updated": datetime.now().timestamp(),
+                "total_solved": data.get("totalSolved", 0),
             }
 
     queryset = LeetcodeUser.objects.all()
@@ -316,6 +317,7 @@ class LeetcodeLeaderboard(
                     user.medium_solved = user_data["medium_solved"]
                     user.hard_solved = user_data["hard_solved"]
                     user.avatar = user_data["avatar"]
+                    user.total_solved = user_data["total_solved"]
                     user.last_updated = datetime.now()
                     user.save()
 

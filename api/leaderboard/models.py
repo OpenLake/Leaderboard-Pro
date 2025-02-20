@@ -127,6 +127,7 @@ class LeetcodeUser(models.Model):
     hard_solved = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+    total_solved = models.PositiveIntegerField(default=0)
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
