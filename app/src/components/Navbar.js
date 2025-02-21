@@ -75,7 +75,7 @@ export const Navbar = ({ darkmode, toggle }) => {
   const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ zIndex: 1000 }}>
       <AppBar
         position="static"
         style={{

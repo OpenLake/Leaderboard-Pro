@@ -1,15 +1,23 @@
-import {React,useContext} from 'react'
+import {React,useContext, useState} from 'react'
 import AuthContext from '../Context/AuthContext.js';
 import Profile from './Profile.js'
 import { useAuth } from '../firebase/AuthContext.js';
+import Goals from './Goals.js';
 
 const Profile1 = ({darkmode}) => {
   let {update_addUsernames}=useAuth();
+  const [update, setUpdate] = useState(false);
   return (
-    <div style={{position:"absolute",backgroundColor:darkmode?"black":"", width:"100vw",height:"93vh"}}>
-      <div style={{width:"100vw",filter:darkmode?"invert(100)":""}}>
+    <div style={{position:"absolute",backgroundColor:darkmode?"black":"", width:"100vw",height:"92vh", top: "8vh", zIndex: "1"}}>
+      <button onClick={()=>setUpdate(!update)} style={{position:"absolute",top:"10px",right:"10px",backgroundColor:!darkmode ? "#39ace7" : "#2F4562",color:darkmode?"white":"black"}}>Update usernames</button>
+      {update && <div style={{width:"100vw",filter:darkmode?"invert(100)":""}}>
         <Profile darkmode={darkmode} update_addUsernames={update_addUsernames}/>
-      </div>
+      </div>}
+      {
+        !update && <div style={{width:"100vw",filter:darkmode?"invert(100)":""}}>
+          <Goals />
+        </div>
+      }
     </div>
   )
 }
