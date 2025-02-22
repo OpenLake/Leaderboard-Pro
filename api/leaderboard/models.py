@@ -149,3 +149,12 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64,default="")
+
+
+class UserTasks(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    problem = models.PositiveIntegerField(default=0)
+    dueDate = models.DateTimeField()
+    title = models.CharField(max_length=64)
+    discription = models.CharField(max_length=256)
+    completed = models.BooleanField(default=False)
