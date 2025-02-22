@@ -201,11 +201,12 @@ const Goals = ({ darkmode }) => {
   // Overall container style (centered, 33vw max on large devices, full on small screens)
   const containerStyle = {
     width: "100%",
-    maxWidth: "33vw",
+    maxWidth: "100vw",
     minWidth: "300px",
-    margin: "0 auto",
+    // margin: "0 auto",
     height: "92vh",
     display: "flex",
+    top: "8vh",
     flexDirection: "row",
     backgroundColor: bgColor,
     color: textColor,
@@ -386,7 +387,9 @@ const Goals = ({ darkmode }) => {
 
   // Delete a task
   const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    if(window.confirm("Are you sure you want to delete this task?")){
+      setTasks(tasks.filter((task) => task.id !== id));
+    }
   };
 
   // Increment solved count for a task (“Solve Problem” action)
@@ -430,7 +433,7 @@ const Goals = ({ darkmode }) => {
       {/* Sidebar */}
       <div style={sidebarStyle}>
         <h2 style={{ fontSize: "1.5em", marginBottom: "20px" }}>
-          Google Tasks
+          Tasks
         </h2>
         <button
           style={tabButtonStyle(activeTab === "tasks")}
@@ -524,7 +527,7 @@ const Goals = ({ darkmode }) => {
                             Progress: {task.solved}/{task.target} (
                             {getProgressPercentage(task)}%)
                           </div>
-                          {task.solved < task.target && !task.completed && (
+                          {/* {task.solved < task.target && !task.completed && (
                             <button
                               onClick={() => solveProblem(task.id)}
                               style={{
@@ -539,9 +542,9 @@ const Goals = ({ darkmode }) => {
                             >
                               Solve Problem
                             </button>
-                          )}
+                          )} */}
                           <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
-                            <button
+                            {/* <button
                               onClick={() => toggleTaskCompleted(task.id)}
                               style={{
                                 padding: "6px 10px",
@@ -555,7 +558,7 @@ const Goals = ({ darkmode }) => {
                               title="Mark as Completed"
                             >
                               ✓
-                            </button>
+                            </button> */}
                             <button
                               onClick={() => deleteTask(task.id)}
                               style={{
@@ -652,7 +655,7 @@ const Goals = ({ darkmode }) => {
                             Progress: {task.solved}/{task.target} (
                             {getProgressPercentage(task)}%)
                           </div>
-                          {task.solved < task.target && !task.completed && (
+                          {/* {task.solved < task.target && !task.completed && (
                             <button
                               onClick={() => solveProblem(task.id)}
                               style={{
@@ -667,9 +670,9 @@ const Goals = ({ darkmode }) => {
                             >
                               Solve Problem
                             </button>
-                          )}
+                          )} */}
                           <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
-                            <button
+                            {/* <button
                               onClick={() => toggleTaskCompleted(task.id)}
                               style={{
                                 padding: "6px 10px",
@@ -683,7 +686,7 @@ const Goals = ({ darkmode }) => {
                               title="Mark as Completed"
                             >
                               ✓
-                            </button>
+                            </button> */}
                             <button
                               onClick={() => deleteTask(task.id)}
                               style={{
