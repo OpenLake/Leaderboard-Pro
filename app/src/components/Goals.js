@@ -22,15 +22,7 @@ const Goals = ({ darkmode }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-  // fetch tasks from database
 
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/tasks/")
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       setTasks(res);
-  //     });
-  // }, []);
 
   // New task state includes target and initializes solved count to 0
   const [newTask, setNewTask] = useState({
@@ -40,6 +32,16 @@ const Goals = ({ darkmode }) => {
     dueDate: "",
     target: 0,
   });
+
+    // fetch tasks from database
+
+  // useEffect(() => {
+  //   fetch("http://localhost:8000/tasks/")
+  //     .then((res) => res.json())
+  //     .then((res) => {
+  //       setTasks(res);
+  //     });
+  // }, [newTask]);
 
   // Colors based on dark mode
   const bgColor = darkmode ? "#202124" : "#fff";
