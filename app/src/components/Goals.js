@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import NewTaskModal from "./NewTaskModal";
 
@@ -20,6 +20,18 @@ const Goals = ({ darkmode }) => {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskText, setEditingTaskText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  // fetch tasks from database
+
+  // useEffect(() => {
+  //   fetch("http://localhost:8000/tasks/")
+  //     .then((res) => res.json())
+  //     .then((res) => {
+  //       setTasks(res);
+  //     });
+  // }, []);
+
   // New task state includes target and initializes solved count to 0
   const [newTask, setNewTask] = useState({
     text: "",
