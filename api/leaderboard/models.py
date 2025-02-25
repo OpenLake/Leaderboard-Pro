@@ -152,7 +152,7 @@ class UserNames(models.Model):
 
 
 class UserTasks(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     problem = models.PositiveIntegerField(default=0)
     dueDate = models.DateTimeField()
     title = models.CharField(max_length=64)

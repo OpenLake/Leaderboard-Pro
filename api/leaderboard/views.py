@@ -5,14 +5,15 @@ from leaderboard.models import (
     codechefUser,
     openlakeContributor,
     LeetcodeUser,
-
+    UserTasks,
 )
 from leaderboard.serializers import (
     CF_Serializer,
     CC_Serializer,
     GH_Serializer,
     OL_Serializer,
-    LT_Serializer
+    LT_Serializer,
+    Task_Serializer,
 )
 from knox.models import AuthToken
 from rest_framework.response import Response
@@ -366,3 +367,32 @@ def LeetcodeCCPSAPIView(request):
    
    
     return JsonResponse(data, safe=False)
+
+
+class UserTasksManage(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
+    
+    def get(self, request):
+        user_tasks = UserTasks.objects.all()
+        req_username = request.data["username"]
+        tasks = []
+        for task in user_tasks:
+            if task.user.username == req_username:
+                tasks.append(task)
+
+        return tasks
+    
+    def post(self, request):
+        user_task = UserTasks(
+            username=request.data["username"],
+            problem=request.data["problem"],
+            dueDate=request.data["dueDate"],
+            title=request.data["title"],
+            discription=request.data["discription"],
+            completed=request.data["completed"]
+        )
+        user_task.save()
+        return Response(
+            Task_Serializer(user_task).data, status=status.HTTP_201_CREATED
+        )
