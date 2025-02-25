@@ -186,7 +186,7 @@ const Goals = ({ darkmode }) => {
   // New tasks get default values: solved = 0, starred = false.
   const handleCreateTask = () => {
     const task = {
-      username: "yuvraj",
+      username: user.username,
       title: newTask.text,
       discription: newTask.details,
       dueDate: newTask.dueDate,

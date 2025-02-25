@@ -395,13 +395,14 @@ class UserTasksManage(APIView):  # Inherit from APIView
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         user_task = UserTasks.objects.create(
-            user=user,
+            username=user,
             problem=request.data["problem"],
             dueDate=request.data["dueDate"],
             title=request.data["title"],
             discription=request.data["discription"],
             completed=request.data["completed"],
             starred=request.data["starred"],
+            solved=request.data["solved"]
         )
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)
