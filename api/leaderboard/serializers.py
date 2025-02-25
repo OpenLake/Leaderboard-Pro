@@ -113,12 +113,10 @@ class OL_Serializer(serializers.ModelSerializer):
 class Name_Serializer(serializers.Serializer):
     friendName = serializers.CharField(max_length=100)
 
-class Task_Serializer(serializers.Serializer):
-    
+class Task_Serializer(serializers.ModelSerializer):
     class Meta:
         model = UserTasks
-        fields = '__all__'
-
+        fields = '__all__' 
 class Task_Update_Serializer(serializers.Serializer):
     class Meta:
         model = UserTasks

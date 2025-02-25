@@ -368,31 +368,40 @@ def LeetcodeCCPSAPIView(request):
    
     return JsonResponse(data, safe=False)
 
+from rest_framework import mixins, generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from .serializers import Task_Serializer
 
-class UserTasksManage(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
-):
-    
-    def get(self, request):
-        user_tasks = UserTasks.objects.all()
-        req_username = request.data["username"]
-        tasks = []
-        for task in user_tasks:
-            if task.user.username == req_username:
-                tasks.append(task)
 
-        return tasks
-    
-    def post(self, request):
-        user_task = UserTasks(
-            username=request.data["username"],
+class UserTasksManage(APIView):  # Inherit from APIView
+    def get(self, request, *args, **kwargs):
+        req_username = request.query_params.get("username")
+        print("Received username:", req_username)
+        if not req_username:
+            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_tasks = UserTasks.objects.filter(username__username=req_username)
+        print("Filtered tasks:", user_tasks)
+        serialized_tasks = Task_Serializer(user_tasks, many=True)
+        
+        return Response(serialized_tasks.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user_task = UserTasks.objects.create(
+            user=user,
             problem=request.data["problem"],
             dueDate=request.data["dueDate"],
             title=request.data["title"],
             discription=request.data["discription"],
-            completed=request.data["completed"]
+            completed=request.data["completed"],
+            starred=request.data["starred"],
         )
-        user_task.save()
-        return Response(
-            Task_Serializer(user_task).data, status=status.HTTP_201_CREATED
-        )
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)

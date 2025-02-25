@@ -152,9 +152,12 @@ class UserNames(models.Model):
 
 
 class UserTasks(models.Model):
-    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     problem = models.PositiveIntegerField(default=0)
+    # startDate = models.DateTimeField(auto_now_add=True)
     dueDate = models.DateTimeField()
     title = models.CharField(max_length=64)
     discription = models.CharField(max_length=256)
     completed = models.BooleanField(default=False)
+    starred = models.BooleanField(default=False)
+    solved = models.PositiveIntegerField(default=0)

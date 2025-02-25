@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import NewTaskModal from "./NewTaskModal";
+import { useAuth } from "../firebase/AuthContext";
 
 // Helper to reorder tasks after drag-and-drop
 const reorder = (list, startIndex, endIndex) => {
@@ -20,6 +21,7 @@ const Goals = ({ darkmode }) => {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskText, setEditingTaskText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useAuth();
 
 
 
@@ -35,13 +37,15 @@ const Goals = ({ darkmode }) => {
 
     // fetch tasks from database
 
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/tasks/")
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       setTasks(res);
-  //     });
-  // }, [newTask]);
+  useEffect(() => {
+    console.log("user", user.username);
+    fetch(`http://localhost:8000/usertasks/?username=${user.username}`)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        setTasks(res);
+      });
+  }, [newTask]);
 
   // Colors based on dark mode
   const bgColor = darkmode ? "#202124" : "#fff";
@@ -182,17 +186,38 @@ const Goals = ({ darkmode }) => {
   // New tasks get default values: solved = 0, starred = false.
   const handleCreateTask = () => {
     const task = {
-      id: Date.now().toString(),
-      text: newTask.text,
-      details: newTask.details,
-      startDate: newTask.startDate,
+      username: "yuvraj",
+      title: newTask.text,
+      discription: newTask.details,
       dueDate: newTask.dueDate,
       completed: false,
       starred: false,
-      target: newTask.target,
+      problem: newTask.target,
       solved: 0,
     };
-    setTasks([...tasks, task]);
+    const addTask = async (task) => {
+      console.log(task)
+      try {
+        const response = await fetch("http://localhost:8000/usertasks/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task), // Convert task object to JSON
+        });
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    
+        const newTask = await response.json();
+        setTasks((prevTasks) => [...prevTasks, newTask]); // Update state
+        console.log("Task added:", newTask);
+      } catch (error) {
+        console.error("Error adding task:", error);
+      }
+    };
+    addTask(task);    
     setNewTask({
       text: "",
       details: "",
@@ -260,9 +285,9 @@ const Goals = ({ darkmode }) => {
   };
 
   // Filter tasks by active or completed
-  const activeTasks = tasks.filter((task) => !task.completed);
-  const starredTasks = tasks.filter((task) => task.starred);
-  const completedTasks = tasks.filter((task) => task.completed);
+  const activeTasks = Array.isArray(tasks) ? tasks.filter((task) => !task.completed) : [];
+  const starredTasks = Array.isArray(tasks) ? tasks.filter((task) => task.starred) : [];
+  const completedTasks = Array.isArray(tasks) ? tasks.filter((task) => task.completed) : [];
 
   // Drag-and-drop handler for active tasks reordering
   const onDragEnd = (result) => {
