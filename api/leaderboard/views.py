@@ -406,3 +406,23 @@ class UserTasksManage(APIView):  # Inherit from APIView
         )
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)
+    
+    def put(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update fields dynamically
+        for field in ["problem", "dueDate", "title", "discription", "completed", "starred", "solved"]:
+            if field in request.data:
+                setattr(user_task, field, request.data[field])
+
+        user_task.save()
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)

@@ -251,7 +251,36 @@ const Goals = ({ darkmode }) => {
         task.id === id ? { ...task, starred: !task.starred } : task
       )
     );
-  };
+    
+    const task = tasks.find((task) => task.id === id); // Use find() instead of filter()
+    if (!task) {
+      console.error("Task not found");
+      return;
+    }
+
+    console.log(task);
+
+    fetch("http://localhost:8000/usertasks/", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: user.username,
+        problem: task.problem,
+        dueDate: task.dueDate,
+        title: task.title,
+        discription: task.discription,
+        completed: task.completed,
+        starred: !task.starred, // Update the starred field correctly
+        solved: task.solved,
+      })
+    })
+    .then(response => response.json())
+    .then(data => console.log("Updated Task:", data))
+    .catch(error => console.error("Error updating task:", error));
+};
+
 
   // Toggle task completed status
   const toggleTaskCompleted = (id) => {
