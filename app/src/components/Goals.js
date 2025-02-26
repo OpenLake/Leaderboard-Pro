@@ -30,8 +30,8 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
     console.log(leetcodeUsers)
     const solvedc = codeforcesUsers.find((u) => u.username==="Yuvraj_Rathod");
     const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
-    totalSolved += solvedc.total_solved;
-    totalSolved += solvedl.total_solved;
+    // totalSolved += solvedc.total_solved;
+    // totalSolved += solvedl.total_solved;
     console.log(totalSolved);
     console.log(solvedc);
     console.log(solvedl);
@@ -207,6 +207,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
       starred: false,
       problem: newTask.target,
       solved: 0,
+      totalSolvedNow: totalSolvedNow,
     };
     const addTask = async (task) => {
       console.log(task)
