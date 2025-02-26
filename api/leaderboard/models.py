@@ -161,3 +161,4 @@ class UserTasks(models.Model):
     completed = models.BooleanField(default=False)
     starred = models.BooleanField(default=False)
     solved = models.PositiveIntegerField(default=0)
+    total_solved_now=models.PositiveBigIntegerField(default=0)

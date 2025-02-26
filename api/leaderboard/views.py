@@ -402,7 +402,8 @@ class UserTasksManage(APIView):  # Inherit from APIView
             discription=request.data["discription"],
             completed=request.data["completed"],
             starred=request.data["starred"],
-            solved=request.data["solved"]
+            solved=request.data["solved"],
+            total_solved_now=request.data["totalSolvedNow"],
         )
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)
