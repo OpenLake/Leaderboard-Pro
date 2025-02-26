@@ -518,9 +518,9 @@ const Goals = ({ darkmode }) => {
                               </span>
                             )}
                           </div>
-                          {task.details && (
+                          {task.title && (
                             <div style={taskDetailsStyle}>
-                              {task.details}
+                              {task.title}
                             </div>
                           )}
                           <div style={{ marginTop: "8px", display: "flex", alignItems: "center" }}>
@@ -529,7 +529,7 @@ const Goals = ({ darkmode }) => {
                             </span>
                           </div>
                           <div style={progressStyle}>
-                            Progress: {task.solved}/{task.target} (
+                            Progress: {task.solved}/{task.problem} (
                             {getProgressPercentage(task)}%)
                           </div>
                           {/* {task.solved < task.target && !task.completed && (
@@ -616,11 +616,11 @@ const Goals = ({ darkmode }) => {
                     {task.text}
                   </span>
                 </div>
-                {task.details && (
-                  <div style={taskDetailsStyle}>{task.details}</div>
+                {task.title && (
+                  <div style={taskDetailsStyle}>{task.title}</div>
                 )}
                 <div style={progressStyle}>
-                  Progress: {task.solved}/{task.target} (
+                  Progress: {task.solved}/{task.problem} (
                   {getProgressPercentage(task)}%)
                 </div>
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
