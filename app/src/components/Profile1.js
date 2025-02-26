@@ -4,7 +4,7 @@ import Profile from './Profile.js'
 import { useAuth } from '../firebase/AuthContext.js';
 import Goals from './Goals.js';
 
-const Profile1 = ({darkmode}) => {
+const Profile1 = ({darkmode,leetcodeUsers,codeforcesUsers}) => {
   let {update_addUsernames}=useAuth();
   const [update, setUpdate] = useState(false);
   return (
@@ -15,7 +15,7 @@ const Profile1 = ({darkmode}) => {
       </div>}
       {
         !update && <div style={{width:"100vw",filter:darkmode?"invert(100)":""}}>
-          <Goals darkmode={""}/>
+          <Goals darkmode={""} leetcodeUsers={leetcodeUsers} codeforcesUsers={codeforcesUsers}/>
         </div>
       }
     </div>

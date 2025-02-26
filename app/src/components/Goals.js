@@ -13,7 +13,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 // Modal Component for creating a new task
 
-const Goals = ({ darkmode }) => {
+const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
   // TASK STRUCTURE:
   // { id, text, details, startDate, dueDate, completed, starred, target, solved }
   const [tasks, setTasks] = useState([]);
@@ -22,8 +22,21 @@ const Goals = ({ darkmode }) => {
   const [editingTaskText, setEditingTaskText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
+  const [totalSolvedNow, setTotalSolvedNow] = useState(0);
 
-
+  useEffect(() => {
+    let totalSolved = 0;
+    console.log(codeforcesUsers);
+    console.log(leetcodeUsers)
+    const solvedc = codeforcesUsers.find((u) => u.username==="Yuvraj_Rathod");
+    const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
+    totalSolved += solvedc.total_solved;
+    totalSolved += solvedl.total_solved;
+    console.log(totalSolved);
+    console.log(solvedc);
+    console.log(solvedl);
+    setTotalSolvedNow(totalSolved);
+  }, [])
 
 
   // New task state includes target and initializes solved count to 0
@@ -273,6 +286,7 @@ const Goals = ({ darkmode }) => {
         discription: task.discription,
         completed: task.completed,
         starred: !task.starred, // Update the starred field correctly
+        totalSolvedNow: totalSolvedNow,
         solved: task.solved,
       })
     })
