@@ -45,29 +45,88 @@ MAX_DATE_TIMESTAMP = datetime.now().timestamp()
 from django.db import connection
 from django.db.utils import OperationalError
 
-class GithubUserAPI(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
-):
+import requests
+from rest_framework import generics, mixins, status
+from rest_framework.response import Response
+from .models import githubUser
+from .serializers import GH_Serializer
+
+class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     """
     Collects Github data for registered users
     """
-
     queryset = githubUser.objects.all()
     serializer_class = GH_Serializer
 
+    def fetch_github_contributions(self, username):
+        url = f"https://github-contributions-api.deno.dev/{username}.json"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("totalContributions", 0)
+        return 0
+
+    def fetch_github_data(self, username):
+        url = f"https://api.github.com/users/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                "avatar": data.get("avatar_url", ""),
+                "repositories": data.get("public_repos", 0),
+                "stars": self.fetch_starred_repos(username),
+                "contributions": self.fetch_github_contributions(username),
+                "last_updated": datetime.now().timestamp(),
+            }
+        return None
+
+    def fetch_starred_repos(self, username):
+        url = f"https://api.github.com/users/{username}/starred"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return len(response.json())  # Count starred repos
+        return 0
+
     def get(self, request):
         gh_users = githubUser.objects.all()
+        if not gh_users.exists():
+            return Response({"message": "No users found"}, status=status.HTTP_404_NOT_FOUND)
+
+        for user in gh_users:
+            github_data = self.fetch_github_data(user.username)
+            if github_data:
+                user.avatar = github_data["avatar"]
+                user.repositories = github_data["repositories"]
+                user.stars = github_data["stars"]
+                user.contributions = github_data["contributions"]
+                user.last_updated = github_data["last_updated"]
+                user.save()
+
         serializer = GH_Serializer(gh_users, many=True)
-        return Response(serializer.data)    
+        return Response(serializer.data)
 
     def post(self, request):
-        username = request.data["username"]
-        gh_user = githubUser(username=username)
-        
-        gh_user.save()
-        return Response(
-            GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED
+        username = request.data.get("username")
+        if not username:
+            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create user and fetch GitHub data
+        github_data = self.fetch_github_data(username)
+        if not github_data:
+            return Response({"error": "GitHub user not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        gh_user = githubUser(
+            username=username,
+            avatar=github_data["avatar"],
+            repositories=github_data["repositories"],
+            stars=github_data["stars"],
+            contributions=github_data["contributions"],
+            last_updated=github_data["last_updated"],
         )
+        gh_user.save()
+
+        return Response(GH_Serializer(gh_user).data, status=status.HTTP_201_CREATED)
 
 
 class GithubOrganisationAPI(
@@ -86,14 +145,48 @@ class GithubOrganisationAPI(
         return Response(serializer.data)
 
 
+from rest_framework import mixins, generics, status
+from rest_framework.response import Response
+import requests
+from .models import codeforcesUser
+from .serializers import CF_Serializer
+
+MAX_DATE_TIMESTAMP = 0  # Define this if needed
+
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+
+    def get_codeforces_data(self, username):
+        url = f"https://codeforces.com/api/user.info?handles={username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK" and data.get("result"):
+                user_data = data["result"][0]
+                return {
+                    "rating": user_data.get("rating", 0),
+                    "max_rating": user_data.get("maxRating", 0),
+                    "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
+                    "avatar": user_data.get("titlePhoto", ""),
+                }
+
     queryset = codeforcesUser.objects.all()
     serializer_class = CF_Serializer
 
     def get(self, request):
         cf_users = codeforcesUser.objects.all()
+
+        for user in cf_users:
+            user_data = self.get_codeforces_data(user.username)
+            if user_data:
+                user.rating = user_data["rating"]
+                user.max_rating = user_data["max_rating"]
+                user.last_activity = user_data["last_activity"]
+                user.avatar = user_data["avatar"]
+                user.save()
+
         serializer = CF_Serializer(cf_users, many=True)
         return Response(serializer.data)
 
@@ -101,19 +194,49 @@ class CodeforcesLeaderboard(
         username = request.data["username"]
         cf_user = codeforcesUser(username=username)
         cf_user.save()
-
         return Response(
             CF_Serializer(cf_user).data, status=status.HTTP_201_CREATED
         )
 
 
+
 class CodechefLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+
+    def get_codechef_data(self, username):
+        url = f"https://codechef-api.vercel.app/handle/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == 200:
+                return {
+                    "rating": data.get("currentRating", 0),
+                    "highest_rating": data.get("highestRating", 0),
+                    "global_rank": data.get("globalRank", -1),
+                    "country_rank": data.get("countryRank", -1),
+                    "avatar": data.get("profile", ""),
+                    "last_updated": datetime.now().timestamp(),
+                }
+
     queryset = codechefUser.objects.all()
     serializer_class = CC_Serializer
+
     def get(self, request):
         cc_users = codechefUser.objects.all()
+
+        for user in cc_users:
+            user_data = self.get_codechef_data(user.username)
+            if user_data:
+                user.rating = user_data["rating"]
+                user.max_rating = user_data["highest_rating"]
+                user.Global_rank = user_data["global_rank"]
+                user.Country_rank = user_data["country_rank"]
+                user.avatar = user_data["avatar"]
+                user.last_updated = datetime.now()
+                user.save()
+
         serializer = CC_Serializer(cc_users, many=True)
         return Response(serializer.data)
 
@@ -124,14 +247,44 @@ class CodechefLeaderboard(
         return Response(
             CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
         )
+
         
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+    
+    def get_leetcode_data(self, username):
+        url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                "ranking": data.get("ranking", 0),
+                "easy_solved": data.get("easySolved", 0),
+                "medium_solved": data.get("mediumSolved", 0),
+                "hard_solved": data.get("hardSolved", 0),
+                "avatar": data.get("avatar", ""),
+                "last_updated": datetime.now().timestamp(),
+            }
+
     queryset = LeetcodeUser.objects.all()
     serializer_class = LT_Serializer
     def get(self, request):
         lt_users = LeetcodeUser.objects.all()
+
+        for user in lt_users:
+            if user.is_outdated:
+                user_data = self.get_leetcode_data(user.username)
+                if user_data:
+                    user.ranking = user_data["ranking"]
+                    user.easy_solved = user_data["easy_solved"]
+                    user.medium_solved = user_data["medium_solved"]
+                    user.hard_solved = user_data["hard_solved"]
+                    user.avatar = user_data["avatar"]
+                    user.last_updated = datetime.now()
+                    user.save()
+
         serializer = LT_Serializer(lt_users, many=True)
         return Response(serializer.data)
 
