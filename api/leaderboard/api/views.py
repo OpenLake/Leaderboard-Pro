@@ -135,17 +135,17 @@ def registerUser(request):
         logger.debug(f"Request data: {request.data}")
         
         first_name = request.data.get("first_name", "")
-        last_name = request.data.get("last_name", "")
+        # last_name = request.data.get("last_name", "")
         email = request.data.get("email", "")
         username = request.data.get("username", "")
-        password = request.data.get("password", "")
+        # password = request.data.get("password", "")
         cc_uname = request.data.get("cc_uname", "")
         cf_uname = request.data.get("cf_uname", "")
         gh_uname = request.data.get("gh_uname", "")
         lt_uname = request.data.get("lt_uname", "")
         
-        if not all([first_name, email, username, password]):
-            logger.error("Missing required fields: first_name, email, username, or password")
+        if not all([first_name, email, username]):
+            logger.error("Missing required fields: first_name, email, username")
             return Response({
                 'status': 400,
                 'message': "Missing required fields"
@@ -153,8 +153,9 @@ def registerUser(request):
         
         # Create user
         user = User.objects.create_user(
-            username=username, password=password, 
-            first_name=first_name, last_name=last_name, 
+            username=username,
+            password='GOOGLEDATA',
+            first_name=first_name, 
             email=email
         )
         user.save()

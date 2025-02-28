@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AuthContext from '../Context/AuthContext.js';
+import { useAuth } from '../firebase/AuthContext.js';
+import { useNavigate } from 'react-router-dom';
 function Copyright(props) {
   return (
     <Typography
@@ -34,7 +36,13 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn({loginUser}) {
-  let {toRegister}=useContext(AuthContext);
+  let {toRegister}=useAuth();
+  const navigate = useNavigate();
+  const handleLogIn = async (e) => {
+    e.preventDefault();
+    await loginUser();
+    navigate("/");
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -55,11 +63,10 @@ export default function SignIn({loginUser}) {
           </Typography>
           <Box
             component="form"
-            onSubmit={loginUser}
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
+            {/* <TextField
               margin="normal"
               required
               fullWidth
@@ -78,18 +85,19 @@ export default function SignIn({loginUser}) {
               type="password"
               id="password"
               autoComplete="current-password"
-            />
-            <FormControlLabel
+            /> */}
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleLogIn}
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Sign In With Google
             </Button>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

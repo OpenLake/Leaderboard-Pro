@@ -4,13 +4,14 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AuthContext from "../Context/AuthContext.js";
+import { useAuth } from "../firebase/AuthContext.js";
+import { useNavigate } from "react-router-dom";
 function Copyright(props) {
   return (
     <Typography
@@ -32,7 +33,15 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp({ registerUser }) {
-  let { toLogin } = useContext(AuthContext);
+  let { toLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleregisterUser = async (e) => {
+    e.preventDefault();
+    await registerUser();
+    navigate("/");
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -55,11 +64,10 @@ export default function SignUp({ registerUser }) {
           <Box
             component="form"
             noValidate
-            onSubmit={registerUser}
             sx={{ mt: 3 }}
           >
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={6}>
+            <Grid2 container spacing={1}>
+              {/* <Grid2 item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
                   size="small"
@@ -70,8 +78,8 @@ export default function SignUp({ registerUser }) {
                   label="First Name"
                   autoFocus
                 />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
@@ -82,8 +90,8 @@ export default function SignUp({ registerUser }) {
                   autoComplete="family-name"
                   defaultValue=""
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -94,8 +102,8 @@ export default function SignUp({ registerUser }) {
                   id="username"
                   autoComplete="new-username"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -106,8 +114,8 @@ export default function SignUp({ registerUser }) {
                   autoComplete="email"
                   type="email"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -118,8 +126,8 @@ export default function SignUp({ registerUser }) {
                   id="password"
                   autoComplete="new-password"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   size="small"
@@ -130,8 +138,8 @@ export default function SignUp({ registerUser }) {
                   autoComplete="new-cc_uname"
                   defaultValue=""
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   size="small"
@@ -142,8 +150,8 @@ export default function SignUp({ registerUser }) {
                   autoComplete="new-cf_uname"
                   defaultValue=""
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   fullWidth
                   size="small"
@@ -154,8 +162,8 @@ export default function SignUp({ registerUser }) {
                   autoComplete="new-gh_uname"
                   defaultValue=""
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 item xs={12}>
                 <TextField
                   size="small"
                   fullWidth
@@ -166,18 +174,19 @@ export default function SignUp({ registerUser }) {
                   autoComplete="new-lt_uname"
                   defaultValue=""
                 />
-              </Grid>
-            </Grid>
+              </Grid2> */}
+            </Grid2>
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleregisterUser}
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Sign Up With Google
             </Button>
-            <Grid container alignItems="center" justifyContent="center">
-              <Grid item>
+            <Grid2 container alignItems="center" justifyContent="center">
+              <Grid2 item>
                 <Button
                   variant="body2"
                   style={{ color: "red" }}
@@ -185,8 +194,8 @@ export default function SignUp({ registerUser }) {
                 >
                   Already have an account? Sign in
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
         </Box>
       </Container>

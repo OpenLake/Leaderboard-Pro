@@ -1,12 +1,14 @@
-import {Route,Redirect} from 'react-router-dom'
-import { useContext } from 'react'
-import AuthContext from '../Context/AuthContext'
-const PrivateRoute=({children,...rest})=>{
-    let {user}=useContext(AuthContext)
-    return (
-        <Route {...rest}>
-            {!user?<Redirect to="/login"/>:children}
-        </Route>
-    )
+import React from 'react';
+import {Navigate} from 'react-router-dom'
+import { useAuth } from '../firebase/AuthContext'
+const PrivateRoute=({children})=>{
+    const {user, loading} = useAuth();
+    if(loading){
+        return <h1>Loading...</h1>
+    }
+    if(user){
+        return children;
+    }
+    return <Navigate to="/login" replace/>
 }
 export default PrivateRoute

@@ -1,6 +1,6 @@
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme } from "@mui/styles";
 
-import { blue } from "@material-ui/core/colors";
+import { blue } from "@mui/material/colors";
 
 // COMMON 
 const overrides = {

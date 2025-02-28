@@ -52,7 +52,7 @@ class codeforcesUser(models.Model):
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     last_activity = models.BigIntegerField(
-        default=datetime.max.timestamp()
+        default=datetime.now().timestamp()
     )
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
