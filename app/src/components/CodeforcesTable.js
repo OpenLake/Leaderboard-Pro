@@ -258,7 +258,7 @@ export const CodeforcesTable = ({
                             variant="contained"
                             style={{backgroundColor:darkmode?"#146ca4":""}}
                             onClick={() => {
-                              !codeforcesfriends.some(
+                              Array.isArray(codeforcesUsers) && !codeforcesfriends.some(
                                 (item) => item.username === cfUser.username
                               )
                                 ? addfriend(cfUser)

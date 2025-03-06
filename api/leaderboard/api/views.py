@@ -8,6 +8,7 @@ from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from django.db import transaction
 import requests
 
 
@@ -49,75 +50,67 @@ def current_user(request):
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
-    
     try:
-        # data['user']=request.user.username
-        # data=request.data
-        username_cc=request.data["cc_uname"]
-        username_cf=request.data["cf_uname"]
-        username_gh=request.data["gh_uname"]
-        username_lt=request.data["lt_uname"]
-        user=request.user
-        
-        if UserNames.objects.filter(user=user).exists():
-            t = UserNames.objects.get(user=user)
-            if username_cc!="":
-                codechefUser.objects.filter(username=t.cc_uname).delete()
-                t.cc_uname=username_cc
-                cc_user = codechefUser(username=username_cc)
-                cc_user.save()
-            if username_cf!="":
-                codeforcesUser.objects.filter(username=t.cf_uname).delete()
-                t.cf_uname=username_cf             
-                cf_user = codeforcesUser(username=username_cf)
-                cf_user.save()
-            if username_gh!="":
-                githubUser.objects.filter(username=t.gh_uname).delete()
-                t.gh_uname=username_gh
-                gh_user = githubUser(username=username_gh)
-                gh_user.save()
-            if username_lt!="":
-                LeetcodeUser.objects.filter(username=t.lt_uname).delete()
-                t.lt_uname=username_lt
-                lt_user = LeetcodeUser(username=username_lt)
-                lt_user.save()
-            t.save()
-        else:
-            if user!="":
-                userName=UserNames(user=user,cc_uname=username_cc,cf_uname=username_cf,gh_uname=username_gh,lt_uname=username_lt)
-                userName.save()
-            if username_cc!="":
-                cc_user = codechefUser(username=username_cc)
-                cc_user.save()
-                
-            # username_cf = request.data["cf_uname"]
-            if username_cf!="":
-                cf_user = codeforcesUser(username=username_cf)
-                cf_user.save()
-             
-            # username_gh = request.data["gh_uname"]
-            if username_gh!="":
-                gh_user = githubUser(username=username_gh)
-                gh_user.save()
-            if username_lt!="":
-                lt_user = LeetcodeUser(username=username_lt)
-                lt_user.save()
-        return Response({
-            'status':200,
-            'message':"Success",
-        },status=status.HTTP_201_CREATED)
-        # else:
-        #     return Response({
-        #         'status':400,
-        #         'message':"Wrong",
-        #     },status=status.HTTP_400_BAD_REQUEST)
+        username_cc = request.data.get("cc_uname", "")
+        username_cf = request.data.get("cf_uname", "")
+        username_gh = request.data.get("gh_uname", "")
+        username_lt = request.data.get("lt_uname", "")
+        user = request.user
 
-    except Exception as e:  
-        print(e)
+        with transaction.atomic():
+            # Check if user already exists in UserNames
+            t = UserNames.objects.filter(user=user).first()
+
+            if t:
+                # Update and delete only if the value changes
+                if username_cc and t.cc_uname != username_cc:
+                    codechefUser.objects.filter(username=t.cc_uname).delete()
+                    t.cc_uname = username_cc
+                    codechefUser.objects.get_or_create(username=username_cc)
+
+                if username_cf and t.cf_uname != username_cf:
+                    codeforcesUser.objects.filter(username=t.cf_uname).delete()
+                    t.cf_uname = username_cf
+                    codeforcesUser.objects.get_or_create(username=username_cf)
+
+                if username_gh and t.gh_uname != username_gh:
+                    githubUser.objects.filter(username=t.gh_uname).delete()
+                    t.gh_uname = username_gh
+                    githubUser.objects.get_or_create(username=username_gh)
+
+                if username_lt and t.lt_uname != username_lt:
+                    LeetcodeUser.objects.filter(username=t.lt_uname).delete()
+                    t.lt_uname = username_lt
+                    LeetcodeUser.objects.get_or_create(username=username_lt)
+
+                t.save()
+
+            else:
+                # Create new UserNames entry
+                userName = UserNames(user=user, cc_uname=username_cc, cf_uname=username_cf, gh_uname=username_gh, lt_uname=username_lt)
+                userName.save()
+
+                # Create corresponding user entries
+                if username_cc:
+                    codechefUser.objects.get_or_create(username=username_cc)
+                if username_cf:
+                    codeforcesUser.objects.get_or_create(username=username_cf)
+                if username_gh:
+                    githubUser.objects.get_or_create(username=username_gh)
+                if username_lt:
+                    LeetcodeUser.objects.get_or_create(username=username_lt)
+
         return Response({
-            'status':400,
-            'message':"Wrong"
-        },status=status.HTTP_400_BAD_REQUEST)
+            'status': 200,
+            'message': "Success",
+        }, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({
+            'status': 400,
+            'message': str(e),
+        }, status=status.HTTP_400_BAD_REQUEST)
+
         
 import logging
 
