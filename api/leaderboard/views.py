@@ -376,16 +376,65 @@ from .serializers import Task_Serializer
 
 
 class UserTasksManage(APIView):  # Inherit from APIView
+    def get_codeforces_solved(self, username):
+        url = f"https://codeforces.com/api/user.status?handle={username}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK":
+                solved_problems = set()
+                for submission in data["result"]:
+                    if submission.get("verdict") == "OK":
+                        # Create a unique problem identifier (contestId+index)
+                        problem_id = f"{submission['problem'].get('contestId', '')}{submission['problem'].get('index', '')}"
+                        solved_problems.add(problem_id)
+                return len(solved_problems)
+        return 0
+
+    # Helper to fetch solved problems count from Leetcode
+    def get_leetcode_solved(self, username):
+        url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("totalSolved", 0)
+        return 0
+
+    # Update the task's progress based on the current solved counts.
+    def update_task_progress(self, task):
+        # Here we assume that task.username is a Django User model and that
+        # its username is used as the handle for both Codeforces and Leetcode.
+        user_handle = task.username  
+        current_cf = self.get_codeforces_solved(user_handle)
+        current_lt = self.get_leetcode_solved(user_handle)
+        current_total = current_cf + current_lt
+
+        # Calculate the number of problems solved since the task was created.
+        new_solved = current_total - task.total_solved_now
+        new_solved = max(new_solved, 0)  # Ensure it doesn't go negative
+
+        # Update the task progress.
+        if new_solved >= task.problem:
+            task.solved = task.problem  # Cap solved to the task's problem count
+            task.completed = True
+        else:
+            task.solved = new_solved
+        task.save()
+
+    # GET method now updates each task's progress before returning the tasks.
     def get(self, request, *args, **kwargs):
         req_username = request.query_params.get("username")
-        print("Received username:", req_username)
         if not req_username:
-            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         user_tasks = UserTasks.objects.filter(username__username=req_username)
-        print("Filtered tasks:", user_tasks)
+        # Update progress for each task by checking Codeforces and Leetcode solved counts
+        for task in user_tasks:
+            self.update_task_progress(task)
+
         serialized_tasks = Task_Serializer(user_tasks, many=True)
-        
         return Response(serialized_tasks.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
@@ -427,3 +476,19 @@ class UserTasksManage(APIView):  # Inherit from APIView
         user_task.save()
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "User Not Found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        user_task.delete()
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)
+

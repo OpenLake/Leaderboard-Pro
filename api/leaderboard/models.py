@@ -156,7 +156,7 @@ class UserTasks(models.Model):
     problem = models.PositiveIntegerField(default=0)
     # startDate = models.DateTimeField(auto_now_add=True)
     dueDate = models.DateTimeField()
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=64, unique=True)
     discription = models.CharField(max_length=256)
     completed = models.BooleanField(default=False)
     starred = models.BooleanField(default=False)
