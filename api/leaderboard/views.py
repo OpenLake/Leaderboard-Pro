@@ -377,28 +377,19 @@ from .serializers import Task_Serializer
 
 class UserTasksManage(APIView):  # Inherit from APIView
     def get_codeforces_solved(self, username):
-        url = f"https://codeforces.com/api/user.status?handle={username}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("status") == "OK":
-                solved_problems = set()
-                for submission in data["result"]:
-                    if submission.get("verdict") == "OK":
-                        # Create a unique problem identifier (contestId+index)
-                        problem_id = f"{submission['problem'].get('contestId', '')}{submission['problem'].get('index', '')}"
-                        solved_problems.add(problem_id)
-                return len(solved_problems)
-        return 0
+        try:
+            codeforcesSolved = codeforcesUser.objects.get(username=username)
+            return codeforcesSolved.total_solved
+        except:
+            return 100
 
     # Helper to fetch solved problems count from Leetcode
     def get_leetcode_solved(self, username):
-        url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("totalSolved", 0)
-        return 0
+        try:
+            leetcodeSolved = LeetcodeUser.objects.get(username=username)
+            return leetcodeSolved.total_solved
+        except:
+            return 56
 
     # Update the task's progress based on the current solved counts.
     def update_task_progress(self, task):
