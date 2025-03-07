@@ -162,3 +162,20 @@ class UserTasks(models.Model):
     starred = models.BooleanField(default=False)
     solved = models.PositiveIntegerField(default=0)
     total_solved_now=models.PositiveBigIntegerField(default=0)
+
+class DiscussionPost(models.Model):
+    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    title = models.CharField(max_length=64, unique=True)
+    discription = models.CharField(max_length=256)
+    posted = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
+    comments = models.PositiveIntegerField(default=0)
+
+class ReplyPost(models.Model):
+    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    discription = models.CharField(max_length=256)
+    posted = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
+    parent = models.ForeignKey(DiscussionPost,on_delete=models.CASCADE,null=True,blank=True)
