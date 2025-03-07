@@ -355,7 +355,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
 
   // Calculate progress percentage (if target > 0)
   const getProgressPercentage = (task) =>
-    task.target > 0 ? Math.round((task.solved / task.target) * 100) : 0;
+    task.problem > 0 ? Math.round((task.solved / task.problem) * 100) : 0;
 
   return (
     <div style={containerStyle}>
