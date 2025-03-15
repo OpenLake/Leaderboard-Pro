@@ -97,6 +97,7 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 
 ## 💻 Contributing Guidelines
 - Read [contributing guidelines](https://github.com/OpenLake/Leaderboard-Pro/blob/main/.github/CONTRIBUTING.md)
+- Understand [directory structure](https://github.com/OpenLake/Leaderboard-Pro/blob/main/.github/DIRECTORY.md)
 
 ## 👀 Hosted App
 [https://openlake-leaderboardpro.vercel.app](https://openlake-leaderboardpro.vercel.app)
