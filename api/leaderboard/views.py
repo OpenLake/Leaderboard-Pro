@@ -499,13 +499,8 @@ class UserTasksManage(APIView):  # Inherit from APIView
 
 class DiscussionPostManage(APIView):
     def get(self, request):
-        try:
-            posts = DiscussionPost.objects.all()
-        except DiscussionPost.DoesNotExist:
-            return Response({"error": "No posts found"}, status=status.HTTP_404_NOT_FOUND)
-        
+        posts = DiscussionPost.objects.all()
         serialized_posts = DiscussionPost_Serializer(posts, many=True)
-
         return Response(serialized_posts.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -515,14 +510,16 @@ class DiscussionPostManage(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         post = DiscussionPost.objects.create(
-            username=user,
+            username=user,  
             title=request.data["title"],
             discription=request.data["discription"],
             likes=0,
-            posted=request.data["posted"],
             dislikes=0,
             comments=0,
         )
+
+        serialized_post = DiscussionPost_Serializer(post)
+        return Response(serialized_post.data, status=status.HTTP_201_CREATED)
 
     def put(self, request):
         try:
@@ -531,16 +528,15 @@ class DiscussionPostManage(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         try:
-            post = DiscussionPost.objects.get(username=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        for field in ["title", "discription", "likes", "dislikes", "comments"]:
+        for field in ["title", "description", "likes", "dislikes", "comments"]:
             if field in request.data:
                 setattr(post, field, request.data[field])
         
         post.save()
-
         return Response(DiscussionPost_Serializer(post).data, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -550,28 +546,27 @@ class DiscussionPostManage(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         try:
-            post = DiscussionPost.objects.get(username=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
         post.delete()
-
-        return Response(DiscussionPost_Serializer(post).data, status=status.HTTP_200_OK)
-
+        return Response({"message": "Post deleted successfully"}, status=status.HTTP_200_OK)
 class DiscussionReplyManage(APIView):
     def get(self, request):
+        # Retrieve discussion post using query parameters
+        title = request.query_params.get("title")
         try:
-            post = DiscussionPost.objects.get(title=request.data["title"])
+            post = DiscussionPost.objects.get(title=title)
         except DiscussionPost.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        try:
-            replies = ReplyPost.objects.filter(post=post)
-        except ReplyPost.DoesNotExist:
+        # Filter replies using the correct field name
+        replies = ReplyPost.objects.filter(parent=post)
+        if not replies.exists():
             return Response({"error": "No replies found"}, status=status.HTTP_404_NOT_FOUND)
         
         serialized_replies = ReplyPost_Serializer(replies, many=True)
-
         return Response(serialized_replies.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -585,14 +580,16 @@ class DiscussionReplyManage(APIView):
         except DiscussionPost.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         
+        # Create the reply using the correct field names
         reply = ReplyPost.objects.create(
             username=user,
             parent=post,
-            discription=request.data["discription"],
+            discription=request.data["discription"],  # corrected field name
             likes=0,
             dislikes=0,
-            posted=request.data["posted"],
         )
+        serialized_reply = ReplyPost_Serializer(reply)
+        return Response(serialized_reply.data, status=status.HTTP_201_CREATED)
 
     def put(self, request):
         try:
@@ -610,12 +607,12 @@ class DiscussionReplyManage(APIView):
         except ReplyPost.DoesNotExist:
             return Response({"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        for field in ["discription", "likes", "dislikes"]:
+        # Update allowed fields
+        for field in ["description", "likes", "dislikes"]:
             if field in request.data:
                 setattr(reply, field, request.data[field])
         
         reply.save()
-
         return Response(ReplyPost_Serializer(reply).data, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -635,5 +632,4 @@ class DiscussionReplyManage(APIView):
             return Response({"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND)
         
         reply.delete()
-
-        return Response(ReplyPost_Serializer(reply).data, status=status.HTTP_200_OK)
+        return Response({"message": "Reply deleted successfully"}, status=status.HTTP_200_OK)

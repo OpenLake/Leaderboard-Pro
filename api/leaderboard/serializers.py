@@ -126,12 +126,12 @@ class Task_Update_Serializer(serializers.Serializer):
         read_only_fields = ("user",)
         list_serializer_class = UpdateListSerializer
 
-class DiscussionPost_Serializer(serializers.Serializer):
+class DiscussionPost_Serializer(serializers.ModelSerializer):
     class Meta:
         model = DiscussionPost
         fields = '__all__'
 
-class ReplyPost_Serializer(serializers.Serializer):
+class ReplyPost_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ReplyPost
         fields = '__all__'
