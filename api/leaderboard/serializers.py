@@ -6,7 +6,8 @@ from leaderboard.models import (
     githubUser,
     openlakeContributor,
     LeetcodeUser,
-    UserNames
+    UserNames,
+    UserTasks,
 )
 
 class UpdateListSerializer(serializers.ListSerializer):
@@ -111,3 +112,14 @@ class OL_Serializer(serializers.ModelSerializer):
         
 class Name_Serializer(serializers.Serializer):
     friendName = serializers.CharField(max_length=100)
+
+class Task_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTasks
+        fields = '__all__' 
+class Task_Update_Serializer(serializers.Serializer):
+    class Meta:
+        model = UserTasks
+        fields = '__all__'
+        read_only_fields = ("user",)
+        list_serializer_class = UpdateListSerializer

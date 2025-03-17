@@ -56,6 +56,8 @@ class codeforcesUser(models.Model):
     )
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+    total_solved = models.PositiveIntegerField(default=0)
+    total_submissions = models.PositiveIntegerField(default=0)
 
     @property
     def is_outdated(self):
@@ -125,6 +127,7 @@ class LeetcodeUser(models.Model):
     hard_solved = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+    total_solved = models.PositiveIntegerField(default=0)
     @property
     def is_outdated(self):
         if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
@@ -146,3 +149,16 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64,default="")
+
+
+class UserTasks(models.Model):
+    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    problem = models.PositiveIntegerField(default=0)
+    # startDate = models.DateTimeField(auto_now_add=True)
+    dueDate = models.DateTimeField()
+    title = models.CharField(max_length=64, unique=True)
+    discription = models.CharField(max_length=256)
+    completed = models.BooleanField(default=False)
+    starred = models.BooleanField(default=False)
+    solved = models.PositiveIntegerField(default=0)
+    total_solved_now=models.PositiveBigIntegerField(default=0)

@@ -6,6 +6,7 @@ from leaderboard.models import (
     openlakeContributor,
     UserNames,
     LeetcodeUser,
+    UserTasks,
 )
 
 admin.site.register(codeforcesUser)
@@ -14,3 +15,4 @@ admin.site.register(codechefUser)
 admin.site.register(openlakeContributor)
 admin.site.register(UserNames)
 admin.site.register(LeetcodeUser)
+admin.site.register(UserTasks)

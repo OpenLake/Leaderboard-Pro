@@ -5,14 +5,15 @@ from leaderboard.models import (
     codechefUser,
     openlakeContributor,
     LeetcodeUser,
-
+    UserTasks,
 )
 from leaderboard.serializers import (
     CF_Serializer,
     CC_Serializer,
     GH_Serializer,
     OL_Serializer,
-    LT_Serializer
+    LT_Serializer,
+    Task_Serializer,
 )
 from knox.models import AuthToken
 from rest_framework.response import Response
@@ -156,6 +157,36 @@ MAX_DATE_TIMESTAMP = 0  # Define this if needed
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
+    def get_codeforces_submission_stats(self, username):
+        """
+        Fetches the total number of submissions and unique solved problems for a given Codeforces username.
+        
+        Returns:
+            dict: {
+                "total_solved": int,
+                "total_submissions": int
+            }
+        """
+        url = f"https://codeforces.com/api/user.status?handle={username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK":
+                total_submissions = len(data["result"])  # Count all submissions
+                solved_problems = set()
+
+                for submission in data["result"]:
+                    if submission.get("verdict") == "OK":
+                        problem_id = f"{submission['problem'].get('contestId', '')}{submission['problem'].get('index', '')}"
+                        solved_problems.add(problem_id)
+
+                return {
+                    "total_solved": len(solved_problems),  # Count unique problems solved
+                    "total_submissions": total_submissions
+                }
+        
+        return {"total_solved": 0, "total_submissions": 0}
 
     def get_codeforces_data(self, username):
         url = f"https://codeforces.com/api/user.info?handles={username}"
@@ -180,12 +211,16 @@ class CodeforcesLeaderboard(
 
         for user in cf_users:
             user_data = self.get_codeforces_data(user.username)
+            user_submission_stats = self.get_codeforces_submission_stats(user.username)
+            if user_submission_stats:
+                user.total_solved = user_submission_stats["total_solved"]
+                user.total_submissions = user_submission_stats["total_submissions"]
             if user_data:
                 user.rating = user_data["rating"]
                 user.max_rating = user_data["max_rating"]
                 user.last_activity = user_data["last_activity"]
                 user.avatar = user_data["avatar"]
-                user.save()
+            user.save()
 
         serializer = CF_Serializer(cf_users, many=True)
         return Response(serializer.data)
@@ -266,6 +301,7 @@ class LeetcodeLeaderboard(
                 "hard_solved": data.get("hardSolved", 0),
                 "avatar": data.get("avatar", ""),
                 "last_updated": datetime.now().timestamp(),
+                "total_solved": data.get("totalSolved", 0),
             }
 
     queryset = LeetcodeUser.objects.all()
@@ -282,6 +318,7 @@ class LeetcodeLeaderboard(
                     user.medium_solved = user_data["medium_solved"]
                     user.hard_solved = user_data["hard_solved"]
                     user.avatar = user_data["avatar"]
+                    user.total_solved = user_data["total_solved"]
                     user.last_updated = datetime.now()
                     user.save()
 
@@ -330,3 +367,119 @@ def LeetcodeCCPSAPIView(request):
    
    
     return JsonResponse(data, safe=False)
+
+from rest_framework import mixins, generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from .serializers import Task_Serializer
+
+
+class UserTasksManage(APIView):  # Inherit from APIView
+    def get_codeforces_solved(self, username):
+        try:
+            codeforcesSolved = codeforcesUser.objects.get(username=username)
+            return codeforcesSolved.total_solved
+        except:
+            return 100
+
+    # Helper to fetch solved problems count from Leetcode
+    def get_leetcode_solved(self, username):
+        try:
+            leetcodeSolved = LeetcodeUser.objects.get(username=username)
+            return leetcodeSolved.total_solved
+        except:
+            return 56
+
+    # Update the task's progress based on the current solved counts.
+    def update_task_progress(self, task):
+        # Here we assume that task.username is a Django User model and that
+        # its username is used as the handle for both Codeforces and Leetcode.
+        user_handle = task.username  
+        current_cf = self.get_codeforces_solved(user_handle)
+        current_lt = self.get_leetcode_solved(user_handle)
+        current_total = current_cf + current_lt
+
+        # Calculate the number of problems solved since the task was created.
+        new_solved = current_total - task.total_solved_now
+        new_solved = max(new_solved, 0)  # Ensure it doesn't go negative
+
+        # Update the task progress.
+        if new_solved >= task.problem:
+            task.solved = task.problem  # Cap solved to the task's problem count
+            task.completed = True
+        else:
+            task.solved = new_solved
+        task.save()
+
+    # GET method now updates each task's progress before returning the tasks.
+    def get(self, request, *args, **kwargs):
+        req_username = request.query_params.get("username")
+        if not req_username:
+            return Response(
+                {"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user_tasks = UserTasks.objects.filter(username__username=req_username)
+        # Update progress for each task by checking Codeforces and Leetcode solved counts
+        for task in user_tasks:
+            self.update_task_progress(task)
+
+        serialized_tasks = Task_Serializer(user_tasks, many=True)
+        return Response(serialized_tasks.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user_task = UserTasks.objects.create(
+            username=user,
+            problem=request.data["problem"],
+            dueDate=request.data["dueDate"],
+            title=request.data["title"],
+            discription=request.data["discription"],
+            completed=request.data["completed"],
+            starred=request.data["starred"],
+            solved=request.data["solved"],
+            total_solved_now=request.data["totalSolvedNow"],
+        )
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)
+    
+    def put(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update fields dynamically
+        for field in ["problem", "dueDate", "title", "discription", "completed", "starred", "solved"]:
+            if field in request.data:
+                setattr(user_task, field, request.data[field])
+
+        user_task.save()
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "User Not Found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+        except UserTasks.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        user_task.delete()
+
+        return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)
+

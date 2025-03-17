@@ -68,6 +68,11 @@ urlpatterns = [
         name="leetcode-leaderboard",
     ),
     path(
+        "usertasks/",
+        views.UserTasksManage.as_view(),
+        name="user-tasks",
+    ),
+    path(
         "codechef/",
         views.CodechefLeaderboard.as_view(),
         name="codechef-leaderboard",
