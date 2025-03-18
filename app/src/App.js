@@ -21,6 +21,7 @@ import LeetcodeRankings from "./components/LeetcodeRankings";
 import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
 import { AuthProvide } from "./firebase/AuthContext.js";
+import Dashboard from "./components/discussion-forum/dashboard.js";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -170,6 +171,7 @@ function App() {
                   <Route exact path="/profile" element={<PrivateRoute><Profile1 darkmode={darkmode} leetcodeUsers={leetcodeUsers} codeforcesUsers={codeforcesUsers} /></PrivateRoute>} />
                   <Route exact path="/leetcoderankings" element={<PrivateRoute><LeetcodeRankings darkmode={darkmode} /></PrivateRoute>} />
                   <Route exact path="/leetcoderanking/:username" element={<PrivateRoute><LeetcodeGraphs darkmode={darkmode} /></PrivateRoute>} />
+                  <Route exact path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                   {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>

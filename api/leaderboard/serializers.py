@@ -8,6 +8,8 @@ from leaderboard.models import (
     LeetcodeUser,
     UserNames,
     UserTasks,
+    DiscussionPost,
+    ReplyPost,
 )
 
 class UpdateListSerializer(serializers.ListSerializer):
@@ -123,3 +125,13 @@ class Task_Update_Serializer(serializers.Serializer):
         fields = '__all__'
         read_only_fields = ("user",)
         list_serializer_class = UpdateListSerializer
+
+class DiscussionPost_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiscussionPost
+        fields = '__all__'
+
+class ReplyPost_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReplyPost
+        fields = '__all__'

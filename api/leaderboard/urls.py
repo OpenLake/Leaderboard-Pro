@@ -73,6 +73,16 @@ urlpatterns = [
         name="user-tasks",
     ),
     path(
+        "discussionpost/",
+        views.DiscussionPostManage.as_view(),
+        name="discussion-post",
+    ),
+    path(
+        "replypost/",
+        views.DiscussionReplyManage.as_view(),
+        name="discussion-reply",
+    ),
+    path(
         "codechef/",
         views.CodechefLeaderboard.as_view(),
         name="codechef-leaderboard",
