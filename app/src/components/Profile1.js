@@ -1,5 +1,4 @@
-import {React,useContext, useState} from 'react'
-import AuthContext from '../Context/AuthContext.js';
+import {React, useState} from 'react'
 import Profile from './Profile.js'
 import { useAuth } from '../firebase/AuthContext.js';
 import Goals from './Goals.js';

@@ -36,7 +36,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
     console.log(solvedc.total_solved);
     console.log(solvedl.total_solved);
     setTotalSolvedNow(totalSolved);
-  }, [])
+  }, [codeforcesUsers, leetcodeUsers])
 
 
   // New task state includes target and initializes solved count to 0
@@ -58,7 +58,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
         console.log(res);
         setTasks(res);
       });
-  }, [newTask]);
+  }, [newTask, user.username]);
 
   // Colors based on dark mode
   const bgColor = darkmode ? "#202124" : "#fff";
@@ -140,10 +140,10 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
   };
 
   // Checkbox style
-  const checkboxStyle = {
-    marginRight: "10px",
-    cursor: "pointer",
-  };
+  // const checkboxStyle = {
+  //   marginRight: "10px",
+  //   cursor: "pointer",
+  // };
 
   // Task text style
   const taskTextStyle = {
@@ -298,13 +298,13 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
 
 
   // Toggle task completed status
-  const toggleTaskCompleted = (title) => {
-    setTasks(
-      tasks.map((task) =>
-        task.title === title ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
+  // const toggleTaskCompleted = (title) => {
+  //   setTasks(
+  //     tasks.map((task) =>
+  //       task.title === title ? { ...task, completed: !task.completed } : task
+  //     )
+  //   );
+  // };
 
   // Delete a task
   const deleteTask = async (title) => {
@@ -322,19 +322,19 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
   };
 
   // Increment solved count for a task (“Solve Problem” action)
-  const solveProblem = (id) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === id) {
-          // Only increment if solved is less than target
-          if (task.solved < task.target) {
-            return { ...task, solved: task.solved + 1 };
-          }
-        }
-        return task;
-      })
-    );
-  };
+  // const solveProblem = (id) => {
+  //   setTasks(
+  //     tasks.map((task) => {
+  //       if (task.id === id) {
+  //         // Only increment if solved is less than target
+  //         if (task.solved < task.target) {
+  //           return { ...task, solved: task.solved + 1 };
+  //         }
+  //       }
+  //       return task;
+  //     })
+  //   );
+  // };
 
   // Filter tasks by active or completed
   const activeTasks = Array.isArray(tasks) ? tasks.filter((task) => !task.completed) : [];

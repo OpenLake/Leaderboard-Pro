@@ -21,7 +21,7 @@ const useScreenWidth = (ScreenWidthLimit) => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [ScreenWidthLimit]);
 
   return isLessThanLimit;
 };

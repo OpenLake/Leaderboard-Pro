@@ -3,16 +3,16 @@ import React, { useState } from 'react';
 
 const LeetcodeRankings = ({ darkmode }) => {
   const [contestId, setContestId] = useState('');
-  const [usernames, setUsernames] = useState([]);
+  // const [usernames, setUsernames] = useState([]);
   const [rankings, setRankings] = useState([]);
 
   const handleContestIdChange = (event) => {
     setContestId(event.target.value);
   };
 
-  const handleUsernameChange = (event) => {
-    setUsernames(event.target.value.split(','));
-  };
+  // const handleUsernameChange = (event) => {
+  //   setUsernames(event.target.value.split(','));
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();

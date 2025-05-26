@@ -38,12 +38,12 @@ const LeetcodeGraphs = ({ darkmode }) => {
     };
 
     fetchRankings();
-  }, []);
+  }, [username]);
 
   useEffect(() => {
     if (rankings.length > 0) {
       const { username, ranking } = rankings[0];
-      const reversedRanking = ranking.slice().reverse();
+      // const reversedRanking = ranking.slice().reverse();
       setSeries([
         {
           name: username,
@@ -86,7 +86,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
         },
       });
     }
-  }, [rankings, darkmode]);
+  }, [rankings, darkmode, contestID]);
 
   return (
     <div style={{ marginTop: "100px" }}>

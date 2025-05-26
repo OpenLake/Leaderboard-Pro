@@ -30,11 +30,11 @@ const NewTaskModal = ({
       justifyContent: "center",
     };
   
-    const dueDateStyle = {
-      marginLeft: "10px",
-      fontSize: "0.85em",
-      color: darkmode ? "#9aa0a6" : "#5f6368",
-    };
+    // const dueDateStyle = {
+    //   marginLeft: "10px",
+    //   fontSize: "0.85em",
+    //   color: darkmode ? "#9aa0a6" : "#5f6368",
+    // };
     
   
     const modalStyle = {

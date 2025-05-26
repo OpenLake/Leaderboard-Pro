@@ -66,7 +66,22 @@ export const AuthProvide = ({ children }) => {
     navigate("/register");
   };
 
-  const token = async (username) => {
+  
+
+  const value = {
+    authTokens,
+    user,
+    loading,
+    SignInWithGoogle,
+    logout,
+    toLogin,
+    toRegister,
+    update_addUsernames,
+  };
+
+  useEffect(() => {
+
+    const token = async (username) => {
     let response = await fetch("http://localhost:8000/api/token/", {
       method: "POST",
       headers: {
@@ -88,18 +103,6 @@ export const AuthProvide = ({ children }) => {
     }
   };
 
-  const value = {
-    authTokens,
-    user,
-    loading,
-    SignInWithGoogle,
-    logout,
-    toLogin,
-    toRegister,
-    update_addUsernames,
-  };
-
-  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
@@ -152,6 +155,6 @@ export const AuthProvide = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

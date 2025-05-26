@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@mui/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,7 +19,6 @@ import LeetcodeLogo from "../icons/leetcode.svg";
 import OpenlakeLogo from "../icons/openlake.svg";
 import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
 import CCPS from "../icons/CCPS.jpeg";
-import AuthContext from "../Context/AuthContext";
 import { useMediaQuery } from "@mui/material";
 import { useAuth } from "../firebase/AuthContext";
 
