@@ -1,5 +1,4 @@
-import {React,useContext} from 'react'
-import AuthContext from '../Context/AuthContext.js';
+import {React} from 'react'
 import SignUp from './SignUp.js'
 import { useAuth } from '../firebase/AuthContext.js';
 const Register = ({darkmode}) => {
