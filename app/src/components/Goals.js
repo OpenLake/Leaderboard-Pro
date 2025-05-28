@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
 import NewTaskModal from "./NewTaskModal";
 import { useAuth } from "../firebase/AuthContext";
 
