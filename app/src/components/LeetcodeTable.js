@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -19,17 +19,27 @@ import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'LeetcodeTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  medium_page: `${PREFIX}-medium_page`,
+  large_page: `${PREFIX}-large_page`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     minWidth: 650,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
-    medium_page: {
+    [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"column-reverse",
@@ -39,7 +49,7 @@ const useStyles = makeStyles({
     width: "100vw",
     flexShrink: "0",
   },
-  large_page: {
+  [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"row",
@@ -49,6 +59,7 @@ const useStyles = makeStyles({
     flexShrink: "0",
   },
 });
+
 export const LeetcodeTable = ({
   darkmode,
   leetcodeUsers,
@@ -159,17 +170,13 @@ export const LeetcodeTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
-  const classes = useStyles();
+  const StyledTableCell = TableCell;
+
 
   const isMobile = useScreenWidth(786);
 
   return (
-    <div
+    <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
       <div style={{
@@ -177,7 +184,6 @@ export const LeetcodeTable = ({
         maxWidth:"200px",
         marginBottom:"10px",
       }}></div>{" "}
-
       <div  style={{
         marginBottom:"1px",
       }}>
@@ -190,14 +196,38 @@ export const LeetcodeTable = ({
               <TableRow
                 style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
               >
-                <StyledTableCell>Avatar</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
-                <StyledTableCell>Ranking</StyledTableCell>
-                <StyledTableCell>Easy Solved</StyledTableCell>
-                <StyledTableCell>Medium Solved</StyledTableCell>
-                <StyledTableCell>Hard Solved</StyledTableCell>
-                <StyledTableCell>Total Solved</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Avatar</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Username</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Ranking</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Easy Solved</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Medium Solved</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Hard Solved</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Total Solved</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -205,14 +235,20 @@ export const LeetcodeTable = ({
                 .sort((a, b) => (a.ranking > b.ranking ? 1 : -1))
                 .map((cfUser) => (
                   <TableRow key={cfUser.id}>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Avatar
                         src={cfUser.avatar}
                         alt={`${cfUser.username} avatar`}
                       />
                       {/* TODO: Lazy load the avatars ? */}
                     </StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Link
                         style={{
                           fontWeight: "bold",
@@ -225,13 +261,31 @@ export const LeetcodeTable = ({
                         {cfUser.username}
                       </Link>
                     </StyledTableCell>
-                    <StyledTableCell>{cfUser.ranking}</StyledTableCell>
-                    <StyledTableCell>{cfUser.easy_solved}</StyledTableCell>
-                    <StyledTableCell>{cfUser.medium_solved}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.ranking}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.easy_solved}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.medium_solved}</StyledTableCell>
 
-                    <StyledTableCell>{cfUser.hard_solved}</StyledTableCell>
-                    <StyledTableCell>{cfUser.total_solved}</StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.hard_solved}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.total_solved}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Button
                         variant="contained"
                         style={{backgroundColor:darkmode?"#146ca4":""}}
@@ -296,6 +350,6 @@ export const LeetcodeTable = ({
           {ltshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
-    </div>
+    </Root>
   );
 };

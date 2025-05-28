@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { styled } from '@mui/material/styles';
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { makeStyles, withStyles } from "@mui/styles";
 import {
   Table,
   TableBody,
@@ -15,18 +15,27 @@ import {
   MenuItem,
 } from "@mui/material";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'LeetcodeRankingsCCPS';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  tableCell: `${PREFIX}-tableCell`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     // minWidth: 500,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     // minWidth: 500,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
 
-  tableCell: {
+  [`& .${classes.tableCell}`]: {
     padding: "16px", // Adjust the padding as per your requirement
   },
  
@@ -88,15 +97,11 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
 
   
 
-  const classes = useStyles();
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
+
+  const StyledTableCell = TableCell;
 
   return (
-    <div style={{ maxWidth: "100%" }}>
+    <Root style={{ maxWidth: "100%" }}>
       <div
         className="codechef"
         style={{
@@ -139,7 +144,6 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
           </label>
         </form>
       </div>
-
       <div
         className="codechef"
         style={{
@@ -156,32 +160,70 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
             <Table className={darkmode ? classes.table_dark : classes.table} aria-label="codeforces-table">
               <TableHead>
                 <TableRow style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root
+                    }}>
                     Institute Rank
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root
+                    }}>
                     Username
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root
+                    }}>
                     Rank
                   </StyledTableCell>
-                  <StyledTableCell className={classes.tableCell}></StyledTableCell>
+                  <StyledTableCell
+                    className={classes.tableCell}
+                    classes={{
+                      root: classes.root
+                    }}></StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rankings.length > 0 ? (
                   rankings.map((rank, index) => (
                     <TableRow key={rank.username} style={{ marginBottom: "5px", backgroundColor: darkmode ? "black" : "white", color: darkmode ? "white" : "black" }}>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                    <StyledTableCell
+                      className={classes.tableCell}
+                      style={{ textAlign: "center" }}
+                      classes={{
+                        root: classes.root
+                      }}>
                       {rank.ranking !== 0 ? index + 1 : "N/A"}
                     </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center",cursor:"pointer" }}>
+                    <StyledTableCell
+                      className={classes.tableCell}
+                      style={{ textAlign: "center",cursor:"pointer" }}
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Link style={{ textDecoration: "none" }} to= {`/leetcoderanking/${rank.username}`}>{rank.username}</Link>
                     </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell} style={{ textAlign: "center" }}>
+                    <StyledTableCell
+                      className={classes.tableCell}
+                      style={{ textAlign: "center" }}
+                      classes={{
+                        root: classes.root
+                      }}>
                       {rank.ranking !== null ? rank.ranking : "N/A"}
                     </StyledTableCell>
-                    <StyledTableCell className={classes.tableCell}></StyledTableCell>
+                    <StyledTableCell
+                      className={classes.tableCell}
+                      classes={{
+                        root: classes.root
+                      }}></StyledTableCell>
                   </TableRow>
                   
                   ))
@@ -197,7 +239,7 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
           </TableContainer>
         </div>
       </div>
-    </div>
+    </Root>
   );
 };
 
