@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import MaterialUISwitch from "@mui/material/Switch";
 import CodechefLogo from "../icons/codechef.png";
-import GitHubIcon from "@material-ui/icons/GitHub";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import CodeforcesLogo from "../icons/codeforces.svg";
 import LeetcodeLogo from "../icons/leetcode.svg";
 import OpenlakeLogo from "../icons/openlake.svg";
@@ -22,32 +22,50 @@ import CCPS from "../icons/CCPS.jpeg";
 import { useMediaQuery } from "@mui/material";
 import { useAuth } from "../firebase/AuthContext";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = 'Navbar';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  menuButton: `${PREFIX}-menuButton`,
+  title: `${PREFIX}-title`,
+  platformButtons: `${PREFIX}-platformButtons`,
+  desktopLogos: `${PREFIX}-desktopLogos`
+};
+
+const Root = styled('div')((
+  {
+    theme
+  }
+) => ({
+  [`&.${classes.root}`]: {
     flexGrow: 1,
   },
-  menuButton: {
+
+  [`& .${classes.menuButton}`]: {
     marginRight: theme.spacing(2),
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     flexGrow: 1,
     textAlign: "left",
   },
-  platformButtons: {
+
+  [`& .${classes.platformButtons}`]: {
     // display: "flex",
     // alignItems: "center",
     // marginLeft:"40px"
   },
-  desktopLogos: {
+
+  [`& .${classes.desktopLogos}`]: {
     display: "flex",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       display: "none",
     },
-  },
+  }
 }));
 
 export const Navbar = ({ darkmode, toggle }) => {
-  const classes = useStyles();
+
   const navigate = useNavigate();
   const manageClick = () => {
     navigate("/profile");
@@ -74,7 +92,7 @@ export const Navbar = ({ darkmode, toggle }) => {
   const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
 
   return (
-    <div className={classes.root} style={{ zIndex: 1000 }}>
+    <Root className={classes.root} style={{ zIndex: 1000 }}>
       <AppBar
         position="static"
         style={{
@@ -90,15 +108,15 @@ export const Navbar = ({ darkmode, toggle }) => {
           </Typography>
 
           {isMobile && ( // Render the hamburger icon only in mobile view
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={handleMobileMenuOpen}
-              className={classes.menuButton}
-            >
+            (<IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMobileMenuOpen}
+            className={classes.menuButton}
+            size="large">
               <MenuIcon />
-            </IconButton>
+            </IconButton>)
           )}
 
           {/* Mobile Menu */}
@@ -144,7 +162,7 @@ export const Navbar = ({ darkmode, toggle }) => {
             {/* Logos (hidden in mobile view) */}
             <div className={classes.desktopLogos}>
               <Link style={{ margin: "12px" }} to="/codechef">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img
                     src={CodechefLogo}
                     width={25}
@@ -155,7 +173,7 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link to="/github" style={{ margin: "12px" }}>
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <GitHubIcon
                     style={{
                       filter: darkmode ? "invert(100)" : "brightness(20%)",
@@ -165,7 +183,7 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link style={{ margin: "12px" }} to="/codeforces">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img
                     src={CodeforcesLogo}
                     width={25}
@@ -175,7 +193,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/leetcode">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img
                     src={LeetcodeLogo}
                     width={25}
@@ -186,7 +204,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/openlake">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img
                     src={OpenlakeLogo}
                     width={25}
@@ -197,7 +215,7 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link style={{ margin: "12px" }} to="leetcoderankings">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img
                     src={LeetcodeRankingsLogo}
                     width={25}
@@ -207,7 +225,7 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/leetcoderankingsccps">
-                <IconButton edge="start" color="inherit" aria-label="menu">
+                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
                   <img src={CCPS} width={25} height={25} alt="" />
                 </IconButton>
               </Link>
@@ -247,6 +265,6 @@ export const Navbar = ({ darkmode, toggle }) => {
           </Button>
         </Toolbar>
       </AppBar>
-    </div>
+    </Root>
   );
 };

@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/styles";
+import { adaptV4Theme, createTheme } from '@mui/material/styles';
 
 import { blue } from "@mui/material/colors";
 
@@ -104,14 +104,14 @@ const lightOverrides = {
     }
 };
 
-export const darkTheme = createTheme({
+export const darkTheme = createTheme(adaptV4Theme({
     ...themeOptions,
     palette: darkPalette,
     overrides: darkOverrides,
-});
+}));
 
-export const lightTheme = createTheme({
+export const lightTheme = createTheme(adaptV4Theme({
     ...themeOptions,
     palette: lightPalette,
     overrides: lightOverrides,
-});
+}));

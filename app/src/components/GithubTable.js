@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -18,17 +18,27 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'GithubTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  medium_page: `${PREFIX}-medium_page`,
+  large_page: `${PREFIX}-large_page`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     minWidth: 500,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     minWidth: 500,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
-  medium_page: {
+  [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"column-reverse",
@@ -38,7 +48,7 @@ const useStyles = makeStyles({
     width: "100vw",
     flexShrink: "0",
   },
-  large_page: {
+  [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"row",
@@ -162,17 +172,13 @@ export const GithubTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-  const classes = useStyles();
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
+
+  const StyledTableCell = TableCell;
 
   const isMobile = useScreenWidth(786);
 
   return (
-    <div
+    <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
       <div style={{
@@ -192,12 +198,30 @@ export const GithubTable = ({
               <TableRow
                 style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
               >
-                <StyledTableCell>Avatar</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
-                <StyledTableCell>Contributions</StyledTableCell>
-                <StyledTableCell>Repositories</StyledTableCell>
-                <StyledTableCell>Stars</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Avatar</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Username</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Contributions</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Repositories</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Stars</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -205,14 +229,20 @@ export const GithubTable = ({
                 .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
                 .map((glUser) => (
                   <TableRow key={glUser.id}>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Avatar
                         src={glUser.avatar}
                         alt={`${glUser.username} avatar`}
                       />
                       {/* TODO: Lazy load the avatars ? */}
                     </StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Link
                         style={{
                           fontWeight: "bold",
@@ -225,10 +255,22 @@ export const GithubTable = ({
                         {glUser.username}
                       </Link>
                     </StyledTableCell>
-                    <StyledTableCell>{glUser.contributions}</StyledTableCell>
-                    <StyledTableCell>{glUser.repositories}</StyledTableCell>
-                    <StyledTableCell>{glUser.stars}</StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{glUser.contributions}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{glUser.repositories}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{glUser.stars}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Button
                         variant="contained"
                         style={{backgroundColor:darkmode?"#146ca4":""}}
@@ -293,6 +335,6 @@ export const GithubTable = ({
           {ghshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
-    </div>
+    </Root>
   );
 };

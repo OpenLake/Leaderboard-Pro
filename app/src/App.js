@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { Grid2 } from "@mui/material";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Grid } from "@mui/material";
+import { ThemeProvider, StyledEngineProvider, createTheme, adaptV4Theme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Navbar } from "./components/Navbar.js";
 import { CodeforcesTable } from "./components/CodeforcesTable.js";
@@ -22,7 +22,7 @@ import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
 import { AuthProvide } from "./firebase/AuthContext.js";
 import Dashboard from "./components/discussion-forum/dashboard.js";
-const darkTheme = createTheme({
+const darkTheme = createTheme(adaptV4Theme({
   palette: {
     mode: "dark",
   },
@@ -40,9 +40,9 @@ const darkTheme = createTheme({
             minHeight: 15,
           },
           "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
-            {
-              backgroundColor: "#4F4F4F",
-            },
+          {
+            backgroundColor: "#4F4F4F",
+          },
           "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
             backgroundColor: "#686868",
           },
@@ -50,9 +50,9 @@ const darkTheme = createTheme({
       },
     },
   },
-});
+}));
 
-const lightTheme = createTheme({
+const lightTheme = createTheme(adaptV4Theme({
   palette: {
     mode: "light",
   },
@@ -70,9 +70,9 @@ const lightTheme = createTheme({
             minHeight: 15,
           },
           "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
-            {
-              backgroundColor: "#B5B5B5",
-            },
+          {
+            backgroundColor: "#B5B5B5",
+          },
           "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
             backgroundColor: "#C1C1C1",
           },
@@ -80,7 +80,7 @@ const lightTheme = createTheme({
       },
     },
   },
-});
+}));
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
   const [darkmode, setDarkmode] = useState(false);
@@ -150,14 +150,14 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
+    <StyledEngineProvider injectFirst>(<ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
       <CssBaseline />
       <Router>
         <AuthProvide>
           <div className="App">
-            <Navbar darkmode={darkmode} toggle={toggle}/>
-            <Grid2 container>
-              <Grid2 item xs={6}>
+            <Navbar darkmode={darkmode} toggle={toggle} />
+            <Grid container>
+              <Grid size={6}>
                 <Routes>
                   <Route exact path="/register" element={<Register darkmode={darkmode} />} />
                   <Route exact path="/login" element={<Login darkmode={darkmode} />} />
@@ -175,14 +175,15 @@ function App() {
                   {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>
-              </Grid2>
-            </Grid2>
-          <GoToTop/>
-          <Footer/>
-        </div>
-      </AuthProvide>
-    </Router>
-  </ThemeProvider>
-);
+              </Grid>
+            </Grid>
+            <GoToTop />
+            <Footer />
+          </div>
+        </AuthProvide>
+      </Router>
+    </ThemeProvider>)
+    </StyledEngineProvider>
+  );
 }
 export default App;

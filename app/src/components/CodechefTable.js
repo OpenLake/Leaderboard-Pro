@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -18,17 +18,27 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'CodechefTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  medium_page: `${PREFIX}-medium_page`,
+  large_page: `${PREFIX}-large_page`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     minWidth: 700,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     minWidth: 700,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
-    medium_page: {
+    [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"column-reverse",
@@ -38,7 +48,7 @@ const useStyles = makeStyles({
     width: "100vw",
     flexShrink: "0",
   },
-  large_page: {
+  [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"row",
@@ -160,17 +170,13 @@ export const CodechefTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
+  const StyledTableCell = TableCell;
 
   const isMobile = useScreenWidth(786);
 
-  const classes = useStyles();
+
   return (
-    <div
+    <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
       <div style={{
@@ -188,13 +194,34 @@ export const CodechefTable = ({
               <TableRow
                 style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
               >
-                <StyledTableCell>Avatar</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
-                <StyledTableCell>Rating</StyledTableCell>
-                <StyledTableCell>Max rating</StyledTableCell>
-                <StyledTableCell>Global Rank</StyledTableCell>
-                <StyledTableCell>Country Rank</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Avatar</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Username</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Rating</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Max rating</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Global Rank</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Country Rank</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -202,14 +229,20 @@ export const CodechefTable = ({
                 .sort((a, b) => (a.rating < b.rating ? 1 : -1))
                 .map((cfUser) => (
                   <TableRow key={cfUser.id}>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Avatar
                         src={cfUser.avatar}
                         alt={`${cfUser.username} avatar`}
                       />
                       {/* TODO: Lazy load the avatars ? */}
                     </StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Link
                         style={{
                           fontWeight: "bold",
@@ -222,11 +255,26 @@ export const CodechefTable = ({
                         {cfUser.username}
                       </Link>
                     </StyledTableCell>
-                    <StyledTableCell>{cfUser.rating}</StyledTableCell>
-                    <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
-                    <StyledTableCell>{cfUser.Global_rank}</StyledTableCell>
-                    <StyledTableCell>{cfUser.Country_rank}</StyledTableCell>
-                    <StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.rating}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.max_rating}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.Global_rank}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>{cfUser.Country_rank}</StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root
+                      }}>
                       <Button
                         variant="contained"
                         style={{backgroundColor:darkmode?"#146ca4":""}}
@@ -292,7 +340,7 @@ export const CodechefTable = ({
           {ccshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
-    </div>
+    </Root>
   );
 };
 

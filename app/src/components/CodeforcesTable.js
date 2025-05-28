@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -18,17 +18,27 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'CodeforcesTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  medium_page: `${PREFIX}-medium_page`,
+  large_page: `${PREFIX}-large_page`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     minWidth: 650,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
-  medium_page: {
+  [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"column-reverse",
@@ -38,7 +48,7 @@ const useStyles = makeStyles({
     width: "100vw",
     flexShrink: "0",
   },
-  large_page: {
+  [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"row",
@@ -153,12 +163,8 @@ export const CodeforcesTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
-  const classes = useStyles();
+  const StyledTableCell = TableCell;
+
 
   function timeConverter(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000);
@@ -191,7 +197,7 @@ export const CodeforcesTable = ({
 
 
   return (
-    <div
+    <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
       <div style={{
@@ -213,13 +219,34 @@ export const CodeforcesTable = ({
               >
                 {/* #1CA7FC */}
                 {/* #1F2F98 */}
-                <StyledTableCell>Avatar</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
-                <StyledTableCell>Rating</StyledTableCell>
-                <StyledTableCell>Max rating</StyledTableCell>
-                <StyledTableCell>Last activity</StyledTableCell>
-                <StyledTableCell>Total Solved</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Avatar</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Username</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Rating</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Max rating</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Last activity</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}>Total Solved</StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -229,14 +256,20 @@ export const CodeforcesTable = ({
                     .sort((a, b) => (a.rating < b.rating ? 1 : -1))
                     .map((cfUser) => (
                       <TableRow key={cfUser.id}>
-                        <StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>
                           <Avatar
                             src={cfUser.avatar}
                             alt={`${cfUser.username} avatar`}
                           />
                           {/* TODO: Lazy load the avatars ? */}
                         </StyledTableCell>
-                        <StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>
                           <Link
                             style={{
                               fontWeight: "bold",
@@ -249,13 +282,28 @@ export const CodeforcesTable = ({
                             {cfUser.username}
                           </Link>
                         </StyledTableCell>
-                        <StyledTableCell>{cfUser.rating}</StyledTableCell>
-                        <StyledTableCell>{cfUser.max_rating}</StyledTableCell>
-                        <StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>{cfUser.rating}</StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>{cfUser.max_rating}</StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>
                           {timeConverter(cfUser.last_activity)}
                         </StyledTableCell>
-                        <StyledTableCell>{cfUser.total_solved}</StyledTableCell>
-                        <StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>{cfUser.total_solved}</StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root
+                          }}>
                           <Button
                             variant="contained"
                             style={{backgroundColor:darkmode?"#146ca4":""}}
@@ -320,6 +368,6 @@ export const CodeforcesTable = ({
           {cfshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
-    </div>
+    </Root>
   );
 };
