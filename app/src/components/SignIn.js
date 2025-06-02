@@ -42,82 +42,83 @@ export default function SignIn({ loginUser, googleAuth }) {
     navigate("/");
   }
   return (
-    <StyledEngineProvider injectFirst>(<ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
           <Box
-            component="form"
-            noValidate
-            sx={{ mt: 1 }}
+            sx={{
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="UserName"
-              label="UserName"
-              name="UserName"
-              autoComplete="UserName"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={loginUser}
-              sx={{ mt: 3, mb: 2 }}
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Box
+              component="form"
+              noValidate
+              sx={{ mt: 1 }}
             >
-              Sign In
-            </Button>
-            <Button
-              // type="submit"
-              fullWidth
-              variant="contained"
-              onClick={handleGoogleAuth}
-              sx={{ mb: 2 }}
-            >
-              Sign In With Google
-            </Button>
-            <Grid container alignItems="center" justifyContent="center">
-              <Grid>
-                <Button variant="body2" style={{ color: "red" }} onClick={toRegister}>
-                  {"Don't have an account? Sign Up"}
-                </Button>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="UserName"
+                label="UserName"
+                name="UserName"
+                autoComplete="UserName"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                onClick={loginUser}
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+              <Button
+                // type="submit"
+                fullWidth
+                variant="contained"
+                onClick={handleGoogleAuth}
+                sx={{ mb: 2 }}
+              >
+                Sign In With Google
+              </Button>
+              <Grid container alignItems="center" justifyContent="center">
+                <Grid>
+                  <Button variant="body2" style={{ color: "red" }} onClick={toRegister}>
+                    {"Don't have an account? Sign Up"}
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
 
-      </Container>
-    </ThemeProvider>)
+        </Container>
+      </ThemeProvider>
     </StyledEngineProvider>
   );
 }
