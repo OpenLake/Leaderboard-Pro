@@ -4,11 +4,12 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import TextField from '@mui/material/TextField';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
-import { useAuth } from "../firebase/AuthContext.js";
+import { useAuth } from "../Context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 // function Copyright(props) {
 //   return (
@@ -30,13 +31,13 @@ import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
-export default function SignUp({ registerUser }) {
+export default function SignUp({ registerUser, googleAuth }) {
   let { toLogin } = useAuth();
   const navigate = useNavigate();
 
-  const handleregisterUser = async (e) => {
+  const handleGoogleRegister = async (e) => {
     e.preventDefault();
-    await registerUser();
+    await googleAuth();
     navigate("/");
   }
 
@@ -65,7 +66,7 @@ export default function SignUp({ registerUser }) {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={1}>
-              {/* <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                     <TextField
                       autoComplete="given-name"
                       size="small"
@@ -172,14 +173,23 @@ export default function SignUp({ registerUser }) {
                       autoComplete="new-lt_uname"
                       defaultValue=""
                     />
-                  </Grid> */}
+                  </Grid>
             </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={handleregisterUser}
+              onClick={registerUser}
               sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              onClick={handleGoogleRegister}
+              sx={{ mb: 2 }}
             >
               Sign Up With Google
             </Button>

@@ -20,7 +20,7 @@ import Footer from "./components/Footer"
 import LeetcodeRankings from "./components/LeetcodeRankings";
 import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
-import { AuthProvide } from "./firebase/AuthContext.js";
+import { AuthProvider } from "./Context/AuthContext.js";
 import Dashboard from "./components/discussion-forum/dashboard.js";
 const darkTheme = createTheme(adaptV4Theme({
   palette: {
@@ -153,7 +153,7 @@ function App() {
     <StyledEngineProvider injectFirst>(<ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
       <CssBaseline />
       <Router>
-        <AuthProvide>
+        <AuthProvider>
           <div className="App">
             <Navbar darkmode={darkmode} toggle={toggle} />
             <Grid container>
@@ -180,7 +180,7 @@ function App() {
             <GoToTop />
             <Footer />
           </div>
-        </AuthProvide>
+        </AuthProvider>
       </Router>
     </ThemeProvider>)
     </StyledEngineProvider>

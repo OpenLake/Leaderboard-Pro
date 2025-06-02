@@ -20,7 +20,7 @@ import OpenlakeLogo from "../icons/openlake.svg";
 import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
 import CCPS from "../icons/CCPS.jpeg";
 import { useMediaQuery } from "@mui/material";
-import { useAuth } from "../firebase/AuthContext";
+import { useAuth } from "../Context/AuthContext";
 
 const PREFIX = 'Navbar';
 
@@ -87,7 +87,7 @@ export const Navbar = ({ darkmode, toggle }) => {
     setMobileMenuOpen(false);
   };
 
-  const { user, logout } = useAuth();
+  const { user, logoutUser } = useAuth();
 
   const isMobile = useMediaQuery("(max-width: 600px)"); // Set the maximum width for mobile view
 
@@ -102,19 +102,19 @@ export const Navbar = ({ darkmode, toggle }) => {
       >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button style={{ color: "white", fontSize:'1.3rem', fontWeight:'900' }} onClick={tohome}>
+            <Button style={{ color: "white", fontSize: '1.3rem', fontWeight: '900' }} onClick={tohome}>
               Leaderboard Pro
             </Button>
           </Typography>
 
           {isMobile && ( // Render the hamburger icon only in mobile view
             (<IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMobileMenuOpen}
-            className={classes.menuButton}
-            size="large">
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleMobileMenuOpen}
+              className={classes.menuButton}
+              size="large">
               <MenuIcon />
             </IconButton>)
           )}
@@ -158,7 +158,7 @@ export const Navbar = ({ darkmode, toggle }) => {
             </MenuItem>
           </Menu>
 
-          <div className={classes.platformButtons} style={{display:"flex",justifyContent:"center"}}>
+          <div className={classes.platformButtons} style={{ display: "flex", justifyContent: "center" }}>
             {/* Logos (hidden in mobile view) */}
             <div className={classes.desktopLogos}>
               <Link style={{ margin: "12px" }} to="/codechef">
@@ -259,7 +259,7 @@ export const Navbar = ({ darkmode, toggle }) => {
           <Button
             color="inherit"
             style={{ display: user ? "block" : "none", margin: "12px" }}
-            onClick={logout}
+            onClick={logoutUser}
           >
             Logout
           </Button>

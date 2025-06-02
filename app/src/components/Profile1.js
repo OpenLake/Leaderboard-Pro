@@ -1,6 +1,6 @@
 import {React, useState} from 'react'
 import Profile from './Profile.js'
-import { useAuth } from '../firebase/AuthContext.js';
+import { useAuth } from '../Context/AuthContext.js';
 import Goals from './Goals.js';
 
 const Profile1 = ({darkmode,leetcodeUsers,codeforcesUsers}) => {
