@@ -7,7 +7,7 @@ import { Navbar } from "./components/Navbar.js";
 import { CodeforcesTable } from "./components/CodeforcesTable.js";
 import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
-import Profile1 from "./components/Profile1.js";
+import Profile from "./components/Profile.js";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
@@ -169,7 +169,7 @@ function App() {
                     <Route exact path="/openlake" element={<PrivateRoute><OpenlakeTable darkmode={darkmode} codechefUsers={openlakeContributor} codecheffriends={openlakefriends} setCodecheffriends={setOpenlakefriends} ccshowfriends={olshowfriends} setCCshowfriends={setOlshowfriends} /></PrivateRoute>} />
                     <Route exact path="/github" element={<PrivateRoute><GithubTable darkmode={darkmode} githubUsers={githubUser} githubfriends={githubfriends} setGithubfriends={setGithubfriends} ghshowfriends={ghshowfriends} setGHshowfriends={setGhshowfriends} /></PrivateRoute>} />
                     <Route exact path="/leetcode" element={<PrivateRoute><LeetcodeTable darkmode={darkmode} leetcodeUsers={leetcodeUsers} leetcodefriends={leetcodefriends} setLeetcodefriends={setLeetcodefriends} ltshowfriends={ltshowfriends} setLTshowfriends={setLtshowfriends} /></PrivateRoute>} />
-                    <Route exact path="/profile" element={<PrivateRoute><Profile1 darkmode={darkmode} leetcodeUsers={leetcodeUsers} codeforcesUsers={codeforcesUsers} /></PrivateRoute>} />
+                    <Route exact path="/profile" element={<PrivateRoute><Profile darkmode={darkmode} />-</PrivateRoute>} />
                     <Route exact path="/leetcoderankings" element={<PrivateRoute><LeetcodeRankings darkmode={darkmode} /></PrivateRoute>} />
                     <Route exact path="/leetcoderanking/:username" element={<PrivateRoute><LeetcodeGraphs darkmode={darkmode} /></PrivateRoute>} />
                     <Route exact path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

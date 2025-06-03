@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -8,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 import { Grid } from "@mui/material";
+import { useAuth } from "../Context/AuthContext";
 
 function Copyright(props) {
   return (
@@ -29,7 +29,22 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function Profile({ darkmode, update_addUsernames }) {
+let fields = [{ 'label': 'CodeChef Username', 'tag': 'codechef' }, { 'label': 'Codeforces Username', 'tag': 'codeforces' }, { 'label': 'LeetCode Username', 'tag': 'leetcode' }, { 'label': 'Github Username', 'tag': 'github' }];
+
+export default function Profile({ darkmode }) {
+  let { update_addUsernames, userNames } = useAuth();
+  fields.forEach(x => { x['helperText'] = (userNames[x['tag']]?.username ? `Currently ${userNames[x['tag']].username}` : `Currently not set`) })
+  let elems = fields.map(x => (<Grid key={x['tag']} size={12}>
+    <TextField
+      fullWidth
+      name={x['label']}
+      label={x['label']}
+      type={x['tag']}
+      id={x['tag']}
+      autoComplete={`new-${x['tag']}`}
+      helperText={x['helperText']}
+    />
+  </Grid>))
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -49,50 +64,10 @@ export default function Profile({ darkmode, update_addUsernames }) {
             <Box
               component="form"
               noValidate
-              onSubmit={update_addUsernames}
               sx={{ mt: 3 }}
             >
               <Grid container spacing={2}>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    name="CodeChef Username"
-                    label="CodeChef Username"
-                    type="cc_uname"
-                    id="cc_uname"
-                    autoComplete="new-cc_uname"
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    name="Codeforces Username"
-                    label="Codeforces Username"
-                    type="cf_uname"
-                    id="cf_uname"
-                    autoComplete="new-cf_uname"
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    name="Github Username "
-                    label="Github Username  "
-                    type="gh_uname"
-                    id="gh_uname"
-                    autoComplete="new-gh_uname"
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    name="LeetCode Username "
-                    label="LeetCode Username  "
-                    type="lt_uname"
-                    id="lt_uname"
-                    autoComplete="new-lt_uname"
-                  />
-                </Grid>
+                {elems}
               </Grid>
               <Button
                 type="submit"
@@ -100,6 +75,7 @@ export default function Profile({ darkmode, update_addUsernames }) {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 style={{ backgroundColor: darkmode ? "#ff8c0b" : "" }}
+                onClick={update_addUsernames}
               >
                 Update
               </Button>
