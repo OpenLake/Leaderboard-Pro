@@ -1,141 +1,134 @@
-import { createContext,useState, useContext, useEffect } from "react";
-import {jwtDecode} from  "jwt-decode"
-import {useNavigate} from "react-router-dom"
+import { createContext, useState, useContext, useEffect } from "react";
+import { jwtDecode } from "jwt-decode"
+import { useNavigate } from "react-router-dom"
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from "./firebase.config";
 
 
-const AuthContext=createContext()
+const AuthContext = createContext()
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+    return useContext(AuthContext);
 };
 const googleProvider = new GoogleAuthProvider();
 
 export default AuthContext;
 
-export const AuthProvider=({children})=>{
-    let [authTokens,setAuthTokens]=useState(localStorage.getItem('authTokens')?JSON.parse(localStorage.getItem('authTokens')):null)
-    let [user,setUser]=useState(authTokens?jwtDecode(authTokens.access):null)
-    const navigate=useNavigate()
+export const AuthProvider = ({ children }) => {
+    let [authTokens, setAuthTokens] = useState(localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
+    let [user, setUser] = useState(authTokens ? jwtDecode(authTokens.access) : null)
+    const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
-    let loginUser=async (e)=>
-    {
+    let loginUser = async (e) => {
         e.preventDefault();
-        let response=await fetch('http://localhost:8000/api/token/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
+        let response = await fetch('http://localhost:8000/api/token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify({
-                'username':e.target.form.UserName.value,'password':e.target.form.password.value
+            body: JSON.stringify({
+                'username': e.target.form.UserName.value, 'password': e.target.form.password.value
             })
         })
         let data = await response.json()
-        if(response.status===200)
-        {
+        if (response.status === 200) {
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
-            localStorage.setItem('authTokens',JSON.stringify(data))
+            localStorage.setItem('authTokens', JSON.stringify(data))
             navigate('/')
-        }else{
+        } else {
             alert('ERROR!!!!')
         }
     }
 
-    let logoutUser=()=>{
+    let logoutUser = () => {
         setAuthTokens(null)
         setUser(null)
         localStorage.removeItem('authTokens')
         navigate('/login')
-        if(auth.currentUser)
+        if (auth.currentUser)
             return signOut(auth);
     }
-    let registerUser=async(e)=>
-    {
+    let registerUser = async (e) => {
         e.preventDefault();
-        let response=await fetch('http://localhost:8000/api/register/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
+        let response = await fetch('http://localhost:8000/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify({
-                'first_name':e.target.form.first_name.value,'email':e.target.form.email.value,'username':e.target.form.username.value,'password':e.target.form.password.value,
-                'last_name':e.target.form.last_name.value,'cc_uname':e.target.form.cc_uname.value,'cf_uname':e.target.form.cf_uname.value,'gh_uname':e.target.form.gh_uname.value,
-                'lt_uname':e.target.form.lt_uname.value
+            body: JSON.stringify({
+                'first_name': e.target.form.first_name.value, 'email': e.target.form.email.value, 'username': e.target.form.username.value, 'password': e.target.form.password.value,
+                'last_name': e.target.form.last_name.value, 'cc_uname': e.target.form.cc_uname.value, 'cf_uname': e.target.form.cf_uname.value, 'gh_uname': e.target.form.gh_uname.value,
+                'lt_uname': e.target.form.lt_uname.value
             })
         })
-        if(response.status===200)
-        {
-            let response=await fetch('http://localhost:8000/api/token/',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
+        if (response.status === 200) {
+            let response = await fetch('http://localhost:8000/api/token/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 },
-                body:JSON.stringify({
-                    'username':e.target.form.username.value,'password':e.target.form.password.value
+                body: JSON.stringify({
+                    'username': e.target.form.username.value, 'password': e.target.form.password.value
                 })
             })
             let data = await response.json()
-            if(response.status===200)
-            {
+            if (response.status === 200) {
                 setAuthTokens(data)
                 setUser(jwtDecode(data.access))
-                localStorage.setItem('authTokens',JSON.stringify(data))
+                localStorage.setItem('authTokens', JSON.stringify(data))
                 navigate('/')
-            }else{
+            } else {
                 alert('ERROR!!!!')
             }
-        }else{
+        } else {
             alert('ERROR!!!!')
         }
     }
-    let update_addUsernames=async(e)=>
-    {
+    let update_addUsernames = async (e) => {
         e.preventDefault();
         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!")
         // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
-        let response=await fetch('http://localhost:8000/api/insertapi/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
+        let response = await fetch('http://localhost:8000/api/insertapi/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('authTokens')).access,
             },
-            body:JSON.stringify({
-                'cc_uname':e.target.form.cc_uname.value,'cf_uname':e.target.form.cf_uname.value,'gh_uname':e.target.form.gh_uname.value,
-                'lt_uname':e.target.form.lt_uname.value
+            body: JSON.stringify({
+                'cc_uname': e.target.form.cc_uname.value, 'cf_uname': e.target.form.cf_uname.value, 'gh_uname': e.target.form.gh_uname.value,
+                'lt_uname': e.target.form.lt_uname.value
             })
         })
-        if(response.status===201)
-        {
+        if (response.status === 201) {
             navigate('/')
-        }else{
+        } else {
             alert('ERROR!!!!')
         }
     }
-    let toLogin=()=>{
+    let toLogin = () => {
         navigate('/login')
     }
-    let toRegister=()=>{
+    let toRegister = () => {
         navigate('/register')
     }
     const SignInWithGoogle = async () => {
         return await signInWithPopup(auth, googleProvider);
-      };
-    let contextData={
-        user:user,
-        authTokens:authTokens,
-        loginUser:loginUser,
-        registerUser:registerUser,
-        logoutUser:logoutUser,
-        toLogin:toLogin,
-        toRegister:toRegister,
-        update_addUsernames:update_addUsernames,
+    };
+    let contextData = {
+        user: user,
+        authTokens: authTokens,
+        loginUser: loginUser,
+        registerUser: registerUser,
+        logoutUser: logoutUser,
+        toLogin: toLogin,
+        toRegister: toRegister,
+        update_addUsernames: update_addUsernames,
         SignInWithGoogle,
         loading,
     }
     // useEffect(() => {
-    
+
     //     const token = async (username) => {
     //     let response = await fetch("http://localhost:8000/api/token/", {
     //       method: "POST",
@@ -157,14 +150,14 @@ export const AuthProvider=({children})=>{
     //       alert("ERROR!!!!");
     //     }
     //   };
-    
+
     //     const unsubscribe = auth.onAuthStateChanged((user) => {
     //       setUser(user);
     //       setLoading(false);
     //       let isNewUser = false;
     //       if (user) {
     //         const { email, displayName, photoURL } = user;
-    
+
     //         const userData = {
     //           email,
     //           username: displayName,
@@ -173,7 +166,7 @@ export const AuthProvider=({children})=>{
     //         console.log(userData);
     //       isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
     //       }
-    
+
     //       if (isNewUser) {
     //         console.log("New User");
     //         async function register() {
@@ -208,7 +201,7 @@ export const AuthProvider=({children})=>{
     //         console.log("Old User");
     //       }
     //     });
-    
+
     //     return () => unsubscribe();
     //   }, [navigate]);
     return (
