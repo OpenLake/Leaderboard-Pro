@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
 import NewTaskModal from "./NewTaskModal";
-import { useAuth } from "../firebase/AuthContext";
+import { useAuth } from "../Context/AuthContext";
 
 // Helper to reorder tasks after drag-and-drop
 const reorder = (list, startIndex, endIndex) => {
@@ -13,7 +13,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 // Modal Component for creating a new task
 
-const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
+const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   // TASK STRUCTURE:
   // { id, text, details, startDate, dueDate, completed, starred, target, solved }
   const [tasks, setTasks] = useState([]);
@@ -28,15 +28,16 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
     let totalSolved = 0;
     console.log(codeforcesUsers[0]);
     console.log(leetcodeUsers[0])
-    const solvedc = codeforcesUsers.find((u) => u.username==="Yuvraj_Rathod");
-    const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
+    const solvedc = codeforcesUsers.find((u) => u.username === user.username);
+    console.log(solvedc)
+    // const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
     totalSolved += solvedc.total_solved;
-    totalSolved += solvedl.total_solved;
-    console.log(totalSolved);
-    console.log(solvedc.total_solved);
-    console.log(solvedl.total_solved);
+    // totalSolved += solvedl.total_solved;
+    // console.log(totalSolved);
+    // console.log(solvedc.total_solved);
+    // console.log(solvedl.total_solved);
     setTotalSolvedNow(totalSolved);
-  }, [codeforcesUsers, leetcodeUsers])
+  }, [codeforcesUsers, leetcodeUsers, user])
 
 
   // New task state includes target and initializes solved count to 0
@@ -48,7 +49,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
     target: 0,
   });
 
-    // fetch tasks from database
+  // fetch tasks from database
 
   useEffect(() => {
     console.log("user", user.username);
@@ -219,11 +220,11 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
           },
           body: JSON.stringify(task), // Convert task object to JSON
         });
-    
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    
+
         const newTask = await response.json();
         setTasks((prevTasks) => [...prevTasks, newTask]); // Update state
         console.log("Task added:", newTask);
@@ -231,7 +232,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
         console.error("Error adding task:", error);
       }
     };
-    addTask(task);    
+    addTask(task);
     setNewTask({
       text: "",
       details: "",
@@ -265,7 +266,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
         task.id === id ? { ...task, starred: !task.starred } : task
       )
     );
-    
+
     const task = tasks.find((task) => task.id === id); // Use find() instead of filter()
     if (!task) {
       console.error("Task not found");
@@ -291,10 +292,10 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
         solved: task.solved,
       })
     })
-    .then(response => response.json())
-    .then(data => console.log("Updated Task:", data))
-    .catch(error => console.error("Error updating task:", error));
-};
+      .then(response => response.json())
+      .then(data => console.log("Updated Task:", data))
+      .catch(error => console.error("Error updating task:", error));
+  };
 
 
   // Toggle task completed status
@@ -308,16 +309,16 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
 
   // Delete a task
   const deleteTask = async (title) => {
-    if(window.confirm("Are you sure you want to delete this task?")){
+    if (window.confirm("Are you sure you want to delete this task?")) {
       setTasks(tasks.filter((task) => task.title !== title));
       await fetch("http://localhost:8000/usertasks/", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({"username":user.username, title}),
+        body: JSON.stringify({ "username": user.username, title }),
       });
-      
+
     }
   };
 
@@ -448,7 +449,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
                             </div>
                           )}
                           <div style={{ marginTop: "8px", display: "flex", alignItems: "center" }}>
-                            <span style={{marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368"}}>
+                            <span style={{ marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368" }}>
                               {task.dueDate ? `Due: ${task.dueDate}` : ""}
                             </span>
                           </div>
@@ -514,7 +515,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
           </DragDropContext>
         )}
 
-    {activeTab === "starred" && (
+        {activeTab === "starred" && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="activeTasks">
               {(provided) => (
@@ -576,7 +577,7 @@ const Goals = ({ darkmode,codeforcesUsers,leetcodeUsers }) => {
                             </div>
                           )}
                           <div style={{ marginTop: "8px", display: "flex", alignItems: "center" }}>
-                            <span style={{marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368"}}>
+                            <span style={{ marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368" }}>
                               {task.dueDate ? `Due: ${task.dueDate}` : ""}
                             </span>
                           </div>

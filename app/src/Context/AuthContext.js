@@ -1,16 +1,24 @@
-import { createContext,useState } from "react";
+import { createContext,useState, useContext, useEffect } from "react";
 import {jwtDecode} from  "jwt-decode"
 import {useNavigate} from "react-router-dom"
-
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { auth } from "./firebase.config";
 
 
 const AuthContext=createContext()
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+const googleProvider = new GoogleAuthProvider();
+
 export default AuthContext;
 
 export const AuthProvider=({children})=>{
     let [authTokens,setAuthTokens]=useState(localStorage.getItem('authTokens')?JSON.parse(localStorage.getItem('authTokens')):null)
     let [user,setUser]=useState(authTokens?jwtDecode(authTokens.access):null)
-    const history=useNavigate()
+    const navigate=useNavigate()
+    const [loading, setLoading] = useState(false);
     let loginUser=async (e)=>
     {
         e.preventDefault();
@@ -20,7 +28,7 @@ export const AuthProvider=({children})=>{
                 'Content-Type':'application/json'
             },
             body:JSON.stringify({
-                'username':e.target.UserName.value,'password':e.target.password.value
+                'username':e.target.form.UserName.value,'password':e.target.form.password.value
             })
         })
         let data = await response.json()
@@ -29,7 +37,7 @@ export const AuthProvider=({children})=>{
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
             localStorage.setItem('authTokens',JSON.stringify(data))
-            history.push('/')
+            navigate('/')
         }else{
             alert('ERROR!!!!')
         }
@@ -39,7 +47,9 @@ export const AuthProvider=({children})=>{
         setAuthTokens(null)
         setUser(null)
         localStorage.removeItem('authTokens')
-        history.push('/login')
+        navigate('/login')
+        if(auth.currentUser)
+            return signOut(auth);
     }
     let registerUser=async(e)=>
     {
@@ -50,9 +60,9 @@ export const AuthProvider=({children})=>{
                 'Content-Type':'application/json'
             },
             body:JSON.stringify({
-                'first_name':e.target.first_name.value,'email':e.target.email.value,'username':e.target.username.value,'password':e.target.password.value,
-                'last_name':e.target.last_name.value,'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value,
-                'lt_uname':e.target.lt_uname.value
+                'first_name':e.target.form.first_name.value,'email':e.target.form.email.value,'username':e.target.form.username.value,'password':e.target.form.password.value,
+                'last_name':e.target.form.last_name.value,'cc_uname':e.target.form.cc_uname.value,'cf_uname':e.target.form.cf_uname.value,'gh_uname':e.target.form.gh_uname.value,
+                'lt_uname':e.target.form.lt_uname.value
             })
         })
         if(response.status===200)
@@ -63,7 +73,7 @@ export const AuthProvider=({children})=>{
                     'Content-Type':'application/json'
                 },
                 body:JSON.stringify({
-                    'username':e.target.username.value,'password':e.target.password.value
+                    'username':e.target.form.username.value,'password':e.target.form.password.value
                 })
             })
             let data = await response.json()
@@ -72,7 +82,7 @@ export const AuthProvider=({children})=>{
                 setAuthTokens(data)
                 setUser(jwtDecode(data.access))
                 localStorage.setItem('authTokens',JSON.stringify(data))
-                history.push('/')
+                navigate('/')
             }else{
                 alert('ERROR!!!!')
             }
@@ -92,23 +102,26 @@ export const AuthProvider=({children})=>{
                 'Authorization':'Bearer '+JSON.parse(localStorage.getItem('authTokens')).access,
             },
             body:JSON.stringify({
-                'cc_uname':e.target.cc_uname.value,'cf_uname':e.target.cf_uname.value,'gh_uname':e.target.gh_uname.value,
-                'lt_uname':e.target.lt_uname.value
+                'cc_uname':e.target.form.cc_uname.value,'cf_uname':e.target.form.cf_uname.value,'gh_uname':e.target.form.gh_uname.value,
+                'lt_uname':e.target.form.lt_uname.value
             })
         })
         if(response.status===201)
         {
-            history.push('/')
+            navigate('/')
         }else{
             alert('ERROR!!!!')
         }
     }
     let toLogin=()=>{
-        history.push('/login')
+        navigate('/login')
     }
     let toRegister=()=>{
-        history.push('/register')
+        navigate('/register')
     }
+    const SignInWithGoogle = async () => {
+        return await signInWithPopup(auth, googleProvider);
+      };
     let contextData={
         user:user,
         authTokens:authTokens,
@@ -117,8 +130,87 @@ export const AuthProvider=({children})=>{
         logoutUser:logoutUser,
         toLogin:toLogin,
         toRegister:toRegister,
-        update_addUsernames:update_addUsernames
+        update_addUsernames:update_addUsernames,
+        SignInWithGoogle,
+        loading,
     }
+    // useEffect(() => {
+    
+    //     const token = async (username) => {
+    //     let response = await fetch("http://localhost:8000/api/token/", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         username: username,
+    //         password: "GOOGLEDATA",
+    //       }),
+    //     });
+    //     let data = await response.json();
+    //     if (response.status === 200) {
+    //       setAuthTokens(data);
+    //       setUser(jwtDecode(data.access));
+    //       localStorage.setItem("authTokens", JSON.stringify(data));
+    //       navigate("/");
+    //     } else {
+    //       alert("ERROR!!!!");
+    //     }
+    //   };
+    
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //       setUser(user);
+    //       setLoading(false);
+    //       let isNewUser = false;
+    //       if (user) {
+    //         const { email, displayName, photoURL } = user;
+    
+    //         const userData = {
+    //           email,
+    //           username: displayName,
+    //           photoURL
+    //         };
+    //         console.log(userData);
+    //       isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+    //       }
+    
+    //       if (isNewUser) {
+    //         console.log("New User");
+    //         async function register() {
+    //           let response = await fetch("http://localhost:8000/api/register/", {
+    //             method: "POST",
+    //             headers: {
+    //               "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //               first_name: user.displayName,
+    //               email: user.email,
+    //               username: user.displayName,
+    //               //   password: e.target.form.password.value,
+    //               //   last_name: e.target.form.last_name.value,
+    //               cc_uname:"",
+    //               cf_uname: "",
+    //               gh_uname: "",
+    //               lt_uname: "",
+    //             }),
+    //           });
+    //           if (response.status === 200) {
+    //             token(user.displayName);
+    //           } else {
+    //             alert("ERROR!!!!", response);
+    //           }
+    //         }
+    //         register();
+    //       } else {
+    //         if(user && user.displayName){
+    //         token(user.displayName);
+    //         }
+    //         console.log("Old User");
+    //       }
+    //     });
+    
+    //     return () => unsubscribe();
+    //   }, [navigate]);
     return (
         <AuthContext.Provider value={contextData}>
             {children}

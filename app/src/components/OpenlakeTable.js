@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -17,17 +17,27 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = 'OpenlakeTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  table_dark: `${PREFIX}-table_dark`,
+  medium_page: `${PREFIX}-medium_page`,
+  large_page: `${PREFIX}-large_page`
+};
+
+const Root = styled('div')({
+  [`& .${classes.table}`]: {
     minWidth: 500,
   },
-  table_dark: {
+  [`& .${classes.table_dark}`]: {
     minWidth: 500,
     backgroundColor: "Black",
     border: "2px solid White",
     borderRadius: "10px",
   },
-  medium_page: {
+  [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"column-reverse",
@@ -37,7 +47,7 @@ const useStyles = makeStyles({
     width: "100vw",
     flexShrink: "0",
   },
-  large_page: {
+  [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection:"row",
@@ -158,16 +168,12 @@ export const OpenlakeTable = ({
         );
       }
     }, [searchfield, todisplayusers]);
-  const classes = useStyles();
-  const StyledTableCell = withStyles({
-    root: {
-      color: !darkmode ? "Black" : "White",
-    },
-  })(TableCell);
+
+  const StyledTableCell = TableCell;
   const isMobile = useScreenWidth(786);
 
   return (
-    <div
+    <Root
       className = {`openlake ${isMobile ? classes.medium_page : classes.large_page}`}
     >
       <div style={{
@@ -188,19 +194,34 @@ export const OpenlakeTable = ({
                 style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC",
                }}
               >
-                <StyledTableCell style={{ textAlign: "center" }}>
+                <StyledTableCell
+                  style={{ textAlign: "center" }}
+                  classes={{
+                    root: classes.root
+                  }}>
                   Username
                 </StyledTableCell>
-                <StyledTableCell style={{ textAlign: "center" }}>
+                <StyledTableCell
+                  style={{ textAlign: "center" }}
+                  classes={{
+                    root: classes.root
+                  }}>
                   Contributions
                 </StyledTableCell>
-                <StyledTableCell></StyledTableCell>
+                <StyledTableCell
+                  classes={{
+                    root: classes.root
+                  }}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredusers.sort((a, b) => (a.contributions < b.contributions ? 1 : -1)).map((olUser) => (
                 <TableRow key={olUser.id}>
-                  <StyledTableCell style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root
+                    }}>
                     <Link
                       style={{
                         fontWeight: "bold",
@@ -213,10 +234,17 @@ export const OpenlakeTable = ({
                       {olUser.username}
                     </Link>
                   </StyledTableCell>
-                  <StyledTableCell style={{ textAlign: "center" }}>
+                  <StyledTableCell
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root
+                    }}>
                     {olUser.contributions}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell
+                    classes={{
+                      root: classes.root
+                    }}>
                       <Button
                         variant="contained"
                         style={{backgroundColor:darkmode?"#146ca4":""}}
@@ -282,6 +310,6 @@ export const OpenlakeTable = ({
           {ccshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
       </div>
-    </div>
+    </Root>
   );
 };
