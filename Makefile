@@ -3,6 +3,11 @@ PYTHON ?= python3
 PIP ?= pip3
 MAKE ?= make
 
+format:
+	cd api/ && $(PYTHON) -m isort .
+	cd api/ && $(PYTHON) -m black .
+	cd app/ && $(PNPM) format
+
 install:
 	cd api/ && $(PIP) install -r requirements.txt
 	cd app/ && $(PNPM) i
