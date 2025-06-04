@@ -1,13 +1,8 @@
 from django.contrib import admin
-from leaderboard.models import (
-    codeforcesUser,
-    githubUser,
-    codechefUser,
-    openlakeContributor,
-    UserNames,
-    LeetcodeUser,
-    UserTasks,
-)
+
+from leaderboard.models import (LeetcodeUser, UserNames, UserTasks,
+                                codechefUser, codeforcesUser, githubUser,
+                                openlakeContributor)
 
 admin.site.register(codeforcesUser)
 admin.site.register(githubUser)

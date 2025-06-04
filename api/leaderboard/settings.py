@@ -10,11 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
-from celery.schedules import crontab
 from datetime import timedelta
+from pathlib import Path
 
-
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,25 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-)6p=1a4tc8_yuaoh-qyu+^+mo==yzo%1%a)ofhiuvw)(el-lbh"
-)
+SECRET_KEY = "django-insecure-)6p=1a4tc8_yuaoh-qyu+^+mo==yzo%1%a)ofhiuvw)(el-lbh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
-import dotenv,os
+import os
+
+import dotenv
+
 dotenv.load_dotenv()
-
 
 
 # import dotenv,os
 
 # dotenv.load_dotenv()
-
-
 
 
 # Application definition
@@ -55,8 +52,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    'celery',
-    'flower',
+    "celery",
+    "flower",
     "rest_framework",
     "knox",
     "rest_framework.authtoken",
@@ -85,42 +82,36 @@ REST_FRAMEWORK = {
     # "DEFAULT_PERMISSION_CLASSES": [
     #     "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     # ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
-    ],   
-    "DEFAULT_PAGINATION_CLASS":
-        "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication"
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=90),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
-
-    'ALGORITHM': 'HS256',
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'JWK_URL': None,
-    'LEEWAY': 0,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS256",
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
 MIDDLEWARE = [
@@ -173,13 +164,13 @@ POSTGRES_HOST = "aws-0-ap-south-1.pooler.supabase.com"
 POSTGRES_PORT = "5432"
 
 DATABASES = {
-    'default': {
-        'ENGINE': POSTGRES_ENGINE,
-        'NAME': POSTGRES_NAME,
-        'USER': POSTGRES_USER,
-        'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': POSTGRES_HOST,
-        'PORT': POSTGRES_PORT,
+    "default": {
+        "ENGINE": POSTGRES_ENGINE,
+        "NAME": POSTGRES_NAME,
+        "USER": POSTGRES_USER,
+        "PASSWORD": POSTGRES_PASSWORD,
+        "HOST": POSTGRES_HOST,
+        "PORT": POSTGRES_PORT,
     }
 }
 # DATABASES = {
@@ -202,12 +193,8 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -235,8 +222,8 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATICFILES_DIR = os.path.join(BASE_DIR,'static')
-STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles_build','static')
+STATICFILES_DIR = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
 
 CC_INTV = 5
 GH_INTV = 10
@@ -271,8 +258,7 @@ CELERY_BEAT_SCHEDULE = {
     "cf_update_db_task": {
         "task": "leaderboard.celery.codeforces_user_update",
         "schedule": crontab(minute=f"*/{CF_INTV}"),
-    }
-    
+    },
 }
 
 # Run the `tasks.add` task every minute.

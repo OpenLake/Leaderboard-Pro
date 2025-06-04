@@ -1,9 +1,8 @@
-from django.db import models
-from datetime import datetime, timezone, timedelta
-from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 
 class githubUser(models.Model):
@@ -13,11 +12,10 @@ class githubUser(models.Model):
     stars = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
-            minutes=1
-        ):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
             return True
         else:
             return False
@@ -33,9 +31,7 @@ class openlakeContributor(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
-            minutes=1
-        ):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
             return True
         else:
             return False
@@ -51,9 +47,7 @@ class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.BigIntegerField(
-        default=datetime.now().timestamp()
-    )
+    last_activity = models.BigIntegerField(default=datetime.now().timestamp())
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
@@ -61,9 +55,7 @@ class codeforcesUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
-            minutes=1
-        ):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
             return True
         else:
             False
@@ -83,11 +75,10 @@ class codechefUser(models.Model):
     rating = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
-            minutes=3
-        ):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3):
             return True
         else:
             False
@@ -114,11 +105,14 @@ class codeforcesUserRatingUpdate(models.Model):
     prev_index = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     timestamp = models.BigIntegerField(default=0)
+
     def __str__(self):
         return f"{self.cf_user.username}.{self.index} {self.rating}"
 
     class Meta:
         ordering = ["timestamp"]
+
+
 class LeetcodeUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     ranking = models.PositiveIntegerField(default=0)
@@ -128,11 +122,10 @@ class LeetcodeUser(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
+
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(
-            minutes=1
-        ):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
             return True
         else:
             return False
@@ -143,16 +136,17 @@ class LeetcodeUser(models.Model):
     class Meta:
         ordering = ["ranking"]
 
+
 class UserNames(models.Model):
-    user =models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     cc_uname = models.CharField(max_length=64)
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
-    lt_uname = models.CharField(max_length=64,default="")
+    lt_uname = models.CharField(max_length=64, default="")
 
 
 class UserTasks(models.Model):
-    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     problem = models.PositiveIntegerField(default=0)
     # startDate = models.DateTimeField(auto_now_add=True)
     dueDate = models.DateTimeField()
@@ -161,10 +155,11 @@ class UserTasks(models.Model):
     completed = models.BooleanField(default=False)
     starred = models.BooleanField(default=False)
     solved = models.PositiveIntegerField(default=0)
-    total_solved_now=models.PositiveBigIntegerField(default=0)
+    total_solved_now = models.PositiveBigIntegerField(default=0)
+
 
 class DiscussionPost(models.Model):
-    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=64, unique=True)
     discription = models.CharField(max_length=256)
     posted = models.DateTimeField(auto_now_add=True)
@@ -172,10 +167,13 @@ class DiscussionPost(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     comments = models.PositiveIntegerField(default=0)
 
+
 class ReplyPost(models.Model):
-    username = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     discription = models.CharField(max_length=256)
     posted = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
-    parent = models.ForeignKey(DiscussionPost,on_delete=models.CASCADE,null=True,blank=True)
+    parent = models.ForeignKey(
+        DiscussionPost, on_delete=models.CASCADE, null=True, blank=True
+    )

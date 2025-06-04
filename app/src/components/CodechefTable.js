@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -18,17 +18,17 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const PREFIX = 'CodechefTable';
+const PREFIX = "CodechefTable";
 
 const classes = {
   root: `${PREFIX}-root`,
   table: `${PREFIX}-table`,
   table_dark: `${PREFIX}-table_dark`,
   medium_page: `${PREFIX}-medium_page`,
-  large_page: `${PREFIX}-large_page`
+  large_page: `${PREFIX}-large_page`,
 };
 
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.table}`]: {
     minWidth: 700,
   },
@@ -38,12 +38,12 @@ const Root = styled('div')({
     border: "2px solid White",
     borderRadius: "10px",
   },
-    [`& .${classes.medium_page}`]: {
+  [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"column-reverse",
-    paddingLeft:"2.5vw",
-    paddingRight:"2.5vw",
+    flexDirection: "column-reverse",
+    paddingLeft: "2.5vw",
+    paddingRight: "2.5vw",
     marginTop: "9vh",
     width: "100vw",
     flexShrink: "0",
@@ -51,8 +51,8 @@ const Root = styled('div')({
   [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"row",
-    padding:"auto",
+    flexDirection: "row",
+    padding: "auto",
     marginTop: "10vh",
     width: "99vw",
     flexShrink: "0",
@@ -87,7 +87,6 @@ export const CodechefTable = ({
   };
 
   async function addfriend(e) {
-
     const response = await fetch("http://127.0.0.1:8000/codechefFA/", {
       method: "POST",
       headers: {
@@ -101,15 +100,12 @@ export const CodechefTable = ({
     });
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
-      console.log(response)
+    } else {
+      console.log(response);
       setCodecheffriends((current) => [...current, e]);
     }
   }
   async function dropfriend(e) {
-
     const response = await fetch("http://127.0.0.1:8000/codechefFD/", {
       method: "POST",
       headers: {
@@ -123,12 +119,10 @@ export const CodechefTable = ({
     });
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
+    } else {
       setCodecheffriends((current) =>
-      current.filter((fruit) => fruit.username !== e)
-    );
+        current.filter((fruit) => fruit.username !== e),
+      );
     }
   }
   useEffect(() => {
@@ -151,7 +145,7 @@ export const CodechefTable = ({
           return cfUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
     // eslint-disable-next-line
@@ -166,7 +160,7 @@ export const CodechefTable = ({
           return cfUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
   }, [searchfield, todisplayusers]);
@@ -174,16 +168,17 @@ export const CodechefTable = ({
 
   const isMobile = useScreenWidth(786);
 
-
   return (
     <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{
-        width: "18vw",
-        maxWidth:"200px",
-        marginBottom:"10px",
-      }}></div>{" "}
+      <div
+        style={{
+          width: "18vw",
+          maxWidth: "200px",
+          marginBottom: "10px",
+        }}
+      ></div>{" "}
       <div>
         <TableContainer component={Paper}>
           <Table
@@ -196,32 +191,51 @@ export const CodechefTable = ({
               >
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Avatar</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Avatar
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Username</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Username
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Rating</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Rating
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Max rating</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Max rating
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Global Rank</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Global Rank
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Country Rank</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Country Rank
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}></StyledTableCell>
+                    root: classes.root,
+                  }}
+                ></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -231,8 +245,9 @@ export const CodechefTable = ({
                   <TableRow key={cfUser.id}>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Avatar
                         src={cfUser.avatar}
                         alt={`${cfUser.username} avatar`}
@@ -241,8 +256,9 @@ export const CodechefTable = ({
                     </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Link
                         style={{
                           fontWeight: "bold",
@@ -257,37 +273,50 @@ export const CodechefTable = ({
                     </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{cfUser.rating}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {cfUser.rating}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{cfUser.max_rating}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {cfUser.max_rating}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{cfUser.Global_rank}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {cfUser.Global_rank}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{cfUser.Country_rank}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {cfUser.Country_rank}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Button
                         variant="contained"
-                        style={{backgroundColor:darkmode?"#146ca4":""}}
+                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
                         onClick={() => {
                           !codecheffriends.some(
-                            (item) => item.username === cfUser.username
+                            (item) => item.username === cfUser.username,
                           )
                             ? addfriend(cfUser)
                             : dropfriend(cfUser.username);
                         }}
                       >
                         {codecheffriends.some(
-                          (item) => item.username === cfUser.username
+                          (item) => item.username === cfUser.username,
                         )
                           ? "Remove Friend"
                           : "Add Friend"}
@@ -303,7 +332,7 @@ export const CodechefTable = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: isMobile ? "0px": "5vw",
+          marginRight: isMobile ? "0px" : "5vw",
           marginTop: "2vh",
           position: "relative",
         }}
@@ -333,8 +362,8 @@ export const CodechefTable = ({
           style={{
             color: "white",
             marginTop: isMobile ? "2vh" : "4vh",
-            backgroundColor:darkmode?"#02055a":"#2196f3",
-            marginBottom:"10px",
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
+            marginBottom: "10px",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}
@@ -343,4 +372,3 @@ export const CodechefTable = ({
     </Root>
   );
 };
-

@@ -1,18 +1,21 @@
-import { React } from 'react'
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
-import { useAuth } from '../Context/AuthContext.js';
-import { useNavigate } from 'react-router-dom';
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from "@mui/material/styles";
+import { useAuth } from "../Context/AuthContext.js";
+import { useNavigate } from "react-router-dom";
 // function Copyright(props) {
 //   return (
 //     <Typography
@@ -40,7 +43,7 @@ export default function SignIn({ loginUser, googleAuth }) {
     e.preventDefault();
     await googleAuth();
     navigate("/");
-  }
+  };
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -60,11 +63,7 @@ export default function SignIn({ loginUser, googleAuth }) {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              sx={{ mt: 1 }}
-            >
+            <Box component="form" noValidate sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
@@ -109,17 +108,19 @@ export default function SignIn({ loginUser, googleAuth }) {
               </Button>
               <Grid container alignItems="center" justifyContent="center">
                 <Grid>
-                  <Button variant="body2" style={{ color: "red" }} onClick={toRegister}>
+                  <Button
+                    variant="body2"
+                    style={{ color: "red" }}
+                    onClick={toRegister}
+                  >
                     {"Don't have an account? Sign Up"}
                   </Button>
                 </Grid>
               </Grid>
             </Box>
           </Box>
-
         </Container>
       </ThemeProvider>
     </StyledEngineProvider>
   );
 }
-

@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -18,17 +18,17 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const PREFIX = 'CodeforcesTable';
+const PREFIX = "CodeforcesTable";
 
 const classes = {
   root: `${PREFIX}-root`,
   table: `${PREFIX}-table`,
   table_dark: `${PREFIX}-table_dark`,
   medium_page: `${PREFIX}-medium_page`,
-  large_page: `${PREFIX}-large_page`
+  large_page: `${PREFIX}-large_page`,
 };
 
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.table}`]: {
     minWidth: 650,
   },
@@ -41,9 +41,9 @@ const Root = styled('div')({
   [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"column-reverse",
-    paddingLeft:"2.5vw",
-    paddingRight:"2.5vw",
+    flexDirection: "column-reverse",
+    paddingLeft: "2.5vw",
+    paddingRight: "2.5vw",
     marginTop: "9vh",
     width: "100vw",
     flexShrink: "0",
@@ -51,8 +51,8 @@ const Root = styled('div')({
   [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"row",
-    padding:"auto",
+    flexDirection: "row",
+    padding: "auto",
     marginTop: "10vh",
     width: "99vw",
     flexShrink: "0",
@@ -81,7 +81,7 @@ export const CodeforcesTable = ({
     });
     const newData = await response.json();
     setCodeforcesfriends(newData);
-    console.log(newData)
+    console.log(newData);
     // setTodisplayusers(codeforcesUsers)
     // setFilteredusers(codeforcesUsers)
   };
@@ -120,7 +120,7 @@ export const CodeforcesTable = ({
       alert("ERROR!!!!");
     } else {
       setCodeforcesfriends((current) =>
-        current.filter((fruit) => fruit.username !== e)
+        current.filter((fruit) => fruit.username !== e),
       );
     }
   }
@@ -144,7 +144,7 @@ export const CodeforcesTable = ({
           return cfUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
     // eslint-disable-next-line
@@ -159,12 +159,11 @@ export const CodeforcesTable = ({
           return cfUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
   }, [searchfield, todisplayusers]);
   const StyledTableCell = TableCell;
-
 
   function timeConverter(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000);
@@ -195,19 +194,22 @@ export const CodeforcesTable = ({
 
   const isMobile = useScreenWidth(786);
 
-
   return (
     <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{
-        width: "18vw",
-        maxWidth:"200px",
-        marginBottom:"10px",
-      }}></div>
-      <div style={{
-        marginBottom:"1px",
-      }}>
+      <div
+        style={{
+          width: "18vw",
+          maxWidth: "200px",
+          marginBottom: "10px",
+        }}
+      ></div>
+      <div
+        style={{
+          marginBottom: "1px",
+        }}
+      >
         <TableContainer component={Paper}>
           <Table
             className={darkmode ? classes.table_dark : classes.table}
@@ -221,32 +223,51 @@ export const CodeforcesTable = ({
                 {/* #1F2F98 */}
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Avatar</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Avatar
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Username</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Username
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Rating</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Rating
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Max rating</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Max rating
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Last activity</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Last activity
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Total Solved</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Total Solved
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}></StyledTableCell>
+                    root: classes.root,
+                  }}
+                ></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -258,8 +279,9 @@ export const CodeforcesTable = ({
                       <TableRow key={cfUser.id}>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>
+                            root: classes.root,
+                          }}
+                        >
                           <Avatar
                             src={cfUser.avatar}
                             alt={`${cfUser.username} avatar`}
@@ -268,8 +290,9 @@ export const CodeforcesTable = ({
                         </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>
+                            root: classes.root,
+                          }}
+                        >
                           <Link
                             style={{
                               fontWeight: "bold",
@@ -284,39 +307,53 @@ export const CodeforcesTable = ({
                         </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>{cfUser.rating}</StyledTableCell>
+                            root: classes.root,
+                          }}
+                        >
+                          {cfUser.rating}
+                        </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>{cfUser.max_rating}</StyledTableCell>
+                            root: classes.root,
+                          }}
+                        >
+                          {cfUser.max_rating}
+                        </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>
+                            root: classes.root,
+                          }}
+                        >
                           {timeConverter(cfUser.last_activity)}
                         </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>{cfUser.total_solved}</StyledTableCell>
+                            root: classes.root,
+                          }}
+                        >
+                          {cfUser.total_solved}
+                        </StyledTableCell>
                         <StyledTableCell
                           classes={{
-                            root: classes.root
-                          }}>
+                            root: classes.root,
+                          }}
+                        >
                           <Button
                             variant="contained"
-                            style={{backgroundColor:darkmode?"#146ca4":""}}
+                            style={{
+                              backgroundColor: darkmode ? "#146ca4" : "",
+                            }}
                             onClick={() => {
-                              Array.isArray(codeforcesUsers) && !codeforcesfriends.some(
-                                (item) => item.username === cfUser.username
+                              Array.isArray(codeforcesUsers) &&
+                              !codeforcesfriends.some(
+                                (item) => item.username === cfUser.username,
                               )
                                 ? addfriend(cfUser)
                                 : dropfriend(cfUser.username);
                             }}
                           >
                             {codeforcesfriends.some(
-                              (item) => item.username === cfUser.username
+                              (item) => item.username === cfUser.username,
                             )
                               ? "Remove Friend"
                               : "Add Friend"}
@@ -334,7 +371,7 @@ export const CodeforcesTable = ({
           flexDirection: "column",
           marginTop: "2vh",
           position: "relative",
-          marginBottom:"10px",
+          marginBottom: "10px",
         }}
       >
         <TextField
@@ -360,9 +397,9 @@ export const CodeforcesTable = ({
             setCfshowfriends(!cfshowfriends);
           }}
           style={{
-            backgroundColor:darkmode?"#02055a":"#2196f3",
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
             color: "white",
-            marginTop:isMobile ? "2vh" : "4vh",
+            marginTop: isMobile ? "2vh" : "4vh",
           }}
         >
           {cfshowfriends ? "Show All" : "Show Friends"}

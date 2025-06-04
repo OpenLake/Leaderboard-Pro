@@ -1,8 +1,14 @@
-from leaderboard.serializers import CC_Serializer, CF_Serializer, OL_Serializer, LT_Serializer, GH_Serializer, UserNamesSerializer
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import permission_classes, api_view
-from leaderboard.models import UserNames, codechefUser, codeforcesUser, LeetcodeUser, githubUser, openlakeContributor
+
+from leaderboard.models import (LeetcodeUser, UserNames, codechefUser,
+                                codeforcesUser, githubUser,
+                                openlakeContributor)
+from leaderboard.serializers import (CC_Serializer, CF_Serializer,
+                                     GH_Serializer, LT_Serializer,
+                                     OL_Serializer, UserNamesSerializer)
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -33,16 +39,20 @@ def getUserDetails(request):
     except:
         githubDetails = {}
     try:
-        openlakeDetails = openlakeContributor.objects.get(username=userDetails["ol_uname"])
+        openlakeDetails = openlakeContributor.objects.get(
+            username=userDetails["ol_uname"]
+        )
         openlakeDetails = OL_Serializer(openlakeDetails).data
     except:
         openlakeDetails = {}
-    return Response({
-        "username" : username,
-        "email" : email,
-        "codechef" : codechefDetails,
-        "codeforces" : codeforcesDetails,
-        "github" : githubDetails,
-        "leetcode" : leetcodeDetails,
-        "openlake" : openlakeDetails
-    })
+    return Response(
+        {
+            "username": username,
+            "email": email,
+            "codechef": codechefDetails,
+            "codeforces": codeforcesDetails,
+            "github": githubDetails,
+            "leetcode": leetcodeDetails,
+            "openlake": openlakeDetails,
+        }
+    )

@@ -1,20 +1,14 @@
 from rest_framework import serializers
-from leaderboard.models import (
-    codeforcesUser,
-    codeforcesUserRatingUpdate,
-    codechefUser,
-    githubUser,
-    openlakeContributor,
-    LeetcodeUser,
-    UserNames,
-    UserTasks,
-    DiscussionPost,
-    ReplyPost,
-)
+
+from leaderboard.models import (DiscussionPost, LeetcodeUser, ReplyPost,
+                                UserNames, UserTasks, codechefUser,
+                                codeforcesUser, codeforcesUserRatingUpdate,
+                                githubUser, openlakeContributor)
+
 
 class UpdateListSerializer(serializers.ListSerializer):
-  
-    def update(self, instances, validated_data):      
+
+    def update(self, instances, validated_data):
         instance_hash = {index: instance for index, instance in enumerate(instances)}
         result = [
             self.child.update(instance_hash[index], attrs)
@@ -22,32 +16,35 @@ class UpdateListSerializer(serializers.ListSerializer):
         ]
         return result
 
+
 class CC_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = codechefUser
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CC_Update_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = codechefUser
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("username",)
         list_serializer_class = UpdateListSerializer
+
 
 class CF_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = codeforcesUser
-        fields = '__all__'
+        fields = "__all__"
+
 
 class CF_Update_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = codeforcesUser
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("username",)
         list_serializer_class = UpdateListSerializer
 
@@ -56,14 +53,14 @@ class LT_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = LeetcodeUser
-        fields = '__all__'
+        fields = "__all__"
 
 
 class LT_Update_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = LeetcodeUser
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("username",)
         list_serializer_class = UpdateListSerializer
 
@@ -72,21 +69,22 @@ class GH_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = githubUser
-        fields = '__all__'
+        fields = "__all__"
 
 
 class GH_Update_Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = githubUser
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("username",)
         list_serializer_class = UpdateListSerializer
 
+
 class UserNamesSerializer(serializers.ModelSerializer):
     class Meta:
-        model=UserNames
-        fields='__all__'
+        model = UserNames
+        fields = "__all__"
 
 
 class OL_Serializer(serializers.ModelSerializer):
@@ -111,27 +109,33 @@ class OL_Serializer(serializers.ModelSerializer):
     class Meta:
         model = openlakeContributor
         fields = ["id", "username", "contributions"]
-        
+
+
 class Name_Serializer(serializers.Serializer):
     friendName = serializers.CharField(max_length=100)
+
 
 class Task_Serializer(serializers.ModelSerializer):
     class Meta:
         model = UserTasks
-        fields = '__all__' 
+        fields = "__all__"
+
+
 class Task_Update_Serializer(serializers.Serializer):
     class Meta:
         model = UserTasks
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("user",)
         list_serializer_class = UpdateListSerializer
+
 
 class DiscussionPost_Serializer(serializers.ModelSerializer):
     class Meta:
         model = DiscussionPost
-        fields = '__all__'
+        fields = "__all__"
+
 
 class ReplyPost_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ReplyPost
-        fields = '__all__'
+        fields = "__all__"

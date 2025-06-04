@@ -5,7 +5,11 @@ import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
 
@@ -29,22 +33,33 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-let fields = [{ 'label': 'CodeChef Username', 'tag': 'codechef' }, { 'label': 'Codeforces Username', 'tag': 'codeforces' }, { 'label': 'LeetCode Username', 'tag': 'leetcode' }, { 'label': 'Github Username', 'tag': 'github' }];
+let fields = [
+  { label: "CodeChef Username", tag: "codechef" },
+  { label: "Codeforces Username", tag: "codeforces" },
+  { label: "LeetCode Username", tag: "leetcode" },
+  { label: "Github Username", tag: "github" },
+];
 
 export default function Profile({ darkmode }) {
   let { update_addUsernames, userNames } = useAuth();
-  fields.forEach(x => { x['helperText'] = (userNames[x['tag']]?.username ? `Currently ${userNames[x['tag']].username}` : `Currently not set`) })
-  let elems = fields.map(x => (<Grid key={x['tag']} size={12}>
-    <TextField
-      fullWidth
-      name={x['label']}
-      label={x['label']}
-      type={x['tag']}
-      id={x['tag']}
-      autoComplete={`new-${x['tag']}`}
-      helperText={x['helperText']}
-    />
-  </Grid>))
+  fields.forEach((x) => {
+    x["helperText"] = userNames[x["tag"]]?.username
+      ? `Currently ${userNames[x["tag"]].username}`
+      : `Currently not set`;
+  });
+  let elems = fields.map((x) => (
+    <Grid key={x["tag"]} size={12}>
+      <TextField
+        fullWidth
+        name={x["label"]}
+        label={x["label"]}
+        type={x["tag"]}
+        id={x["tag"]}
+        autoComplete={`new-${x["tag"]}`}
+        helperText={x["helperText"]}
+      />
+    </Grid>
+  ));
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -61,11 +76,7 @@ export default function Profile({ darkmode }) {
             <Typography component="h1" variant="h5">
               Profile
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              sx={{ mt: 3 }}
-            >
+            <Box component="form" noValidate sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 {elems}
               </Grid>
@@ -79,8 +90,11 @@ export default function Profile({ darkmode }) {
               >
                 Update
               </Button>
-              <Grid container alignItems="center" justifyContent="center">
-              </Grid>
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="center"
+              ></Grid>
             </Box>
           </Box>
           <Copyright sx={{ mt: 5 }} />
@@ -89,4 +103,3 @@ export default function Profile({ darkmode }) {
     </StyledEngineProvider>
   );
 }
-
