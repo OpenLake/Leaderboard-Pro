@@ -14,14 +14,27 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
-from leaderboard.models import (DiscussionPost, LeetcodeUser, ReplyPost,
-                                UserTasks, codechefUser, codeforcesUser,
-                                codeforcesUserRatingUpdate, githubUser,
-                                openlakeContributor)
-from leaderboard.serializers import (CC_Serializer, CF_Serializer,
-                                     DiscussionPost_Serializer, GH_Serializer,
-                                     LT_Serializer, OL_Serializer,
-                                     ReplyPost_Serializer, Task_Serializer)
+from leaderboard.models import (
+    DiscussionPost,
+    LeetcodeUser,
+    ReplyPost,
+    UserTasks,
+    codechefUser,
+    codeforcesUser,
+    codeforcesUserRatingUpdate,
+    githubUser,
+    openlakeContributor,
+)
+from leaderboard.serializers import (
+    CC_Serializer,
+    CF_Serializer,
+    DiscussionPost_Serializer,
+    GH_Serializer,
+    LT_Serializer,
+    OL_Serializer,
+    ReplyPost_Serializer,
+    Task_Serializer,
+)
 
 logger = logging.getLogger(__name__)
 from django.http import JsonResponse

@@ -1,9 +1,16 @@
+from leaderboard.models import (
+    DiscussionPost,
+    LeetcodeUser,
+    ReplyPost,
+    UserNames,
+    UserTasks,
+    codechefUser,
+    codeforcesUser,
+    codeforcesUserRatingUpdate,
+    githubUser,
+    openlakeContributor,
+)
 from rest_framework import serializers
-
-from leaderboard.models import (DiscussionPost, LeetcodeUser, ReplyPost,
-                                UserNames, UserTasks, codechefUser,
-                                codeforcesUser, codeforcesUserRatingUpdate,
-                                githubUser, openlakeContributor)
 
 
 class UpdateListSerializer(serializers.ListSerializer):

@@ -2,12 +2,22 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from leaderboard.models import (LeetcodeUser, UserNames, codechefUser,
-                                codeforcesUser, githubUser,
-                                openlakeContributor)
-from leaderboard.serializers import (CC_Serializer, CF_Serializer,
-                                     GH_Serializer, LT_Serializer,
-                                     OL_Serializer, UserNamesSerializer)
+from leaderboard.models import (
+    LeetcodeUser,
+    UserNames,
+    codechefUser,
+    codeforcesUser,
+    githubUser,
+    openlakeContributor,
+)
+from leaderboard.serializers import (
+    CC_Serializer,
+    CF_Serializer,
+    GH_Serializer,
+    LT_Serializer,
+    OL_Serializer,
+    UserNamesSerializer,
+)
 
 
 @api_view(["GET"])

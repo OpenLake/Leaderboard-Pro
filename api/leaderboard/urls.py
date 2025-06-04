@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.urls import include, path
 from rest_framework import permissions, routers, serializers, viewsets
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from leaderboard import friends, root, users, views
 

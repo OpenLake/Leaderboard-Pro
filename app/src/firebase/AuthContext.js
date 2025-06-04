@@ -1,7 +1,7 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebase.config";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -20,7 +20,7 @@ export const AuthProvide = ({ children }) => {
   const [authTokens, setAuthTokens] = useState(
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
-      : null
+      : null,
   );
 
   const SignInWithGoogle = async () => {
@@ -66,8 +66,6 @@ export const AuthProvide = ({ children }) => {
     navigate("/register");
   };
 
-  
-
   const value = {
     authTokens,
     user,
@@ -80,28 +78,27 @@ export const AuthProvide = ({ children }) => {
   };
 
   useEffect(() => {
-
     const token = async (username) => {
-    let response = await fetch("http://localhost:8000/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: "GOOGLEDATA",
-      }),
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setAuthTokens(data);
-      setUser(jwtDecode(data.access));
-      localStorage.setItem("authTokens", JSON.stringify(data));
-      navigate("/");
-    } else {
-      alert("ERROR!!!!");
-    }
-  };
+      let response = await fetch("http://localhost:8000/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: "GOOGLEDATA",
+        }),
+      });
+      let data = await response.json();
+      if (response.status === 200) {
+        setAuthTokens(data);
+        setUser(jwtDecode(data.access));
+        localStorage.setItem("authTokens", JSON.stringify(data));
+        navigate("/");
+      } else {
+        alert("ERROR!!!!");
+      }
+    };
 
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
@@ -113,10 +110,10 @@ export const AuthProvide = ({ children }) => {
         const userData = {
           email,
           username: displayName,
-          photoURL
+          photoURL,
         };
         console.log(userData);
-      isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+        isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
       }
 
       if (isNewUser) {
@@ -133,7 +130,7 @@ export const AuthProvide = ({ children }) => {
               username: user.displayName,
               //   password: e.target.password.value,
               //   last_name: e.target.last_name.value,
-              cc_uname:"",
+              cc_uname: "",
               cf_uname: "",
               gh_uname: "",
               lt_uname: "",
@@ -147,8 +144,8 @@ export const AuthProvide = ({ children }) => {
         }
         register();
       } else {
-        if(user && user.displayName){
-        token(user.displayName);
+        if (user && user.displayName) {
+          token(user.displayName);
         }
         console.log("Old User");
       }
