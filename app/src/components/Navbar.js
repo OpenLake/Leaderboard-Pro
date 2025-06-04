@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -22,21 +22,17 @@ import CCPS from "../icons/CCPS.jpeg";
 import { useMediaQuery } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
 
-const PREFIX = 'Navbar';
+const PREFIX = "Navbar";
 
 const classes = {
   root: `${PREFIX}-root`,
   menuButton: `${PREFIX}-menuButton`,
   title: `${PREFIX}-title`,
   platformButtons: `${PREFIX}-platformButtons`,
-  desktopLogos: `${PREFIX}-desktopLogos`
+  desktopLogos: `${PREFIX}-desktopLogos`,
 };
 
-const Root = styled('div')((
-  {
-    theme
-  }
-) => ({
+const Root = styled("div")(({ theme }) => ({
   [`&.${classes.root}`]: {
     flexGrow: 1,
   },
@@ -58,14 +54,13 @@ const Root = styled('div')((
 
   [`& .${classes.desktopLogos}`]: {
     display: "flex",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       display: "none",
     },
-  }
+  },
 }));
 
 export const Navbar = ({ darkmode, toggle }) => {
-
   const navigate = useNavigate();
   const manageClick = () => {
     navigate("/profile");
@@ -102,21 +97,25 @@ export const Navbar = ({ darkmode, toggle }) => {
       >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button style={{ color: "white", fontSize: '1.3rem', fontWeight: '900' }} onClick={tohome}>
+            <Button
+              style={{ color: "white", fontSize: "1.3rem", fontWeight: "900" }}
+              onClick={tohome}
+            >
               Leaderboard Pro
             </Button>
           </Typography>
 
           {isMobile && ( // Render the hamburger icon only in mobile view
-            (<IconButton
+            <IconButton
               edge="start"
               color="inherit"
               aria-label="menu"
               onClick={handleMobileMenuOpen}
               className={classes.menuButton}
-              size="large">
+              size="large"
+            >
               <MenuIcon />
-            </IconButton>)
+            </IconButton>
           )}
 
           {/* Mobile Menu */}
@@ -158,11 +157,19 @@ export const Navbar = ({ darkmode, toggle }) => {
             </MenuItem>
           </Menu>
 
-          <div className={classes.platformButtons} style={{ display: "flex", justifyContent: "center" }}>
+          <div
+            className={classes.platformButtons}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             {/* Logos (hidden in mobile view) */}
             <div className={classes.desktopLogos}>
               <Link style={{ margin: "12px" }} to="/codechef">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img
                     src={CodechefLogo}
                     width={25}
@@ -173,7 +180,12 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link to="/github" style={{ margin: "12px" }}>
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <GitHubIcon
                     style={{
                       filter: darkmode ? "invert(100)" : "brightness(20%)",
@@ -183,7 +195,12 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link style={{ margin: "12px" }} to="/codeforces">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img
                     src={CodeforcesLogo}
                     width={25}
@@ -193,7 +210,12 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/leetcode">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img
                     src={LeetcodeLogo}
                     width={25}
@@ -204,7 +226,12 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/openlake">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img
                     src={OpenlakeLogo}
                     width={25}
@@ -215,7 +242,12 @@ export const Navbar = ({ darkmode, toggle }) => {
               </Link>
 
               <Link style={{ margin: "12px" }} to="leetcoderankings">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img
                     src={LeetcodeRankingsLogo}
                     width={25}
@@ -225,7 +257,12 @@ export const Navbar = ({ darkmode, toggle }) => {
                 </IconButton>
               </Link>
               <Link style={{ margin: "12px" }} to="/leetcoderankingsccps">
-                <IconButton edge="start" color="inherit" aria-label="menu" size="large">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  size="large"
+                >
                   <img src={CCPS} width={25} height={25} alt="" />
                 </IconButton>
               </Link>

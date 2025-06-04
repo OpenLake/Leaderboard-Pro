@@ -29,7 +29,6 @@ app/.env.local
 app/.env.development
 app/.env.production
 app/.env.test
-app/.vscode/
 app/.idea/
 
 # -----------------------------
@@ -53,7 +52,9 @@ api/.env.production
 api/.env.test
 api/.vscode/
 api/.idea/
-api/migrations/**  # Ignore Django migrations, except __init__.py (handled below)
+api/leaderboard/migrations/*
+# Ignore Django migrations, except __init__.py (handled below)
+api/leaderboard/api/service-account.json
 
 # Don't ignore __init__.py in migrations
 !api/**/migrations/__init__.py

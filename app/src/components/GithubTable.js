@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -18,17 +18,17 @@ import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
 
-const PREFIX = 'GithubTable';
+const PREFIX = "GithubTable";
 
 const classes = {
   root: `${PREFIX}-root`,
   table: `${PREFIX}-table`,
   table_dark: `${PREFIX}-table_dark`,
   medium_page: `${PREFIX}-medium_page`,
-  large_page: `${PREFIX}-large_page`
+  large_page: `${PREFIX}-large_page`,
 };
 
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.table}`]: {
     minWidth: 500,
   },
@@ -41,9 +41,9 @@ const Root = styled('div')({
   [`& .${classes.medium_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"column-reverse",
-    paddingLeft:"2.5vw",
-    paddingRight:"2.5vw",
+    flexDirection: "column-reverse",
+    paddingLeft: "2.5vw",
+    paddingRight: "2.5vw",
     marginTop: "9vh",
     width: "100vw",
     flexShrink: "0",
@@ -51,8 +51,8 @@ const Root = styled('div')({
   [`& .${classes.large_page}`]: {
     display: "flex",
     justifyContent: "space-around",
-    flexDirection:"row",
-    padding:"auto",
+    flexDirection: "row",
+    padding: "auto",
     marginTop: "10vh",
     width: "99vw",
     flexShrink: "0",
@@ -87,9 +87,7 @@ export const GithubTable = ({
   };
 
   async function addfriend(e) {
-
     const response = await fetch("http://localhost:8000/githubFA/", {
-
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -102,17 +100,12 @@ export const GithubTable = ({
     });
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
+    } else {
       setGithubfriends((current) => [...current, e]);
     }
   }
   async function dropfriend(e) {
-
     const response = await fetch("http://localhost:8000/githubFD/", {
-
-
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,12 +118,10 @@ export const GithubTable = ({
     });
     if (response.status !== 200) {
       alert("ERROR!!!!");
-    }
-    else
-    {
+    } else {
       setGithubfriends((current) =>
-      current.filter((fruit) => fruit.username !== e)
-    );
+        current.filter((fruit) => fruit.username !== e),
+      );
     }
   }
   useEffect(() => {
@@ -153,7 +144,7 @@ export const GithubTable = ({
           return glUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
     // eslint-disable-next-line
@@ -168,7 +159,7 @@ export const GithubTable = ({
           return glUser.username
             .toLowerCase()
             .includes(searchfield.toLowerCase());
-        })
+        }),
       );
     }
   }, [searchfield, todisplayusers]);
@@ -181,14 +172,18 @@ export const GithubTable = ({
     <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
     >
-      <div style={{
-        width: "18vw",
-        maxWidth:"200px",
-        marginBottom:"10px",
-      }}></div>{" "}
-      <div style={{
-        marginBottom:"1px",
-      }}>
+      <div
+        style={{
+          width: "18vw",
+          maxWidth: "200px",
+          marginBottom: "10px",
+        }}
+      ></div>{" "}
+      <div
+        style={{
+          marginBottom: "1px",
+        }}
+      >
         <TableContainer component={Paper}>
           <Table
             className={darkmode ? classes.table_dark : classes.table}
@@ -200,28 +195,44 @@ export const GithubTable = ({
               >
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Avatar</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Avatar
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Username</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Username
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Contributions</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Contributions
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Repositories</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Repositories
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}>Stars</StyledTableCell>
+                    root: classes.root,
+                  }}
+                >
+                  Stars
+                </StyledTableCell>
                 <StyledTableCell
                   classes={{
-                    root: classes.root
-                  }}></StyledTableCell>
+                    root: classes.root,
+                  }}
+                ></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -231,8 +242,9 @@ export const GithubTable = ({
                   <TableRow key={glUser.id}>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Avatar
                         src={glUser.avatar}
                         alt={`${glUser.username} avatar`}
@@ -241,8 +253,9 @@ export const GithubTable = ({
                     </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Link
                         style={{
                           fontWeight: "bold",
@@ -257,33 +270,43 @@ export const GithubTable = ({
                     </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{glUser.contributions}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {glUser.contributions}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{glUser.repositories}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {glUser.repositories}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>{glUser.stars}</StyledTableCell>
+                        root: classes.root,
+                      }}
+                    >
+                      {glUser.stars}
+                    </StyledTableCell>
                     <StyledTableCell
                       classes={{
-                        root: classes.root
-                      }}>
+                        root: classes.root,
+                      }}
+                    >
                       <Button
                         variant="contained"
-                        style={{backgroundColor:darkmode?"#146ca4":""}}
+                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
                         onClick={() => {
                           !githubfriends.some(
-                            (item) => item.username === glUser.username
+                            (item) => item.username === glUser.username,
                           )
                             ? addfriend(glUser)
                             : dropfriend(glUser.username);
                         }}
                       >
                         {githubfriends.some(
-                          (item) => item.username === glUser.username
+                          (item) => item.username === glUser.username,
                         )
                           ? "Remove Friend"
                           : "Add Friend"}
@@ -301,7 +324,7 @@ export const GithubTable = ({
           flexDirection: "column",
           marginTop: "2vh",
           position: "relative",
-          marginBottom:"10px",
+          marginBottom: "10px",
         }}
       >
         <TextField
@@ -327,9 +350,9 @@ export const GithubTable = ({
             setGHshowfriends(!ghshowfriends);
           }}
           style={{
-            backgroundColor:darkmode?"#02055a":"#2196f3",
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
             color: "white",
-            marginTop:isMobile ? "2vh" : "4vh",
+            marginTop: isMobile ? "2vh" : "4vh",
           }}
         >
           {ghshowfriends ? "Show All" : "Show Friends"}

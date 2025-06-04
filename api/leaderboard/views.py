@@ -1,65 +1,63 @@
+import logging
+import re
+import urllib.parse
+from datetime import datetime
+
+import requests
+from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from knox.models import AuthToken
+from rest_framework import generics, mixins, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
+
 from leaderboard.models import (
+    DiscussionPost,
+    LeetcodeUser,
+    ReplyPost,
+    UserTasks,
+    codechefUser,
     codeforcesUser,
     codeforcesUserRatingUpdate,
     githubUser,
-    codechefUser,
     openlakeContributor,
-    LeetcodeUser,
-    UserTasks,
-    DiscussionPost,
-    ReplyPost,
 )
 from leaderboard.serializers import (
-    CF_Serializer,
     CC_Serializer,
-    GH_Serializer,
-    OL_Serializer,
-    LT_Serializer,
-    Task_Serializer,
+    CF_Serializer,
     DiscussionPost_Serializer,
-    ReplyPost_Serializer
+    GH_Serializer,
+    LT_Serializer,
+    OL_Serializer,
+    ReplyPost_Serializer,
+    Task_Serializer,
 )
-from knox.models import AuthToken
-from rest_framework.response import Response
 
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
-from rest_framework.reverse import reverse
-from rest_framework import generics, mixins, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import get_user_model
-from datetime import datetime
-import requests
-
-from django.http import JsonResponse
-
-import requests
-import urllib.parse
-    
-
-import re
-
-import logging
 logger = logging.getLogger(__name__)
 from django.http import JsonResponse
 
 MAX_DATE_TIMESTAMP = datetime.now().timestamp()
 
+import requests
 from django.db import connection
 from django.db.utils import OperationalError
-
-import requests
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
+
 from .models import githubUser
 from .serializers import GH_Serializer
 
-class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+
+class GithubUserAPI(
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
     """
     Collects Github data for registered users
     """
+
     queryset = githubUser.objects.all()
     serializer_class = GH_Serializer
 
@@ -96,7 +94,9 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
     def get(self, request):
         gh_users = githubUser.objects.all()
         if not gh_users.exists():
-            return Response({"message": "No users found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "No users found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         for user in gh_users:
             github_data = self.fetch_github_data(user.username)
@@ -114,12 +114,16 @@ class GithubUserAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
     def post(self, request):
         username = request.data.get("username")
         if not username:
-            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Create user and fetch GitHub data
         github_data = self.fetch_github_data(username)
         if not github_data:
-            return Response({"error": "GitHub user not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "GitHub user not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         gh_user = githubUser(
             username=username,
@@ -150,13 +154,15 @@ class GithubOrganisationAPI(
         return Response(serializer.data)
 
 
-from rest_framework import mixins, generics, status
-from rest_framework.response import Response
 import requests
+from rest_framework import generics, mixins, status
+from rest_framework.response import Response
+
 from .models import codeforcesUser
 from .serializers import CF_Serializer
 
 MAX_DATE_TIMESTAMP = 0  # Define this if needed
+
 
 class CodeforcesLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
@@ -164,7 +170,7 @@ class CodeforcesLeaderboard(
     def get_codeforces_submission_stats(self, username):
         """
         Fetches the total number of submissions and unique solved problems for a given Codeforces username.
-        
+
         Returns:
             dict: {
                 "total_solved": int,
@@ -186,10 +192,12 @@ class CodeforcesLeaderboard(
                         solved_problems.add(problem_id)
 
                 return {
-                    "total_solved": len(solved_problems),  # Count unique problems solved
-                    "total_submissions": total_submissions
+                    "total_solved": len(
+                        solved_problems
+                    ),  # Count unique problems solved
+                    "total_submissions": total_submissions,
                 }
-        
+
         return {"total_solved": 0, "total_submissions": 0}
 
     def get_codeforces_data(self, username):
@@ -203,7 +211,9 @@ class CodeforcesLeaderboard(
                 return {
                     "rating": user_data.get("rating", 0),
                     "max_rating": user_data.get("maxRating", 0),
-                    "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
+                    "last_activity": user_data.get(
+                        "lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP
+                    ),
                     "avatar": user_data.get("titlePhoto", ""),
                 }
 
@@ -233,10 +243,7 @@ class CodeforcesLeaderboard(
         username = request.data["username"]
         cf_user = codeforcesUser(username=username)
         cf_user.save()
-        return Response(
-            CF_Serializer(cf_user).data, status=status.HTTP_201_CREATED
-        )
-
+        return Response(CF_Serializer(cf_user).data, status=status.HTTP_201_CREATED)
 
 
 class CodechefLeaderboard(
@@ -283,15 +290,13 @@ class CodechefLeaderboard(
         username = request.data["username"]
         cc_user = codechefUser(username=username)
         cc_user.save()
-        return Response(
-            CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED
-        )
+        return Response(CC_Serializer(cc_user).data, status=status.HTTP_201_CREATED)
 
-        
+
 class LeetcodeLeaderboard(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
-    
+
     def get_leetcode_data(self, username):
         url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
         response = requests.get(url)
@@ -310,6 +315,7 @@ class LeetcodeLeaderboard(
 
     queryset = LeetcodeUser.objects.all()
     serializer_class = LT_Serializer
+
     def get(self, request):
         lt_users = LeetcodeUser.objects.all()
 
@@ -333,13 +339,12 @@ class LeetcodeLeaderboard(
         username = request.data["username"]
         lt_user = LeetcodeUser(username=username)
         lt_user.save()
-        return Response(
-            LT_Serializer(lt_user).data, status=status.HTTP_201_CREATED
-        )
+        return Response(LT_Serializer(lt_user).data, status=status.HTTP_201_CREATED)
 
 
 from django.db import connection
 from django.db.utils import OperationalError
+
 
 def get_table_data():
     try:
@@ -349,7 +354,7 @@ def get_table_data():
             data = cursor.fetchall()
 
             results = []
-        
+
             for row in data:
                 result = {}
                 for i, value in enumerate(row):
@@ -360,22 +365,19 @@ def get_table_data():
     except OperationalError as e:
         print(f"Error: {e}")
 
+
 def LeetcodeCCPSAPIView(request):
-    
-    
-   
 
     data = get_table_data()
-    
 
-   
-   
     return JsonResponse(data, safe=False)
 
-from rest_framework import mixins, generics, status
+
+from django.contrib.auth.models import User
+from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.models import User
+
 from .serializers import Task_Serializer
 
 
@@ -399,7 +401,7 @@ class UserTasksManage(APIView):  # Inherit from APIView
     def update_task_progress(self, task):
         # Here we assume that task.username is a Django User model and that
         # its username is used as the handle for both Codeforces and Leetcode.
-        user_handle = task.username  
+        user_handle = task.username
         current_cf = self.get_codeforces_solved(user_handle)
         current_lt = self.get_leetcode_solved(user_handle)
         current_total = current_cf + current_lt
@@ -436,7 +438,9 @@ class UserTasksManage(APIView):  # Inherit from APIView
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         user_task = UserTasks.objects.create(
             username=user,
@@ -451,20 +455,34 @@ class UserTasksManage(APIView):  # Inherit from APIView
         )
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_201_CREATED)
-    
+
     def put(self, request, *args, **kwargs):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         try:
-            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+            user_task = UserTasks.objects.get(
+                username=user, title=request.data["title"]
+            )
         except UserTasks.DoesNotExist:
-            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         # Update fields dynamically
-        for field in ["problem", "dueDate", "title", "discription", "completed", "starred", "solved"]:
+        for field in [
+            "problem",
+            "dueDate",
+            "title",
+            "discription",
+            "completed",
+            "starred",
+            "solved",
+        ]:
             if field in request.data:
                 setattr(user_task, field, request.data[field])
 
@@ -476,13 +494,19 @@ class UserTasksManage(APIView):  # Inherit from APIView
         try:
             user = User.objects.get(username=request.data["username"])
         except UserTasks.DoesNotExist:
-            return Response({"error": "User Not Found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User Not Found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
-            user_task = UserTasks.objects.get(username=user, title=request.data["title"])
+            user_task = UserTasks.objects.get(
+                username=user, title=request.data["title"]
+            )
         except UserTasks.DoesNotExist:
-            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         user_task.delete()
 
         return Response(Task_Serializer(user_task).data, status=status.HTTP_200_OK)
@@ -498,10 +522,12 @@ class DiscussionPostManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         post = DiscussionPost.objects.create(
-            username=user,  
+            username=user,
             title=request.data["title"],
             discription=request.data["discription"],
             likes=0,
@@ -516,17 +542,21 @@ class DiscussionPostManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             post = DiscussionPost.objects.get(user=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         for field in ["title", "description", "likes", "dislikes", "comments"]:
             if field in request.data:
                 setattr(post, field, request.data[field])
-        
+
         post.save()
         return Response(DiscussionPost_Serializer(post).data, status=status.HTTP_200_OK)
 
@@ -534,15 +564,23 @@ class DiscussionPostManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             post = DiscussionPost.objects.get(user=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         post.delete()
-        return Response({"message": "Post deleted successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Post deleted successfully"}, status=status.HTTP_200_OK
+        )
+
+
 class DiscussionReplyManage(APIView):
     def get(self, request):
         # Retrieve discussion post using query parameters
@@ -550,13 +588,17 @@ class DiscussionReplyManage(APIView):
         try:
             post = DiscussionPost.objects.get(title=title)
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         # Filter replies using the correct field name
         replies = ReplyPost.objects.filter(parent=post)
         if not replies.exists():
-            return Response({"error": "No replies found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "No replies found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         serialized_replies = ReplyPost_Serializer(replies, many=True)
         return Response(serialized_replies.data, status=status.HTTP_200_OK)
 
@@ -564,13 +606,17 @@ class DiscussionReplyManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         # Create the reply using the correct field names
         reply = ReplyPost.objects.create(
             username=user,
@@ -586,23 +632,29 @@ class DiscussionReplyManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             reply = ReplyPost.objects.get(username=user, parent=post)
         except ReplyPost.DoesNotExist:
-            return Response({"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         # Update allowed fields
         for field in ["description", "likes", "dislikes"]:
             if field in request.data:
                 setattr(reply, field, request.data[field])
-        
+
         reply.save()
         return Response(ReplyPost_Serializer(reply).data, status=status.HTTP_200_OK)
 
@@ -610,17 +662,25 @@ class DiscussionReplyManage(APIView):
         try:
             user = User.objects.get(username=request.data["username"])
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         try:
             reply = ReplyPost.objects.get(username=user, parent=post)
         except ReplyPost.DoesNotExist:
-            return Response({"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         reply.delete()
-        return Response({"message": "Reply deleted successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Reply deleted successfully"}, status=status.HTTP_200_OK
+        )

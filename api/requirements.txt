@@ -3,6 +3,7 @@ asgiref==3.8.1
 async-timeout==5.0.1
 beautifulsoup4==4.12.3
 billiard==4.2.1
+black==25.1.0
 bs4==0.0.2
 celery==5.4.0
 certifi==2024.12.14
@@ -26,6 +27,7 @@ filelock==3.17.0
 flower==2.0.1
 identify==2.6.6
 idna==3.10
+isort==6.0.1
 Jinja2==3.1.5
 knox==0.1.14
 kombu==5.4.2

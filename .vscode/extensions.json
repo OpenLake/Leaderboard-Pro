@@ -1,0 +1,9 @@
+{
+    // For ease of formatting of code
+    "recommendations": [
+        "rvest.vs-code-prettier-eslint",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "dbaeumer.vscode-eslint"
+    ]
+}

@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
+import { useEffect, useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+} from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
 import NewTaskModal from "./NewTaskModal";
 import { useAuth } from "../Context/AuthContext";
 
@@ -27,9 +31,9 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   useEffect(() => {
     let totalSolved = 0;
     console.log(codeforcesUsers[0]);
-    console.log(leetcodeUsers[0])
+    console.log(leetcodeUsers[0]);
     const solvedc = codeforcesUsers.find((u) => u.username === user.username);
-    console.log(solvedc)
+    console.log(solvedc);
     // const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
     totalSolved += solvedc.total_solved;
     // totalSolved += solvedl.total_solved;
@@ -37,8 +41,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     // console.log(solvedc.total_solved);
     // console.log(solvedl.total_solved);
     setTotalSolvedNow(totalSolved);
-  }, [codeforcesUsers, leetcodeUsers, user])
-
+  }, [codeforcesUsers, leetcodeUsers, user]);
 
   // New task state includes target and initializes solved count to 0
   const [newTask, setNewTask] = useState({
@@ -211,7 +214,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
       totalSolvedNow: totalSolvedNow,
     };
     const addTask = async (task) => {
-      console.log(task)
+      console.log(task);
       try {
         const response = await fetch("http://localhost:8000/usertasks/", {
           method: "POST",
@@ -252,8 +255,8 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   const handleFinishEditing = (id) => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, text: editingTaskText } : task
-      )
+        task.id === id ? { ...task, text: editingTaskText } : task,
+      ),
     );
     setEditingTaskId(null);
     setEditingTaskText("");
@@ -263,8 +266,8 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   const toggleStarred = (id) => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, starred: !task.starred } : task
-      )
+        task.id === id ? { ...task, starred: !task.starred } : task,
+      ),
     );
 
     const task = tasks.find((task) => task.id === id); // Use find() instead of filter()
@@ -278,7 +281,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     fetch("http://localhost:8000/usertasks/", {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username: user.username,
@@ -290,13 +293,12 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
         starred: !task.starred, // Update the starred field correctly
         totalSolvedNow: totalSolvedNow,
         solved: task.solved,
-      })
+      }),
     })
-      .then(response => response.json())
-      .then(data => console.log("Updated Task:", data))
-      .catch(error => console.error("Error updating task:", error));
+      .then((response) => response.json())
+      .then((data) => console.log("Updated Task:", data))
+      .catch((error) => console.error("Error updating task:", error));
   };
-
 
   // Toggle task completed status
   // const toggleTaskCompleted = (title) => {
@@ -316,9 +318,8 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ "username": user.username, title }),
+        body: JSON.stringify({ username: user.username, title }),
       });
-
     }
   };
 
@@ -338,9 +339,15 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   // };
 
   // Filter tasks by active or completed
-  const activeTasks = Array.isArray(tasks) ? tasks.filter((task) => !task.completed) : [];
-  const starredTasks = Array.isArray(tasks) ? tasks.filter((task) => task.starred) : [];
-  const completedTasks = Array.isArray(tasks) ? tasks.filter((task) => task.completed) : [];
+  const activeTasks = Array.isArray(tasks)
+    ? tasks.filter((task) => !task.completed)
+    : [];
+  const starredTasks = Array.isArray(tasks)
+    ? tasks.filter((task) => task.starred)
+    : [];
+  const completedTasks = Array.isArray(tasks)
+    ? tasks.filter((task) => task.completed)
+    : [];
 
   // Drag-and-drop handler for active tasks reordering
   const onDragEnd = (result) => {
@@ -348,7 +355,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     const reordered = reorder(
       activeTasks,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
     // Merge reordered active tasks with unchanged completed tasks
     setTasks([...reordered, ...completedTasks]);
@@ -362,9 +369,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     <div style={containerStyle}>
       {/* Sidebar */}
       <div style={sidebarStyle}>
-        <h2 style={{ fontSize: "1.5em", marginBottom: "20px" }}>
-          Tasks
-        </h2>
+        <h2 style={{ fontSize: "1.5em", marginBottom: "20px" }}>Tasks</h2>
         <button
           style={tabButtonStyle(activeTab === "tasks")}
           onClick={() => setActiveTab("tasks")}
@@ -393,7 +398,11 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
                   {activeTasks.map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
+                    <Draggable
+                      key={task.id}
+                      draggableId={task.id}
+                      index={index}
+                    >
                       {(provided) => (
                         <div
                           style={{
@@ -444,12 +453,22 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                             )}
                           </div>
                           {task.title && (
-                            <div style={taskDetailsStyle}>
-                              {task.title}
-                            </div>
+                            <div style={taskDetailsStyle}>{task.title}</div>
                           )}
-                          <div style={{ marginTop: "8px", display: "flex", alignItems: "center" }}>
-                            <span style={{ marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368" }}>
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span
+                              style={{
+                                marginLeft: "10px",
+                                fontSize: "0.85em",
+                                color: darkmode ? "#9aa0a6" : "#5f6368",
+                              }}
+                            >
                               {task.dueDate ? `Due: ${task.dueDate}` : ""}
                             </span>
                           </div>
@@ -473,7 +492,13 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                               Solve Problem
                             </button>
                           )} */}
-                          <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
                             {/* <button
                               onClick={() => toggleTaskCompleted(task.id)}
                               style={{
@@ -521,7 +546,11 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
                   {starredTasks.map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
+                    <Draggable
+                      key={task.id}
+                      draggableId={task.id}
+                      index={index}
+                    >
                       {(provided) => (
                         <div
                           style={{
@@ -572,12 +601,22 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                             )}
                           </div>
                           {task.title && (
-                            <div style={taskDetailsStyle}>
-                              {task.title}
-                            </div>
+                            <div style={taskDetailsStyle}>{task.title}</div>
                           )}
-                          <div style={{ marginTop: "8px", display: "flex", alignItems: "center" }}>
-                            <span style={{ marginLeft: "10px", fontSize: "0.85em", color: darkmode ? "#9aa0a6" : "#5f6368" }}>
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span
+                              style={{
+                                marginLeft: "10px",
+                                fontSize: "0.85em",
+                                color: darkmode ? "#9aa0a6" : "#5f6368",
+                              }}
+                            >
                               {task.dueDate ? `Due: ${task.dueDate}` : ""}
                             </span>
                           </div>
@@ -601,7 +640,13 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                               Solve Problem
                             </button>
                           )} */}
-                          <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
                             {/* <button
                               onClick={() => toggleTaskCompleted(task.id)}
                               style={{
@@ -669,9 +714,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                     {task.text}
                   </span>
                 </div>
-                {task.title && (
-                  <div style={taskDetailsStyle}>{task.title}</div>
-                )}
+                {task.title && <div style={taskDetailsStyle}>{task.title}</div>}
                 <div style={progressStyle}>
                   Progress: {task.solved}/{task.problem} (
                   {getProgressPercentage(task)}%)

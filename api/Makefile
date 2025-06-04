@@ -1,6 +1,10 @@
 PYTHON ?= python3
 PIP ?= pip3
 
+format:
+	cd api/ && $(PYTHON) -m isort .
+	cd api/ && $(PYTHON) -m black .
+
 migrate:
 	$(PYTHON) manage.py makemigrations
 	$(PYTHON) manage.py migrate

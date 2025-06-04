@@ -1,20 +1,27 @@
+import logging
+from datetime import datetime
+
+import requests
+from django.contrib.auth.models import User
+from django.db import transaction
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import permissions,status
-from rest_framework.decorators import api_view,permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from leaderboard.models import UserNames,githubUser,codechefUser,codeforcesUser,LeetcodeUser,openlakeContributor
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
-from django.db import transaction
-import requests
 
+from leaderboard.models import (
+    LeetcodeUser,
+    UserNames,
+    codechefUser,
+    codeforcesUser,
+    githubUser,
+    openlakeContributor,
+)
 
-import logging
 logger = logging.getLogger(__name__)
-
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -23,30 +30,34 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token['username'] = user.username
+        token["username"] = user.username
         # ...
         return token
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @permission_classes((permissions.AllowAny,))
 def getRoutes(request):
-    routes=[
-        '/api/token',
-         'api/token/refresh'
-    ]
+    routes = ["/api/token", "api/token/refresh"]
     return Response(routes)
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def current_user(request):
     user = request.user
-    return Response({
-        'username': user.username,
-        'email': user.email,
-    })
+    return Response(
+        {
+            "username": user.username,
+            "email": user.email,
+        }
+    )
+
+
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def post_UserNames(request):
@@ -87,7 +98,13 @@ def post_UserNames(request):
 
             else:
                 # Create new UserNames entry
-                userName = UserNames(user=user, cc_uname=username_cc, cf_uname=username_cf, gh_uname=username_gh, lt_uname=username_lt)
+                userName = UserNames(
+                    user=user,
+                    cc_uname=username_cc,
+                    cf_uname=username_cf,
+                    gh_uname=username_gh,
+                    lt_uname=username_lt,
+                )
                 userName.save()
 
                 # Create corresponding user entries
@@ -100,33 +117,40 @@ def post_UserNames(request):
                 if username_lt:
                     LeetcodeUser.objects.get_or_create(username=username_lt)
 
-        return Response({
-            'status': 200,
-            'message': "Success",
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "status": 200,
+                "message": "Success",
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
     except Exception as e:
-        return Response({
-            'status': 400,
-            'message': str(e),
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "status": 400,
+                "message": str(e),
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        
+
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def registerUser(request):
     logger.info("Received a request to register a user")
-    
+
     try:
         # Log incoming data
         logger.debug(f"Request data: {request.data}")
-        
+
         first_name = request.data.get("first_name", "")
         # last_name = request.data.get("last_name", "")
         email = request.data.get("email", "")
@@ -136,33 +160,32 @@ def registerUser(request):
         cf_uname = request.data.get("cf_uname", "")
         gh_uname = request.data.get("gh_uname", "")
         lt_uname = request.data.get("lt_uname", "")
-        
+
         if not all([first_name, email, username]):
             logger.error("Missing required fields: first_name, email, username")
-            return Response({
-                'status': 400,
-                'message': "Missing required fields"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"status": 400, "message": "Missing required fields"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # Create user
         user = User.objects.create_user(
-            username=username,
-            password='GOOGLEDATA',
-            first_name=first_name, 
-            email=email
+            username=username, password="GOOGLEDATA", first_name=first_name, email=email
         )
         user.save()
         logger.info(f"User {username} created successfully")
-        
+
         # Save usernames
         userName = UserNames(
-            user=user, cc_uname=cc_uname, 
-            cf_uname=cf_uname, gh_uname=gh_uname, 
-            lt_uname=lt_uname
+            user=user,
+            cc_uname=cc_uname,
+            cf_uname=cf_uname,
+            gh_uname=gh_uname,
+            lt_uname=lt_uname,
         )
         userName.save()
         logger.info(f"Usernames for {username} saved successfully")
-        
+
         # Save platform-specific usernames
         if cc_uname:
             cc_user = codechefUser(username=cc_uname)
@@ -180,18 +203,20 @@ def registerUser(request):
             lt_user = LeetcodeUser(username=lt_uname)
             lt_user.save()
             logger.info(f"LeetCode username {lt_uname} saved")
-        
-        return Response({
-            'status': 200,
-            'message': "Success",
-        }, status=status.HTTP_200_OK)
+
+        return Response(
+            {
+                "status": 200,
+                "message": "Success",
+            },
+            status=status.HTTP_200_OK,
+        )
     except Exception as e:
         logger.exception("An error occurred while registering the user")
-        return Response({
-            'status': 400,
-            'message': "An error occurred"
-        }, status=status.HTTP_400_BAD_REQUEST)
-        
+        return Response(
+            {"status": 400, "message": "An error occurred"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 # def get_ranking(contest, usernames):
@@ -199,10 +224,10 @@ def registerUser(request):
 #     page = 1
 #     total_rank = []
 #     retry_cnt = 0
-    
+
 #     while retry_cnt<10:
 #         try:
-            
+
 #             url = API_URL_FMT.format(contest, page)
 #             # if page == 3 :
 #             #     break
@@ -212,7 +237,7 @@ def registerUser(request):
 #                 break
 #             total_rank.extend(page_rank)
 #             print(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
-            
+
 #             # logger.info(f'Retrieved ranking from page {page}. {len(total_rank)} retrieved.')
 #             page += 1
 #             if(page==3):
@@ -233,74 +258,73 @@ def registerUser(request):
 #             rank['finish_time'] = datetime.fromtimestamp(int(finish_timestamp)).isoformat()
 
 #     # Filter rankings based on usernames
-    
+
 #     filtered_rankings = [rank for rank in total_rank if rank['username'] in usernames]
-    
+
 #     filtered_rankings.sort(key=lambda obj: obj["rank"])
-    
+
 #     return filtered_rankings
 
 
-
-import requests
 import urllib.parse
 
+import requests
+
+
 def get_data_from_url(usernames, contestID):
-    base_url = 'https://leetcode.com/graphql'
+    base_url = "https://leetcode.com/graphql"
     data_list = []
     contest_data = []
 
     for username in usernames:
         # Construct the query parameters
         query = f'query {{ userContestRankingHistory(username:"{username}") {{ attended ranking contest {{ title startTime }} }} }}'
-        query_params = {'query': query}
-        
+        query_params = {"query": query}
+
         # Encode the query parameters
         encoded_params = urllib.parse.urlencode(query_params)
-        
+
         # Construct the full URL with the encoded query parameters
-        url = f'{base_url}?{encoded_params}'
+        url = f"{base_url}?{encoded_params}"
 
         try:
             response = requests.get(url)
             data = response.json()
-            
+
             # Process the retrieved data as per your requirements
-            
-            data_object = {
-                'username': username,
-                'data': data
-            }
+
+            data_object = {"username": username, "data": data}
             data_list.append(data_object)
-          
+
         except requests.exceptions.RequestException as e:
             # Handle any errors that occurred during the request
             print(f"Error: {e}")
 
     for item in data_list:
-        username = item['username']
-        user_data = item['data']['data']['userContestRankingHistory']
-      
+        username = item["username"]
+        user_data = item["data"]["data"]["userContestRankingHistory"]
+
         if user_data is not None:
             for contest in user_data:
-                if contest['contest']['title'] == contestID:
+                if contest["contest"]["title"] == contestID:
                     contest_info = {
-                        'username': username,
-                        'ranking': contest['ranking'],
-                        'startTime': contest['contest']['startTime']
+                        "username": username,
+                        "ranking": contest["ranking"],
+                        "startTime": contest["contest"]["startTime"],
                     }
                     contest_data.append(contest_info)
-    sorted_contest_data = sorted(contest_data, key=lambda x: x['ranking'], reverse=True)
-    
+    sorted_contest_data = sorted(contest_data, key=lambda x: x["ranking"], reverse=True)
+
     return sorted_contest_data
 
-def ContestRankingsAPIView(request):
-        
-        if request.method=="GET":
-            contest = request.GET.get('contest')
-            
-            usernames = [user.username for user in LeetcodeUser.objects.all()]
-      
-            task = get_data_from_url(usernames,contest)
 
-        return JsonResponse(task, safe=False)
+def ContestRankingsAPIView(request):
+
+    if request.method == "GET":
+        contest = request.GET.get("contest")
+
+        usernames = [user.username for user in LeetcodeUser.objects.all()]
+
+        task = get_data_from_url(usernames, contest)
+
+    return JsonResponse(task, safe=False)

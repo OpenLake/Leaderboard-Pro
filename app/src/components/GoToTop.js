@@ -1,4 +1,3 @@
-import React from "react";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 const GoToTop = () => {
@@ -22,7 +21,7 @@ const GoToTop = () => {
           borderRadius: "50%",
           backgroundColor: "#1976d2",
           color: "#f1f1f1",
-          border:'1px solid #fefefe'
+          border: "1px solid #fefefe",
         }}
         onClick={gotop}
       >

@@ -14,7 +14,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     const fetchRankings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/contest-rankings/"
+          "http://localhost:8000/contest-rankings/",
         );
         const data = response.data;
 
@@ -22,7 +22,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
           .filter((rank) => rank.usernames === username)
           .map((rank) => {
             const variableNames = Object.keys(rank).filter(
-              (key) => key !== "usernames"
+              (key) => key !== "usernames",
             );
             setContestID(variableNames);
             return {
@@ -81,8 +81,8 @@ const LeetcodeGraphs = ({ darkmode }) => {
         // yaxis: {
         //   reversed: true,
         // },
-        tooltip:{
-            fillSeriesColor:true,
+        tooltip: {
+          fillSeriesColor: true,
         },
       });
     }
