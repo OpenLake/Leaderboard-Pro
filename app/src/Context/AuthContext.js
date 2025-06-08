@@ -159,6 +159,45 @@ export const AuthProvider = ({ children }) => {
   const SignInWithGoogle = async () => {
     return await signInWithPopup(auth, googleProvider);
   };
+  const SignUpWithGoogle = async () => {
+    let response;
+    try {
+      response = await signInWithPopup(auth, googleProvider);
+      if (response && !(response["status"] === 400)) {
+        let regresponse = await fetch(
+          "http://localhost:8000/api/register/google/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: response.user.accessToken,
+              username: response.user.email.split("@")[0],
+            }),
+          },
+        );
+        if (regresponse.status === 200) {
+          console.log(regresponse);
+          let data = await regresponse.json();
+          console.log(data);
+          let token = data.token;
+          setAuthTokens(token);
+          setUser(jwtDecode(token.access));
+          localStorage.setItem("authTokens", JSON.stringify(token));
+        } else {
+          console.log("Please Try Logging in again");
+        }
+        console.log(response);
+      } else {
+        console.log("Please Try Logging in again");
+      }
+    } catch (error) {
+      console.log(error);
+      console.log("Please Try Logging in again");
+    }
+    return response;
+  };
   let contextData = {
     user: user,
     authTokens: authTokens,
@@ -169,6 +208,7 @@ export const AuthProvider = ({ children }) => {
     toRegister: toRegister,
     update_addUsernames: update_addUsernames,
     SignInWithGoogle,
+    SignUpWithGoogle,
     loading,
     userNames: userNames,
   };
