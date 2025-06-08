@@ -4,20 +4,13 @@ import urllib.parse
 from datetime import datetime
 
 import requests
-from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from knox.models import AuthToken
-from rest_framework import generics, mixins, status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework.views import APIView
-
 from leaderboard.models import (
     DiscussionPost,
     LeetcodeUser,
     ReplyPost,
+    User,
     UserTasks,
     codechefUser,
     codeforcesUser,
@@ -35,6 +28,12 @@ from leaderboard.serializers import (
     ReplyPost_Serializer,
     Task_Serializer,
 )
+from rest_framework import generics, mixins, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
 from django.http import JsonResponse
@@ -373,7 +372,6 @@ def LeetcodeCCPSAPIView(request):
     return JsonResponse(data, safe=False)
 
 
-from django.contrib.auth.models import User
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
