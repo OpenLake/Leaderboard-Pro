@@ -228,6 +228,42 @@ def registerUser(request):
 
 @api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
+def loginGoogleUser(request):
+    try:
+        token = request.data.get("token", "")
+        verified = verify_id_token(token, default_app)
+
+        uid = verified.get("uid")
+        user = User.objects.get(uid=uid)
+
+        refresh = RefreshToken.for_user(user)
+        token = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+        return Response(
+            {
+                "status": 200,
+                "message": "Success",
+                "token": token,
+            },
+            status=status.HTTP_200_OK,
+        )
+    except User.DoesNotExist:
+        return Response(
+            {"status": 400, "message": "Please sign up before logging in"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    except Exception as e:
+        logger.exception("An error occurred while logging in")
+        return Response(
+            {"status": 400, "message": "An error occurred"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
 def registerGoogleUser(request):
     logger.info("Received a request to register a user")
 
