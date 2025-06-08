@@ -6,7 +6,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    uid = models.CharField(max_length=64, unique=True)
+    uid = models.CharField(max_length=64, unique=True, null=True, blank=True)
 
 
 class githubUser(models.Model):
