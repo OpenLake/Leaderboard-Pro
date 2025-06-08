@@ -158,10 +158,10 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 # }
 POSTGRES_ENGINE = "django.db.backends.postgresql"
 POSTGRES_NAME = "postgres"
-POSTGRES_USER = "postgres.rgusvtmhhyjhrgsakktd"
-POSTGRES_PASSWORD = "yuvrajrathod1202"
-POSTGRES_HOST = "aws-0-ap-south-1.pooler.supabase.com"
-POSTGRES_PORT = "5432"
+POSTGRES_USER = str(os.getenv("POSTGRES_USER"))
+POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
+POSTGRES_HOST = str(os.getenv("POSTGRES_HOST"))
+POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
 
 DATABASES = {
     "default": {
@@ -197,6 +197,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+AUTH_USER_MODEL = "leaderboard.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

@@ -42,11 +42,17 @@ let fields = [
 
 export default function Profile({ darkmode }) {
   let { update_addUsernames, userNames } = useAuth();
-  fields.forEach((x) => {
-    x["helperText"] = userNames[x["tag"]]?.username
-      ? `Currently ${userNames[x["tag"]].username}`
-      : `Currently not set`;
-  });
+  if (userNames) {
+    fields.forEach((x) => {
+      x["helperText"] = userNames[x["tag"]]?.username
+        ? `Currently ${userNames[x["tag"]].username}`
+        : `Currently not set`;
+    });
+  } else {
+    fields.forEach((x) => {
+      x["helperText"] = `Currently not set`;
+    });
+  }
   let elems = fields.map((x) => (
     <Grid key={x["tag"]} size={12}>
       <TextField

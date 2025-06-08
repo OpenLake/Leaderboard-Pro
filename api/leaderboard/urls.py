@@ -15,12 +15,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.urls import include, path
+from leaderboard import friends, root, users, views
 from rest_framework import permissions, routers, serializers, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from leaderboard import friends, root, users, views
+from .models import User
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

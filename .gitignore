@@ -52,7 +52,7 @@ api/.env.production
 api/.env.test
 api/.vscode/
 api/.idea/
-api/leaderboard/migrations/*
+# api/leaderboard/migrations/*
 # Ignore Django migrations, except __init__.py (handled below)
 api/leaderboard/api/service-account.json
 

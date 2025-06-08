@@ -1,7 +1,7 @@
 import SignUp from "./SignUp.js";
 import { useAuth } from "../Context/AuthContext.js";
 const Register = ({ darkmode }) => {
-  let { SignInWithGoogle, registerUser } = useAuth();
+  let { SignUpWithGoogle, registerUser } = useAuth();
   return (
     <div
       style={{
@@ -12,7 +12,7 @@ const Register = ({ darkmode }) => {
       }}
     >
       <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
-        <SignUp registerUser={registerUser} googleAuth={SignInWithGoogle} />
+        <SignUp registerUser={registerUser} googleAuth={SignUpWithGoogle} />
       </div>
     </div>
   );

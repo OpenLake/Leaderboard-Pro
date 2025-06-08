@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
         setUser(jwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
         navigate("/");
-        let usernames_data = getUsernamesData(data);
+        let usernames_data = await getUsernamesData(data);
         setUserNames(usernames_data);
       } else {
         alert("ERROR!!!!");
@@ -157,7 +157,76 @@ export const AuthProvider = ({ children }) => {
     navigate("/register");
   };
   const SignInWithGoogle = async () => {
-    return await signInWithPopup(auth, googleProvider);
+    let response;
+    try {
+      response = await signInWithPopup(auth, googleProvider);
+      if (response && !(response["status"] === 400)) {
+        let logresponse = await fetch(
+          "http://localhost:8000/api/token/google/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: response.user.accessToken,
+            }),
+          },
+        );
+        let data = await logresponse.json();
+        if (logresponse.status === 200) {
+          let token = data.token;
+          setAuthTokens(token);
+          setUser(jwtDecode(token.access));
+          localStorage.setItem("authTokens", JSON.stringify(token));
+        } else {
+          alert(data.message);
+        }
+      } else {
+        console.log("Please try logging in again");
+      }
+    } catch (error) {
+      console.log(error);
+      console.log("Please try logging in again");
+    }
+    return response;
+  };
+  const SignUpWithGoogle = async () => {
+    let response;
+    try {
+      response = await signInWithPopup(auth, googleProvider);
+      if (response && !(response["status"] === 400)) {
+        let regresponse = await fetch(
+          "http://localhost:8000/api/register/google/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: response.user.accessToken,
+              username: response.user.email.split("@")[0],
+            }),
+          },
+        );
+        let data = await regresponse.json();
+        if (regresponse.status === 200) {
+          let token = data.token;
+          setAuthTokens(token);
+          setUser(jwtDecode(token.access));
+          localStorage.setItem("authTokens", JSON.stringify(token));
+        } else {
+          alert("Please Try registering again");
+        }
+        console.log(response);
+      } else {
+        alert("Please Try registering again");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Please Try registering again");
+    }
+    return response;
   };
   let contextData = {
     user: user,
@@ -169,6 +238,7 @@ export const AuthProvider = ({ children }) => {
     toRegister: toRegister,
     update_addUsernames: update_addUsernames,
     SignInWithGoogle,
+    SignUpWithGoogle,
     loading,
     userNames: userNames,
   };

@@ -40,8 +40,8 @@ export default function SignUp({ registerUser, googleAuth }) {
 
   const handleGoogleRegister = async (e) => {
     e.preventDefault();
-    await googleAuth();
-    navigate("/");
+    console.log(await googleAuth());
+    navigate("/profile");
   };
 
   return (
