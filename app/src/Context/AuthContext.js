@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
         setUser(jwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
         navigate("/");
-        let usernames_data = getUsernamesData(data);
+        let usernames_data = await getUsernamesData(data);
         setUserNames(usernames_data);
       } else {
         alert("ERROR!!!!");
