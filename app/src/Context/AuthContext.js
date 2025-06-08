@@ -157,7 +157,39 @@ export const AuthProvider = ({ children }) => {
     navigate("/register");
   };
   const SignInWithGoogle = async () => {
-    return await signInWithPopup(auth, googleProvider);
+    let response;
+    try {
+      response = await signInWithPopup(auth, googleProvider);
+      if (response && !(response["status"] === 400)) {
+        let logresponse = await fetch(
+          "http://localhost:8000/api/token/google/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: response.user.accessToken,
+            }),
+          },
+        );
+        let data = await logresponse.json();
+        if (logresponse.status === 200) {
+          let token = data.token;
+          setAuthTokens(token);
+          setUser(jwtDecode(token.access));
+          localStorage.setItem("authTokens", JSON.stringify(token));
+        } else {
+          alert(data.message);
+        }
+      } else {
+        console.log("Please try logging in again");
+      }
+    } catch (error) {
+      console.log(error);
+      console.log("Please try logging in again");
+    }
+    return response;
   };
   const SignUpWithGoogle = async () => {
     let response;
@@ -177,24 +209,22 @@ export const AuthProvider = ({ children }) => {
             }),
           },
         );
+        let data = await regresponse.json();
         if (regresponse.status === 200) {
-          console.log(regresponse);
-          let data = await regresponse.json();
-          console.log(data);
           let token = data.token;
           setAuthTokens(token);
           setUser(jwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
         } else {
-          console.log("Please Try Logging in again");
+          alert("Please Try registering again");
         }
         console.log(response);
       } else {
-        console.log("Please Try Logging in again");
+        alert("Please Try registering again");
       }
     } catch (error) {
       console.log(error);
-      console.log("Please Try Logging in again");
+      alert("Please Try registering again");
     }
     return response;
   };
