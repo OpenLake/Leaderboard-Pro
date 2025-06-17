@@ -182,97 +182,101 @@ export const OpenlakeTable = ({
           marginBottom: "1px",
         }}
       >
-        <TableContainer component={Paper}>
-          <Table
-            className={darkmode ? classes.table_dark : classes.table}
-            aria-label="openlake-table"
-          >
-            <TableHead>
-              <TableRow
-                style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
-              >
-                <StyledTableCell
-                  style={{ textAlign: "center" }}
-                  classes={{
-                    root: classes.root,
-                  }}
+        {!filteredusers.length ? (
+          "No users"
+        ) : (
+          <TableContainer component={Paper}>
+            <Table
+              className={darkmode ? classes.table_dark : classes.table}
+              aria-label="openlake-table"
+            >
+              <TableHead>
+                <TableRow
+                  style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
                 >
-                  Username
-                </StyledTableCell>
-                <StyledTableCell
-                  style={{ textAlign: "center" }}
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Contributions
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                ></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredusers
-                .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
-                .map((olUser) => (
-                  <TableRow key={olUser.id}>
-                    <StyledTableCell
-                      style={{ textAlign: "center" }}
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      <Link
-                        style={{
-                          fontWeight: "bold",
-                          textDecoration: "none",
-                          color: darkmode ? "#03DAC6" : "",
+                  <StyledTableCell
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root,
+                    }}
+                  >
+                    Username
+                  </StyledTableCell>
+                  <StyledTableCell
+                    style={{ textAlign: "center" }}
+                    classes={{
+                      root: classes.root,
+                    }}
+                  >
+                    Contributions
+                  </StyledTableCell>
+                  <StyledTableCell
+                    classes={{
+                      root: classes.root,
+                    }}
+                  ></StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredusers
+                  .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
+                  .map((olUser) => (
+                    <TableRow key={olUser.id}>
+                      <StyledTableCell
+                        style={{ textAlign: "center" }}
+                        classes={{
+                          root: classes.root,
                         }}
-                        href={`https://github.com/${olUser.username}`}
-                        target="_blank"
                       >
-                        {olUser.username}
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell
-                      style={{ textAlign: "center" }}
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {olUser.contributions}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
-                        onClick={() => {
-                          !codecheffriends.some(
+                        <Link
+                          style={{
+                            fontWeight: "bold",
+                            textDecoration: "none",
+                            color: darkmode ? "#03DAC6" : "",
+                          }}
+                          href={`https://github.com/${olUser.username}`}
+                          target="_blank"
+                        >
+                          {olUser.username}
+                        </Link>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{ textAlign: "center" }}
+                        classes={{
+                          root: classes.root,
+                        }}
+                      >
+                        {olUser.contributions}
+                      </StyledTableCell>
+                      <StyledTableCell
+                        classes={{
+                          root: classes.root,
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
+                          onClick={() => {
+                            !codecheffriends.some(
+                              (item) => item.username === olUser.username,
+                            )
+                              ? addfriend(olUser)
+                              : dropfriend(olUser.username);
+                          }}
+                        >
+                          {codecheffriends.some(
                             (item) => item.username === olUser.username,
                           )
-                            ? addfriend(olUser)
-                            : dropfriend(olUser.username);
-                        }}
-                      >
-                        {codecheffriends.some(
-                          (item) => item.username === olUser.username,
-                        )
-                          ? "Remove Friend"
-                          : "Add Friend"}
-                      </Button>
-                    </StyledTableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                            ? "Remove Friend"
+                            : "Add Friend"}
+                        </Button>
+                      </StyledTableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
       <div
         style={{
