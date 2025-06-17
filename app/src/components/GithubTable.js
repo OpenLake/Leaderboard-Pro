@@ -172,161 +172,13 @@ export const GithubTable = ({
     >
       <div
         style={{
-          width: "18vw",
-          maxWidth: "200px",
-          marginBottom: "10px",
-        }}
-      ></div>{" "}
-      <div
-        style={{
-          marginBottom: "1px",
-        }}
-      >
-        {!filteredusers.length ? (
-          "No users"
-        ) : (
-          <TableContainer component={Paper}>
-            <Table
-              className={darkmode ? classes.table_dark : classes.table}
-              aria-label="github-table"
-            >
-              <TableHead>
-                <TableRow
-                  style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
-                >
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Avatar
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Username
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Contributions
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Repositories
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Stars
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  ></StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredusers
-                  .sort((a, b) => (a.contributions < b.contributions ? 1 : -1))
-                  .map((glUser) => (
-                    <TableRow key={glUser.id}>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Avatar
-                          src={glUser.avatar}
-                          alt={`${glUser.username} avatar`}
-                        />
-                        {/* TODO: Lazy load the avatars ? */}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Link
-                          style={{
-                            fontWeight: "bold",
-                            textDecoration: "none",
-                            color: darkmode ? "#03DAC6" : "",
-                          }}
-                          href={`https://github.com/${glUser.username}`}
-                          target="_blank"
-                        >
-                          {glUser.username}
-                        </Link>
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {glUser.contributions}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {glUser.repositories}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {glUser.stars}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
-                          onClick={() => {
-                            !githubfriends.some(
-                              (item) => item.username === glUser.username,
-                            )
-                              ? addfriend(glUser)
-                              : dropfriend(glUser.username);
-                          }}
-                        >
-                          {githubfriends.some(
-                            (item) => item.username === glUser.username,
-                          )
-                            ? "Remove Friend"
-                            : "Add Friend"}
-                        </Button>
-                      </StyledTableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </div>
-      <div
-        style={{
           display: "flex",
           flexDirection: "column",
-          marginTop: "2vh",
+          marginTop: "15vh",
           position: "relative",
           marginBottom: "10px",
+          alignItems: "center",
+          width: "100vw",
         }}
       >
         <TextField
@@ -359,6 +211,155 @@ export const GithubTable = ({
         >
           {ghshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
+        <div
+          style={{
+            marginTop: "1px",
+          }}
+        >
+          {!filteredusers.length ? (
+            "No users"
+          ) : (
+            <TableContainer component={Paper}>
+              <Table
+                className={darkmode ? classes.table_dark : classes.table}
+                aria-label="github-table"
+              >
+                <TableHead>
+                  <TableRow
+                    style={{
+                      backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC",
+                    }}
+                  >
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Avatar
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Username
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Contributions
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Repositories
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Stars
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    ></StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredusers
+                    .sort((a, b) =>
+                      a.contributions < b.contributions ? 1 : -1,
+                    )
+                    .map((glUser) => (
+                      <TableRow key={glUser.id}>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Avatar
+                            src={glUser.avatar}
+                            alt={`${glUser.username} avatar`}
+                          />
+                          {/* TODO: Lazy load the avatars ? */}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Link
+                            style={{
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                              color: darkmode ? "#03DAC6" : "",
+                            }}
+                            href={`https://github.com/${glUser.username}`}
+                            target="_blank"
+                          >
+                            {glUser.username}
+                          </Link>
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {glUser.contributions}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {glUser.repositories}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {glUser.stars}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Button
+                            variant="contained"
+                            style={{
+                              backgroundColor: darkmode ? "#146ca4" : "",
+                            }}
+                            onClick={() => {
+                              !githubfriends.some(
+                                (item) => item.username === glUser.username,
+                              )
+                                ? addfriend(glUser)
+                                : dropfriend(glUser.username);
+                            }}
+                          >
+                            {githubfriends.some(
+                              (item) => item.username === glUser.username,
+                            )
+                              ? "Remove Friend"
+                              : "Add Friend"}
+                          </Button>
+                        </StyledTableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div>
       </div>
     </Root>
   );

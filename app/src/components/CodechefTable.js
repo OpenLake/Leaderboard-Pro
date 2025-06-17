@@ -172,173 +172,13 @@ export const CodechefTable = ({
     >
       <div
         style={{
-          width: "18vw",
-          maxWidth: "200px",
-          marginBottom: "10px",
-        }}
-      ></div>{" "}
-      <div>
-        {!filteredusers.length ? (
-          "No users"
-        ) : (
-          <TableContainer component={Paper}>
-            <Table
-              className={darkmode ? classes.table_dark : classes.table}
-              aria-label="codeforces-table"
-            >
-              <TableHead>
-                <TableRow
-                  style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
-                >
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Avatar
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Username
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Rating
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Max rating
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Global Rank
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  >
-                    Country Rank
-                  </StyledTableCell>
-                  <StyledTableCell
-                    classes={{
-                      root: classes.root,
-                    }}
-                  ></StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredusers
-                  .sort((a, b) => (a.rating < b.rating ? 1 : -1))
-                  .map((ccUser) => (
-                    <TableRow key={ccUser.id}>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Avatar
-                          src={ccUser.avatar}
-                          alt={`${ccUser.username} avatar`}
-                        />
-                        {/* TODO: Lazy load the avatars ? */}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Link
-                          style={{
-                            fontWeight: "bold",
-                            textDecoration: "none",
-                            color: darkmode ? "#03DAC6" : "",
-                          }}
-                          href={`https://codechef.com/users/${ccUser.username}`}
-                          target="_blank"
-                        >
-                          {ccUser.username}
-                        </Link>
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {ccUser.rating}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {ccUser.max_rating}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {ccUser.Global_rank}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        {ccUser.Country_rank}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        classes={{
-                          root: classes.root,
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          style={{
-                            backgroundColor: darkmode ? "#146ca4" : "",
-                          }}
-                          onClick={() => {
-                            !codecheffriends.some(
-                              (item) => item.username === ccUser.username,
-                            )
-                              ? addfriend(ccUser)
-                              : dropfriend(ccUser.username);
-                          }}
-                        >
-                          {codecheffriends.some(
-                            (item) => item.username === ccUser.username,
-                          )
-                            ? "Remove Friend"
-                            : "Add Friend"}
-                        </Button>
-                      </StyledTableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </div>
-      <div
-        style={{
           display: "flex",
           flexDirection: "column",
-          marginRight: isMobile ? "0px" : "5vw",
-          marginTop: "2vh",
+          marginTop: "15vh",
           position: "relative",
+          marginBottom: "10px",
+          alignItems: "center",
+          width: "100vw",
         }}
       >
         <TextField
@@ -372,6 +212,163 @@ export const CodechefTable = ({
         >
           {ccshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
+        <div>
+          {!filteredusers.length ? (
+            "No users"
+          ) : (
+            <TableContainer component={Paper}>
+              <Table
+                className={darkmode ? classes.table_dark : classes.table}
+                aria-label="codeforces-table"
+              >
+                <TableHead>
+                  <TableRow
+                    style={{
+                      backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC",
+                    }}
+                  >
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Avatar
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Username
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Rating
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Max rating
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Global Rank
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Country Rank
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    ></StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredusers
+                    .sort((a, b) => (a.rating < b.rating ? 1 : -1))
+                    .map((ccUser) => (
+                      <TableRow key={ccUser.id}>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Avatar
+                            src={ccUser.avatar}
+                            alt={`${ccUser.username} avatar`}
+                          />
+                          {/* TODO: Lazy load the avatars ? */}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Link
+                            style={{
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                              color: darkmode ? "#03DAC6" : "",
+                            }}
+                            href={`https://codechef.com/users/${ccUser.username}`}
+                            target="_blank"
+                          >
+                            {ccUser.username}
+                          </Link>
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ccUser.rating}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ccUser.max_rating}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ccUser.Global_rank}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ccUser.Country_rank}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Button
+                            variant="contained"
+                            style={{
+                              backgroundColor: darkmode ? "#146ca4" : "",
+                            }}
+                            onClick={() => {
+                              !codecheffriends.some(
+                                (item) => item.username === ccUser.username,
+                              )
+                                ? addfriend(ccUser)
+                                : dropfriend(ccUser.username);
+                            }}
+                          >
+                            {codecheffriends.some(
+                              (item) => item.username === ccUser.username,
+                            )
+                              ? "Remove Friend"
+                              : "Add Friend"}
+                          </Button>
+                        </StyledTableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div>
       </div>
     </Root>
   );
