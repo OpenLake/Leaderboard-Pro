@@ -211,7 +211,7 @@ export const OpenlakeTable = ({
         </ToggleButton>
         <div
           style={{
-            marginBottom: "1px",
+            marginTop: isMobile ? "2vh" : "4vh",
           }}
         >
           {!filteredusers.length ? (

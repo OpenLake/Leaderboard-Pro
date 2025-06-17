@@ -207,12 +207,15 @@ export const CodechefTable = ({
             color: "white",
             marginTop: isMobile ? "2vh" : "4vh",
             backgroundColor: darkmode ? "#02055a" : "#2196f3",
-            marginBottom: "10px",
           }}
         >
           {ccshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
-        <div>
+        <div
+          style={{
+            marginTop: isMobile ? "2vh" : "4vh",
+          }}
+        >
           {!filteredusers.length ? (
             "No users"
           ) : (
