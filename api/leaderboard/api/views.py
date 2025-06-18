@@ -2,24 +2,27 @@ import logging
 from datetime import datetime
 
 import requests
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-
+from firebase_admin.auth import verify_id_token
 from leaderboard.models import (
     LeetcodeUser,
+    User,
     UserNames,
     codechefUser,
     codeforcesUser,
     githubUser,
     openlakeContributor,
 )
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .firebase import default_app
 
 logger = logging.getLogger(__name__)
 
@@ -152,10 +155,10 @@ def registerUser(request):
         logger.debug(f"Request data: {request.data}")
 
         first_name = request.data.get("first_name", "")
-        # last_name = request.data.get("last_name", "")
+        last_name = request.data.get("last_name", "")
         email = request.data.get("email", "")
         username = request.data.get("username", "")
-        # password = request.data.get("password", "")
+        password = request.data.get("password", "")
         cc_uname = request.data.get("cc_uname", "")
         cf_uname = request.data.get("cf_uname", "")
         gh_uname = request.data.get("gh_uname", "")
@@ -170,7 +173,11 @@ def registerUser(request):
 
         # Create user
         user = User.objects.create_user(
-            username=username, password="GOOGLEDATA", first_name=first_name, email=email
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
         )
         user.save()
         logger.info(f"User {username} created successfully")
@@ -208,6 +215,104 @@ def registerUser(request):
             {
                 "status": 200,
                 "message": "Success",
+            },
+            status=status.HTTP_200_OK,
+        )
+    except Exception as e:
+        logger.exception("An error occurred while registering the user")
+        return Response(
+            {"status": 400, "message": "An error occurred"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
+def loginGoogleUser(request):
+    try:
+        token = request.data.get("token", "")
+        verified = verify_id_token(token, default_app)
+
+        uid = verified.get("uid")
+        user = User.objects.get(uid=uid)
+
+        refresh = RefreshToken.for_user(user)
+        token = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+        return Response(
+            {
+                "status": 200,
+                "message": "Success",
+                "token": token,
+            },
+            status=status.HTTP_200_OK,
+        )
+    except User.DoesNotExist:
+        return Response(
+            {"status": 400, "message": "Please sign up before logging in"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    except Exception as e:
+        logger.exception("An error occurred while logging in")
+        return Response(
+            {"status": 400, "message": "An error occurred"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@api_view(["POST"])
+@permission_classes((permissions.AllowAny,))
+def registerGoogleUser(request):
+    logger.info("Received a request to register a user")
+
+    try:
+        # Log incoming data
+        logger.debug(f"Request data: {request.data}")
+
+        token = request.data.get("token", "")
+        verified = verify_id_token(token, default_app)
+        name = verified["name"].split(" ")
+        first_name = name[0]
+        if len(name) >= 2:
+            last_name = name[-1]
+        else:
+            last_name = ""
+        email = verified.get("email", "")
+        uid = verified.get("uid")
+        username = request.data.get("username", "")
+
+        if not all([first_name, email, username]):
+            logger.error("Missing required fields: first_name, email, username")
+            return Response(
+                {"status": 400, "message": "Missing required fields"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Create user
+        user = User.objects.create_user(
+            uid=uid,
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+        )
+        user.set_unusable_password()
+        user.save()
+        logger.info(f"User {username} created successfully")
+
+        # Create a token manually as user is not made using the normal authentication method
+        refresh = RefreshToken.for_user(user)
+        token = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+        return Response(
+            {
+                "status": 200,
+                "message": "Success",
+                "token": token,
             },
             status=status.HTTP_200_OK,
         )
