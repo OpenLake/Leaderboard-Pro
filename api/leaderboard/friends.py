@@ -1,11 +1,10 @@
 import pymongo
+from leaderboard.serializers import Name_Serializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from leaderboard.serializers import Name_Serializer
 
 client = pymongo.MongoClient("localhost", 27017)
 myDB = client["Friends"]
@@ -103,11 +102,12 @@ def codeforcesFriendList(request):
         friendEntry = codeforcesFriends.find_one({"_id": user})
         logger.error(friendEntry)
         friendList = []
-        for i in friendEntry["Friends"]:
-            friendList.append({"friendName": i})
-        serialier = Name_Serializer(friendList, many=True)
-        logger.error(serialier.data)
-        return Response(serialier.data)
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append({"friendName": i})
+        serializer = Name_Serializer(friendList, many=True)
+        logger.error(serializer.data)
+        return Response(serializer.data)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -196,10 +196,11 @@ def codechefFriendList(request):
         user = request.user.username
         friendEntry = codechefFriends.find_one({"_id": user})
         friendList = []
-        for i in friendEntry["Friends"]:
-            friendList.append({"friendName": i})
-        serialier = Name_Serializer(friendList, many=True)
-        return Response(serialier.data)
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append({"friendName": i})
+        serializer = Name_Serializer(friendList, many=True)
+        return Response(serializer.data)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -286,10 +287,11 @@ def leetcodeFriendList(request):
         user = request.user.username
         friendEntry = leetcodeFriends.find_one({"_id": user})
         friendList = []
-        for i in friendEntry["Friends"]:
-            friendList.append({"friendName": i})
-        serialier = Name_Serializer(friendList, many=True)
-        return Response(serialier.data)
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append({"friendName": i})
+        serializer = Name_Serializer(friendList, many=True)
+        return Response(serializer.data)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -377,10 +379,11 @@ def githubFriendList(request):
         user = request.user.username
         friendEntry = githubFriends.find_one({"_id": user})
         friendList = []
-        for i in friendEntry["Friends"]:
-            friendList.append({"friendName": i})
-        serialier = Name_Serializer(friendList, many=True)
-        return Response(serialier.data)
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append({"friendName": i})
+        serializer = Name_Serializer(friendList, many=True)
+        return Response(serializer.data)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -468,10 +471,11 @@ def openlakeFriendList(request):
         user = request.user.username
         friendEntry = openlakeFriends.find_one({"_id": user})
         friendList = []
-        for i in friendEntry["Friends"]:
-            friendList.append({"friendName": i})
-        serialier = Name_Serializer(friendList, many=True)
-        return Response(serialier.data)
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append({"friendName": i})
+        serializer = Name_Serializer(friendList, many=True)
+        return Response(serializer.data)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST

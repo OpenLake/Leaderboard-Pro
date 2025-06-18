@@ -81,9 +81,6 @@ export const CodeforcesTable = ({
     });
     const newData = await response.json();
     setCodeforcesfriends(newData);
-    console.log(newData);
-    // setTodisplayusers(codeforcesUsers)
-    // setFilteredusers(codeforcesUsers)
   };
 
   async function addfriend(e) {
@@ -200,80 +197,117 @@ export const CodeforcesTable = ({
     >
       <div
         style={{
-          width: "18vw",
-          maxWidth: "200px",
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "15vh",
+          position: "relative",
           marginBottom: "10px",
-        }}
-      ></div>
-      <div
-        style={{
-          marginBottom: "1px",
+          alignItems: "center",
+          width: "100vw",
         }}
       >
-        <TableContainer component={Paper}>
-          <Table
-            className={darkmode ? classes.table_dark : classes.table}
-            aria-label="codeforces-table"
-          >
-            <TableHead>
-              <TableRow
-                style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
+        <TextField
+          id="outlined-basic"
+          label="Search Usernames"
+          variant="outlined"
+          defaultValue=""
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(e) => {
+            setSearchfield(e.target.value);
+          }}
+        />
+        <ToggleButton
+          value="check"
+          selected={cfshowfriends}
+          onChange={() => {
+            setCfshowfriends(!cfshowfriends);
+          }}
+          style={{
+            backgroundColor: darkmode ? "#02055a" : "#2196f3",
+            color: "white",
+            marginTop: isMobile ? "2vh" : "4vh",
+          }}
+        >
+          {cfshowfriends ? "Show All" : "Show Friends"}
+        </ToggleButton>
+        <div
+          style={{
+            marginTop: isMobile ? "2vh" : "4vh",
+          }}
+        >
+          {!filteredusers.length ? (
+            "No users"
+          ) : (
+            <TableContainer component={Paper}>
+              <Table
+                className={darkmode ? classes.table_dark : classes.table}
+                aria-label="codeforces-table"
               >
-                {/* #1CA7FC */}
-                {/* #1F2F98 */}
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Avatar
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Username
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Rating
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Max rating
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Last activity
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Total Solved
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                ></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {!filteredusers
-                ? "no users"
-                : filteredusers
+                <TableHead>
+                  <TableRow
+                    style={{
+                      backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC",
+                    }}
+                  >
+                    {/* #1CA7FC */}
+                    {/* #1F2F98 */}
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Avatar
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Username
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Rating
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Max rating
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Last activity
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Total Solved
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    ></StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredusers
                     .sort((a, b) => (a.rating < b.rating ? 1 : -1))
                     .map((cfUser) => (
                       <TableRow key={cfUser.id}>
@@ -361,49 +395,11 @@ export const CodeforcesTable = ({
                         </StyledTableCell>
                       </TableRow>
                     ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginTop: "2vh",
-          position: "relative",
-          marginBottom: "10px",
-        }}
-      >
-        <TextField
-          id="outlined-basic"
-          label="Search Usernames"
-          variant="outlined"
-          defaultValue=""
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          onChange={(e) => {
-            setSearchfield(e.target.value);
-          }}
-        />
-        <ToggleButton
-          value="check"
-          selected={cfshowfriends}
-          onChange={() => {
-            setCfshowfriends(!cfshowfriends);
-          }}
-          style={{
-            backgroundColor: darkmode ? "#02055a" : "#2196f3",
-            color: "white",
-            marginTop: isMobile ? "2vh" : "4vh",
-          }}
-        >
-          {cfshowfriends ? "Show All" : "Show Friends"}
-        </ToggleButton>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div>
       </div>
     </Root>
   );
