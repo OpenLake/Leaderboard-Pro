@@ -82,8 +82,6 @@ export const LeetcodeTable = ({
 
     const newData = await response.json();
     setLeetcodefriends(newData);
-    // setTodisplayusers(leetcodeUsers)
-    // setFilteredusers(leetcodeUsers)
   };
 
   async function addfriend(e) {
@@ -173,186 +171,13 @@ export const LeetcodeTable = ({
     >
       <div
         style={{
-          width: "18vw",
-          maxWidth: "200px",
-          marginBottom: "10px",
-        }}
-      ></div>{" "}
-      <div
-        style={{
-          marginBottom: "1px",
-        }}
-      >
-        <TableContainer component={Paper}>
-          <Table
-            className={darkmode ? classes.table_dark : classes.table}
-            aria-label="leetcode-table"
-          >
-            <TableHead>
-              <TableRow
-                style={{ backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC" }}
-              >
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Avatar
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Username
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Ranking
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Easy Solved
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Medium Solved
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Hard Solved
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                >
-                  Total Solved
-                </StyledTableCell>
-                <StyledTableCell
-                  classes={{
-                    root: classes.root,
-                  }}
-                ></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredusers
-                .sort((a, b) => (a.ranking > b.ranking ? 1 : -1))
-                .map((cfUser) => (
-                  <TableRow key={cfUser.id}>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      <Avatar
-                        src={cfUser.avatar}
-                        alt={`${cfUser.username} avatar`}
-                      />
-                      {/* TODO: Lazy load the avatars ? */}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      <Link
-                        style={{
-                          fontWeight: "bold",
-                          textDecoration: "none",
-                          color: darkmode ? "#03DAC6" : "",
-                        }}
-                        href={"https://leetcode.com/" + cfUser.username + "/"}
-                        target="_blank"
-                      >
-                        {cfUser.username}
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {cfUser.ranking}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {cfUser.easy_solved}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {cfUser.medium_solved}
-                    </StyledTableCell>
-
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {cfUser.hard_solved}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      {cfUser.total_solved}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        style={{ backgroundColor: darkmode ? "#146ca4" : "" }}
-                        onClick={() => {
-                          !leetcodefriends.some(
-                            (item) => item.username === cfUser.username,
-                          )
-                            ? addfriend(cfUser)
-                            : dropfriend(cfUser.username);
-                        }}
-                      >
-                        {leetcodefriends.some(
-                          (item) => item.username === cfUser.username,
-                        )
-                          ? "Remove Friend"
-                          : "Add Friend"}
-                      </Button>
-                    </StyledTableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-      <div
-        style={{
           display: "flex",
           flexDirection: "column",
-          marginTop: "2vh",
+          marginTop: "15vh",
           position: "relative",
           marginBottom: "10px",
+          alignItems: "center",
+          width: "100vw",
         }}
       >
         <TextField
@@ -385,6 +210,184 @@ export const LeetcodeTable = ({
         >
           {ltshowfriends ? "Show All" : "Show Friends"}
         </ToggleButton>
+        <div
+          style={{
+            marginTop: isMobile ? "2vh" : "4vh",
+          }}
+        >
+          {!filteredusers.length ? (
+            "No users"
+          ) : (
+            <TableContainer component={Paper}>
+              <Table
+                className={darkmode ? classes.table_dark : classes.table}
+                aria-label="leetcode-table"
+              >
+                <TableHead>
+                  <TableRow
+                    style={{
+                      backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC",
+                    }}
+                  >
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Avatar
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Username
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Ranking
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Easy Solved
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Medium Solved
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Hard Solved
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    >
+                      Total Solved
+                    </StyledTableCell>
+                    <StyledTableCell
+                      classes={{
+                        root: classes.root,
+                      }}
+                    ></StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredusers
+                    .sort((a, b) => (a.ranking > b.ranking ? 1 : -1))
+                    .map((ltUser) => (
+                      <TableRow key={ltUser.id}>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Avatar
+                            src={ltUser.avatar}
+                            alt={`${ltUser.username} avatar`}
+                          />
+                          {/* TODO: Lazy load the avatars ? */}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Link
+                            style={{
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                              color: darkmode ? "#03DAC6" : "",
+                            }}
+                            href={
+                              "https://leetcode.com/" + ltUser.username + "/"
+                            }
+                            target="_blank"
+                          >
+                            {ltUser.username}
+                          </Link>
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ltUser.ranking}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ltUser.easy_solved}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ltUser.medium_solved}
+                        </StyledTableCell>
+
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ltUser.hard_solved}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          {ltUser.total_solved}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          classes={{
+                            root: classes.root,
+                          }}
+                        >
+                          <Button
+                            variant="contained"
+                            style={{
+                              backgroundColor: darkmode ? "#146ca4" : "",
+                            }}
+                            onClick={() => {
+                              !leetcodefriends.some(
+                                (item) => item.username === ltUser.username,
+                              )
+                                ? addfriend(ltUser)
+                                : dropfriend(ltUser.username);
+                            }}
+                          >
+                            {leetcodefriends.some(
+                              (item) => item.username === ltUser.username,
+                            )
+                              ? "Remove Friend"
+                              : "Add Friend"}
+                          </Button>
+                        </StyledTableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div>
       </div>
     </Root>
   );
