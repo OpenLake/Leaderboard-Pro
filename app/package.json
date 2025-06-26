@@ -21,6 +21,7 @@
     "apexcharts": "^4.7.0",
     "axios": "^1.9.0",
     "chart.js": "^4.4.9",
+    "dotenv": "^16.6.0",
     "eslint-config-react-app": "~7.0.1",
     "firebase": "^11.8.1",
     "jwt-decode": "^4.0.0",

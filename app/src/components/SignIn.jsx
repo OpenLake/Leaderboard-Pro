@@ -14,7 +14,7 @@ import {
   ThemeProvider,
   StyledEngineProvider,
 } from "@mui/material/styles";
-import { useAuth } from "../Context/AuthContext.js";
+import { useAuth } from "../Context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 // function Copyright(props) {
 //   return (
