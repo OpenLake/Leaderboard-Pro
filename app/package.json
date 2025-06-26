@@ -16,6 +16,8 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.0.4",
+    "@vitejs/plugin-react": "^4.6.0",
     "apexcharts": "^4.7.0",
     "axios": "^1.9.0",
     "chart.js": "^4.4.9",
@@ -40,7 +42,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier-eslint --write \"src/**/*.js\""
+    "format": "prettier-eslint --write \"src/**/*.js\"",
+    "dev": "vite",
+    "build2": "vite build",
+    "preview": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -64,6 +69,7 @@
     "eslint": "^9.29.0",
     "prettier": "^3.5.3",
     "prettier-eslint": "^16.4.2",
-    "prettier-eslint-cli": "^8.0.1"
+    "prettier-eslint-cli": "^8.0.1",
+    "vite": "^7.0.0"
   }
 }
