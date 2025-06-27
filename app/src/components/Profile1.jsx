@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Profile from "./Profile.js";
-import { useAuth } from "../Context/AuthContext.js";
-import Goals from "./Goals.js";
+import Profile from "./Profile.jsx";
+import { useAuth } from "../Context/AuthContext.jsx";
+import Goals from "./Goals.jsx";
 
 const Profile1 = ({ darkmode, leetcodeUsers, codeforcesUsers }) => {
   let { update_addUsernames } = useAuth();

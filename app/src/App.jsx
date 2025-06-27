@@ -8,11 +8,11 @@ import {
   adaptV4Theme,
 } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Navbar } from "./components/Navbar.js";
-import { CodeforcesTable } from "./components/CodeforcesTable.js";
+import { Navbar } from "./components/Navbar.jsx";
+import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
-import Profile from "./components/Profile.js";
+import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { OpenlakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
@@ -25,8 +25,8 @@ import Footer from "./components/Footer";
 import LeetcodeRankings from "./components/LeetcodeRankings";
 import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
-import { AuthProvider } from "./Context/AuthContext.js";
-import Dashboard from "./components/discussion-forum/dashboard.js";
+import { AuthProvider } from "./Context/AuthContext.jsx";
+import Dashboard from "./components/discussion-forum/dashboard.jsx";
 const darkTheme = createTheme(
   adaptV4Theme({
     palette: {

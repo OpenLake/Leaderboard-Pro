@@ -1,5 +1,5 @@
-import SignUp from "./SignUp.js";
-import { useAuth } from "../Context/AuthContext.js";
+import SignUp from "./SignUp.jsx";
+import { useAuth } from "../Context/AuthContext.jsx";
 const Register = ({ darkmode }) => {
   let { SignUpWithGoogle, registerUser } = useAuth();
   return (
