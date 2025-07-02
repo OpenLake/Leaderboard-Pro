@@ -4,6 +4,7 @@ async-timeout==5.0.1
 beautifulsoup4==4.12.3
 billiard==4.2.1
 black==25.1.0
+Brotli==1.1.0
 bs4==0.0.2
 CacheControl==0.14.3
 cachetools==5.5.2
@@ -44,6 +45,8 @@ google-resumable-media==2.7.2
 googleapis-common-protos==1.70.0
 grpcio==1.72.1
 grpcio-status==1.72.1
+gunicorn==23.0.0
+h11==0.16.0
 httplib2==0.22.0
 humanize==4.12.3
 hvac==2.3.0
@@ -92,8 +95,10 @@ typing_extensions==4.12.2
 tzdata==2025.1
 uritemplate==4.2.0
 urllib3==2.3.0
+uvicorn==0.35.0
 validators==0.35.0
 vine==5.1.0
 virtualenv==20.29.1
 wcwidth==0.2.13
+whitenoise==6.9.0
 wrapt==1.17.2

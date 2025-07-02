@@ -1,3 +1,5 @@
+import logging
+
 import pymongo
 from leaderboard.serializers import Name_Serializer
 from rest_framework import status
@@ -6,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+logging.getLogger("pymongo").setLevel(logging.ERROR)
 client = pymongo.MongoClient("localhost", 27017)
 myDB = client["Friends"]
 codechefFriends = myDB["Codechef"]
