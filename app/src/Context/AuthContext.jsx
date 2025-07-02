@@ -180,7 +180,7 @@ export const AuthProvider = ({ children }) => {
           setAuthTokens(token);
           setUser(jwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
-          let usernames_data = await getUsernamesData(response.user.uid);
+          let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
         } else {
           alert(data.message);
