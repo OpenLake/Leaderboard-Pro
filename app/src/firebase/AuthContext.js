@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
+const BACKEND = import.meta.env.VITE_BACKEND;
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -38,7 +39,7 @@ export const AuthProvide = ({ children }) => {
     e.preventDefault();
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
     // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
-    let response = await fetch("http://localhost:8000/api/insertapi/", {
+    let response = await fetch(BACKEND + "/api/insertapi/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +80,7 @@ export const AuthProvide = ({ children }) => {
 
   useEffect(() => {
     const token = async (username) => {
-      let response = await fetch("http://localhost:8000/api/token/", {
+      let response = await fetch(BACKEND + "/api/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +120,7 @@ export const AuthProvide = ({ children }) => {
       if (isNewUser) {
         console.log("New User");
         async function register() {
-          let response = await fetch("http://localhost:8000/api/register/", {
+          let response = await fetch(BACKEND + "/api/register/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

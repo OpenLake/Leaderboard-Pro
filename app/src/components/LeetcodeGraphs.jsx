@@ -14,7 +14,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     const fetchRankings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/contest-rankings/",
+          import.meta.env.VITE_BACKEND + "/contest-rankings/",
         );
         const data = response.data;
 

@@ -58,6 +58,8 @@ const Root = styled("div")({
   },
 });
 
+const BACKEND = import.meta.env.VITE_BACKEND;
+
 export const OpenlakeTable = ({
   darkmode,
   codechefUsers,
@@ -70,7 +72,7 @@ export const OpenlakeTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getccfriends = async () => {
-    const response = await fetch("http://localhost:8000/openlakeFL/", {
+    const response = await fetch(BACKEND + "/openlakeFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +86,7 @@ export const OpenlakeTable = ({
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://localhost:8000/openlakeFA/", {
+    const response = await fetch(BACKEND + "/openlakeFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +104,7 @@ export const OpenlakeTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://localhost:8000/openlakeFD/", {
+    const response = await fetch(BACKEND + "/openlakeFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
