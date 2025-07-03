@@ -73,7 +73,7 @@ export const GithubTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getghfriends = async () => {
-    const response = await fetch("http://127.0.0.1:8000/githubFL/", {
+    const response = await fetch(BACKEND + "/githubFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
