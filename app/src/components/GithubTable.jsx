@@ -59,6 +59,8 @@ const Root = styled("div")({
   },
 });
 
+const BACKEND = import.meta.env.VITE_BACKEND;
+
 export const GithubTable = ({
   darkmode,
   githubUsers,
@@ -85,7 +87,7 @@ export const GithubTable = ({
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://localhost:8000/githubFA/", {
+    const response = await fetch(BACKEND + "/githubFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +105,7 @@ export const GithubTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://localhost:8000/githubFD/", {
+    const response = await fetch(BACKEND + "/githubFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

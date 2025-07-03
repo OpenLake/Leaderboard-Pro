@@ -59,6 +59,8 @@ const Root = styled("div")({
   },
 });
 
+const BACKEND = import.meta.env.VITE_BACKEND;
+
 export const CodeforcesTable = ({
   darkmode,
   codeforcesUsers,
@@ -71,7 +73,7 @@ export const CodeforcesTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getcffriends = async () => {
-    const response = await fetch("http://localhost:8000/codeforcesFL/", {
+    const response = await fetch(BACKEND + "/codeforcesFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +86,7 @@ export const CodeforcesTable = ({
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://localhost:8000/codeforcesFA/", {
+    const response = await fetch(BACKEND + "/codeforcesFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +104,7 @@ export const CodeforcesTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://localhost:8000/codeforcesFD/", {
+    const response = await fetch(BACKEND + "/codeforcesFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

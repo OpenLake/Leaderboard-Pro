@@ -90,6 +90,7 @@ const lightTheme = createTheme(
     },
   }),
 );
+const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
   const [darkmode, setDarkmode] = useState(false);
@@ -121,7 +122,7 @@ function App() {
     }
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/codeforces/")
+    fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
       .then((res) => {
         setCodeforcesUsers(res);
@@ -129,21 +130,21 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/codechef/")
+    fetch(BACKEND + "/codechef/")
       .then((res) => res.json())
       .then((res) => {
         setCodechefUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/leetcode/")
+    fetch(BACKEND + "/leetcode/")
       .then((res) => res.json())
       .then((res) => {
         setLeetcodeUsers(res);
       });
   }, []);
   useEffect(() => {
-    fetch("http://localhost:8000/openlake/")
+    fetch(BACKEND + "/openlake/")
       .then((res) => res.json())
       .then((res) => {
         setOpenlakeContributor(res);
@@ -151,7 +152,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/github/")
+    fetch(BACKEND + "/github/")
       .then((res) => res.json())
       .then((res) => {
         setGithubUser(res);

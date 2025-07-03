@@ -10,6 +10,7 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 const googleProvider = new GoogleAuthProvider();
+const BACKEND = import.meta.env.VITE_BACKEND;
 
 export default AuthContext;
 
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       : null,
   );
   let getUsernamesData = async (authToken) => {
-    let usernames_response = await fetch("http://localhost:8000/userDetails/", {
+    let usernames_response = await fetch(BACKEND + "/userDetails/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   };
   let loginUser = async (e) => {
     e.preventDefault();
-    let response = await fetch("http://localhost:8000/api/token/", {
+    let response = await fetch(BACKEND + "/api/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
   let registerUser = async (e) => {
     e.preventDefault();
-    let response = await fetch("http://localhost:8000/api/register/", {
+    let response = await fetch(BACKEND + "/api/register/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -99,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       }),
     });
     if (response.status === 200) {
-      let response = await fetch("http://localhost:8000/api/token/", {
+      let response = await fetch(BACKEND + "/api/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +130,7 @@ export const AuthProvider = ({ children }) => {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
     console.log(e.target.form);
     // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
-    let response = await fetch("http://localhost:8000/api/insertapi/", {
+    let response = await fetch(BACKEND + "/api/insertapi/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -162,7 +163,7 @@ export const AuthProvider = ({ children }) => {
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         let logresponse = await fetch(
-          "http://localhost:8000/api/token/google/",
+          BACKEND + "/api/token/google/",
           {
             method: "POST",
             headers: {
@@ -179,7 +180,7 @@ export const AuthProvider = ({ children }) => {
           setAuthTokens(token);
           setUser(jwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
-          let usernames_data = await getUsernamesData(response.user.uid);
+          let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
         } else {
           alert(data.message);
@@ -199,7 +200,7 @@ export const AuthProvider = ({ children }) => {
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         let regresponse = await fetch(
-          "http://localhost:8000/api/register/google/",
+          BACKEND + "/api/register/google/",
           {
             method: "POST",
             headers: {
@@ -247,7 +248,7 @@ export const AuthProvider = ({ children }) => {
   // useEffect(() => {
 
   //     const token = async (username) => {
-  //     let response = await fetch("http://localhost:8000/api/token/", {
+  //     let response = await fetch(BACKEND + "/api/token/", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
@@ -287,7 +288,7 @@ export const AuthProvider = ({ children }) => {
   //       if (isNewUser) {
   //         console.log("New User");
   //         async function register() {
-  //           let response = await fetch("http://localhost:8000/api/register/", {
+  //           let response = await fetch(BACKEND + "/api/register/", {
   //             method: "POST",
   //             headers: {
   //               "Content-Type": "application/json",

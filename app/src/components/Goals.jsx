@@ -15,6 +15,7 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
+const BACKEND = import.meta.env.VITE_BACKEND;
 // Modal Component for creating a new task
 
 const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
@@ -216,7 +217,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     const addTask = async (task) => {
       console.log(task);
       try {
-        const response = await fetch("http://localhost:8000/usertasks/", {
+        const response = await fetch( BACKEND + "/usertasks/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -278,7 +279,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
 
     console.log(task);
 
-    fetch("http://localhost:8000/usertasks/", {
+    fetch(BACKEND + "/usertasks/", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -313,7 +314,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
   const deleteTask = async (title) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       setTasks(tasks.filter((task) => task.title !== title));
-      await fetch("http://localhost:8000/usertasks/", {
+      await fetch(BACKEND + "/usertasks/", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
