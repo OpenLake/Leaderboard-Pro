@@ -8,7 +8,7 @@ Brotli==1.1.0
 bs4==0.0.2
 CacheControl==0.14.3
 cachetools==5.5.2
-celery==5.4.0
+celery==5.5.3
 certifi==2024.12.14
 cffi==1.17.1
 cfgv==3.4.0
@@ -55,7 +55,7 @@ idna==3.10
 isort==6.0.1
 Jinja2==3.1.5
 knox==0.1.14
-kombu==5.4.2
+kombu==5.5.4
 loguru==0.7.3
 MarkupSafe==3.0.2
 msgpack==1.1.0
@@ -92,7 +92,7 @@ sqlparse==0.5.3
 toml==0.10.2
 tornado==6.5.1
 typing_extensions==4.12.2
-tzdata==2025.1
+tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.3.0
 uvicorn==0.35.0

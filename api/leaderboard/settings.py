@@ -26,7 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-)6p=1a4tc8_yuaoh-qyu+^+mo==yzo%1%a)ofhiuvw)(el-lbh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -36,11 +35,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-
-# import dotenv,os
-
-# dotenv.load_dotenv()
-
+DEBUG = bool(os.getenv("DEBUG")) if os.getenv("DEBUG") else False
 
 # Application definition
 
@@ -60,6 +55,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "leaderboard",
     "rest_framework_simplejwt.token_blacklist",
+    "django_celery_results",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -238,8 +234,14 @@ OL_INTV = 60
 LT_INTV = 5
 CF_INTV = 5
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+RABBITMQ_DEFAULT_USER = str(os.getenv("RABBITMQ_DEFAULT_USER"))
+RABBITMQ_DEFAULT_PASSWORD = str(os.getenv("RABBITMQ_DEFAULT_PASSWORD"))
+RABBITMQ_DEFAULT_VHOST = str(os.getenv("RABBITMQ_DEFAULT_VHOST"))
+RABBITMQ_HOST = str(os.getenv("RABBITMQ_HOST"))
+POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
+
+CELERY_BROKER_URL = f"amqp://{RABBITMQ_DEFAULT_PASSWORD}:{RABBITMQ_DEFAULT_USER}@{RABBITMQ_HOST}:5672/{RABBITMQ_DEFAULT_VHOST}"
+CELERY_RESULT_BACKEND = "django-db"
 
 # CELERY_BROKER_URL="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
 # CELERY_RESULT_BACKEND="redis-18982.c80.us-east-1-2.ec2.cloud.redislabs.com:18982"
