@@ -58,7 +58,7 @@ const Root = styled("div")({
     flexShrink: "0",
   },
 });
-
+const BACKEND = import.meta.env.VITE_BACKEND
 export const CodechefTable = ({
   darkmode,
   codechefUsers,
