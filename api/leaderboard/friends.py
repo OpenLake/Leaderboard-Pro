@@ -1,6 +1,7 @@
 import logging
-
-import pymongo
+import os
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from leaderboard.serializers import Name_Serializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -9,7 +10,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 logging.getLogger("pymongo").setLevel(logging.ERROR)
-client = pymongo.MongoClient("localhost", 27017)
+uri = os.environ.get("MONGODB_URI")
+client = MongoClient(uri, server_api=ServerApi('1'))
 myDB = client["Friends"]
 codechefFriends = myDB["Codechef"]
 codeforcesFriends = myDB["Codeforces"]
