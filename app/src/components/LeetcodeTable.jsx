@@ -58,6 +58,7 @@ const Root = styled("div")({
     flexShrink: "0",
   },
 });
+const BACKEND = import.meta.env.VITE_BACKEND
 
 export const LeetcodeTable = ({
   darkmode,
@@ -71,7 +72,7 @@ export const LeetcodeTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getltfriends = async () => {
-    const response = await fetch("http://127.0.0.1:8000/leetcodeFL/", {
+    const response = await fetch(BACKEND + "/leetcodeFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +86,7 @@ export const LeetcodeTable = ({
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://127.0.0.1:8000/leetcodeFA/", {
+    const response = await fetch(BACKEND + "/leetcodeFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +104,7 @@ export const LeetcodeTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://127.0.0.1:8000/leetcodeFD/", {
+    const response = await fetch(BACKEND + "/leetcodeFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

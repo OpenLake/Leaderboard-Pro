@@ -58,7 +58,7 @@ const Root = styled("div")({
     flexShrink: "0",
   },
 });
-
+const BACKEND = import.meta.env.VITE_BACKEND
 export const CodechefTable = ({
   darkmode,
   codechefUsers,
@@ -71,7 +71,7 @@ export const CodechefTable = ({
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const getccfriends = async () => {
-    const response = await fetch("http://127.0.0.1:8000/codechefFL/", {
+    const response = await fetch(BACKEND + "/codechefFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export const CodechefTable = ({
   };
 
   async function addfriend(e) {
-    const response = await fetch("http://127.0.0.1:8000/codechefFA/", {
+    const response = await fetch(BACKEND + "/codechefFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export const CodechefTable = ({
     }
   }
   async function dropfriend(e) {
-    const response = await fetch("http://127.0.0.1:8000/codechefFD/", {
+    const response = await fetch(BACKEND + "/codechefFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
