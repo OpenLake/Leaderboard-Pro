@@ -4,8 +4,8 @@ PIP ?= pip3
 MAKE ?= make
 
 format:
-	cd api/ && $(PYTHON) -m isort .
 	cd api/ && $(PYTHON) -m black .
+	cd api/ && $(PYTHON) -m isort . --profile black -p leaderboard
 	cd app/ && $(PNPM) format
 
 install:

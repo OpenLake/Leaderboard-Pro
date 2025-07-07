@@ -2,8 +2,8 @@ PYTHON ?= python3
 PIP ?= pip3
 
 format:
-	cd api/ && $(PYTHON) -m isort .
-	cd api/ && $(PYTHON) -m black .
+	$(PYTHON) -m black .
+	$(PYTHON) -m isort . --profile black -p leaderboard
 
 migrate:
 	$(PYTHON) manage.py makemigrations
