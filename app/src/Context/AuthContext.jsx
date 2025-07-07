@@ -1,7 +1,11 @@
 import { createContext, useState, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { auth } from "./firebase.config";
 
 const AuthContext = createContext();
@@ -162,18 +166,15 @@ export const AuthProvider = ({ children }) => {
     try {
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
-        let logresponse = await fetch(
-          BACKEND + "/api/token/google/",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: response.user.accessToken,
-            }),
+        let logresponse = await fetch(BACKEND + "/api/token/google/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            token: response.user.accessToken,
+          }),
+        });
         let data = await logresponse.json();
         if (logresponse.status === 200) {
           let token = data.token;
@@ -199,19 +200,16 @@ export const AuthProvider = ({ children }) => {
     try {
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
-        let regresponse = await fetch(
-          BACKEND + "/api/register/google/",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: response.user.accessToken,
-              username: response.user.email.split("@")[0],
-            }),
+        let regresponse = await fetch(BACKEND + "/api/register/google/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            token: response.user.accessToken,
+            username: response.user.email.split("@")[0],
+          }),
+        });
         let data = await regresponse.json();
         if (regresponse.status === 200) {
           let token = data.token;
@@ -323,6 +321,8 @@ export const AuthProvider = ({ children }) => {
   //     return () => unsubscribe();
   //   }, [navigate]);
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {children}
+    </AuthContext.Provider>
   );
 };

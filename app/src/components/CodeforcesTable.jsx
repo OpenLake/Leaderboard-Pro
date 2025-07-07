@@ -78,7 +78,8 @@ export const CodeforcesTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
     const newData = await response.json();
@@ -91,7 +92,8 @@ export const CodeforcesTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e.username,
@@ -109,7 +111,8 @@ export const CodeforcesTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e,
@@ -382,7 +385,8 @@ export const CodeforcesTable = ({
                             onClick={() => {
                               Array.isArray(codeforcesUsers) &&
                               !codeforcesfriends.some(
-                                (item) => item.username === cfUser.username,
+                                (item) =>
+                                  item.username === cfUser.username,
                               )
                                 ? addfriend(cfUser)
                                 : dropfriend(cfUser.username);

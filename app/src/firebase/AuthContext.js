@@ -1,4 +1,8 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebase.config";
 import { jwtDecode } from "jwt-decode";
@@ -44,7 +48,8 @@ export const AuthProvide = ({ children }) => {
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         cc_uname: e.target.cc_uname.value,
@@ -114,7 +119,8 @@ export const AuthProvide = ({ children }) => {
           photoURL,
         };
         console.log(userData);
-        isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+        isNewUser =
+          user.metadata.creationTime === user.metadata.lastSignInTime;
       }
 
       if (isNewUser) {
@@ -154,5 +160,7 @@ export const AuthProvide = ({ children }) => {
 
     return () => unsubscribe();
   }, [navigate]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 };

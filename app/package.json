@@ -37,7 +37,11 @@
     "web-vitals": "^5.0.1"
   },
   "scripts": {
-    "format": "prettier-eslint --write \"src/**/*.js\"",
+    "lint": "npx eslint src test",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "npx prettier src test --check",
+    "prettier:fix": "npm run prettier -- --write",
+    "format": "npm run prettier:fix && npm run lint:fix",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

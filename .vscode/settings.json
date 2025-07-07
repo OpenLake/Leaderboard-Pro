@@ -6,14 +6,9 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-    },
-    "[javascript]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-    },
-    "editor.formatOnPaste": true, // optional
-    "editor.formatOnSave": true, // optional
-    "editor.formatOnSaveMode": "file", // required to format on save
-    "vs-code-prettier-eslint.prettierLast": false // set as "true" to run 'prettier' last not first
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.probe": ["javascript", "javascriptreact", "vue"],
+  "editor.formatOnSave": false,
+  // Runs Prettier, then ESLint
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
 }

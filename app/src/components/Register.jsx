@@ -11,8 +11,13 @@ const Register = ({ darkmode }) => {
         height: "93vh",
       }}
     >
-      <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
-        <SignUp registerUser={registerUser} googleAuth={SignUpWithGoogle} />
+      <div
+        style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}
+      >
+        <SignUp
+          registerUser={registerUser}
+          googleAuth={SignUpWithGoogle}
+        />
       </div>
     </div>
   );

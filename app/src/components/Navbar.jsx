@@ -101,7 +101,11 @@ export const Navbar = ({ darkmode, toggle }) => {
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             <Button
-              style={{ color: "white", fontSize: "1.3rem", fontWeight: "900" }}
+              style={{
+                color: "white",
+                fontSize: "1.3rem",
+                fontWeight: "900",
+              }}
               onClick={tohome}
             >
               Leaderboard Pro
@@ -156,7 +160,9 @@ export const Navbar = ({ darkmode, toggle }) => {
               <Link to="/leetcoderankings">LeetCode Rankings</Link>
             </MenuItem>
             <MenuItem onClick={handleMobileMenuClose}>
-              <Link to="/leetcoderankingsccps">LeetCode Rankings (CCPS)</Link>
+              <Link to="/leetcoderankingsccps">
+                LeetCode Rankings (CCPS)
+              </Link>
             </MenuItem>
           </Menu>
 

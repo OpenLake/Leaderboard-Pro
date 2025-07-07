@@ -31,7 +31,9 @@ const Profile1 = ({ darkmode, leetcodeUsers, codeforcesUsers }) => {
         Update usernames
       </button>
       {update && (
-        <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
+        <div
+          style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}
+        >
           <Profile
             darkmode={darkmode}
             update_addUsernames={update_addUsernames}
@@ -39,7 +41,9 @@ const Profile1 = ({ darkmode, leetcodeUsers, codeforcesUsers }) => {
         </div>
       )}
       {!update && (
-        <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
+        <div
+          style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}
+        >
           <Goals
             darkmode={""}
             leetcodeUsers={leetcodeUsers}

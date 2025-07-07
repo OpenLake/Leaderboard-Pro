@@ -33,7 +33,9 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     let totalSolved = 0;
     console.log(codeforcesUsers[0]);
     console.log(leetcodeUsers[0]);
-    const solvedc = codeforcesUsers.find((u) => u.username === user.username);
+    const solvedc = codeforcesUsers.find(
+      (u) => u.username === user.username,
+    );
     console.log(solvedc);
     // const solvedl = leetcodeUsers.find((u) => u.username==="1bJxR2iXHT");
     totalSolved += solvedc.total_solved;
@@ -217,7 +219,7 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
     const addTask = async (task) => {
       console.log(task);
       try {
-        const response = await fetch( BACKEND + "/usertasks/", {
+        const response = await fetch(BACKEND + "/usertasks/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -454,7 +456,9 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                             )}
                           </div>
                           {task.title && (
-                            <div style={taskDetailsStyle}>{task.title}</div>
+                            <div style={taskDetailsStyle}>
+                              {task.title}
+                            </div>
                           )}
                           <div
                             style={{
@@ -602,7 +606,9 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                             )}
                           </div>
                           {task.title && (
-                            <div style={taskDetailsStyle}>{task.title}</div>
+                            <div style={taskDetailsStyle}>
+                              {task.title}
+                            </div>
                           )}
                           <div
                             style={{
@@ -715,12 +721,16 @@ const Goals = ({ darkmode, codeforcesUsers, leetcodeUsers }) => {
                     {task.text}
                   </span>
                 </div>
-                {task.title && <div style={taskDetailsStyle}>{task.title}</div>}
+                {task.title && (
+                  <div style={taskDetailsStyle}>{task.title}</div>
+                )}
                 <div style={progressStyle}>
                   Progress: {task.solved}/{task.problem} (
                   {getProgressPercentage(task)}%)
                 </div>
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <button
                     onClick={() => deleteTask(task.title)}
                     style={{

@@ -78,7 +78,8 @@ export const GithubTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
 
@@ -92,7 +93,8 @@ export const GithubTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e.username,
@@ -110,7 +112,8 @@ export const GithubTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e,
@@ -342,7 +345,8 @@ export const GithubTable = ({
                             }}
                             onClick={() => {
                               !githubfriends.some(
-                                (item) => item.username === glUser.username,
+                                (item) =>
+                                  item.username === glUser.username,
                               )
                                 ? addfriend(glUser)
                                 : dropfriend(glUser.username);
