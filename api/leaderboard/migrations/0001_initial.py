@@ -4,9 +4,10 @@ import django.contrib.auth.models
 import django.contrib.auth.validators
 import django.db.models.deletion
 import django.utils.timezone
-import leaderboard.models
 from django.conf import settings
 from django.db import migrations, models
+
+import leaderboard.models
 
 
 class Migration(migrations.Migration):

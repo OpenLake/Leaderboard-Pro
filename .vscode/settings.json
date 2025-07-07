@@ -1,14 +1,19 @@
 {
-    "git.ignoreLimitWarning": true,
-    "python.analysis.extraPaths": [
-        "./api/leaderboard"
-    ],
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-    },
+  "git.ignoreLimitWarning": true,
+
+  // For backend
+  "python.analysis.extraPaths": ["./api/leaderboard"],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+  "isort.args": ["--profile", "black", "-p", "leaderboard"],
+  "isort.importStrategy": "fromEnvironment",
+
+  // For Frontend
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.probe": ["javascript", "javascriptreact", "vue"],
   "editor.formatOnSave": false,
   // Runs Prettier, then ESLint
-  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"]
 }
