@@ -128,7 +128,6 @@ export const OpenlakeTable = ({
   }
   useEffect(() => {
     getccfriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -140,7 +139,6 @@ export const OpenlakeTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
@@ -149,13 +147,11 @@ export const OpenlakeTable = ({
         }),
       );
     }
-    // eslint-disable-next-line
   }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
