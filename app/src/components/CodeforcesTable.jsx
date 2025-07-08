@@ -128,7 +128,6 @@ export const CodeforcesTable = ({
   }
   useEffect(() => {
     getcffriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -140,7 +139,6 @@ export const CodeforcesTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username
@@ -149,13 +147,11 @@ export const CodeforcesTable = ({
         }),
       );
     }
-    // eslint-disable-next-line
   }, [cfshowfriends, codeforcesfriends, searchfield, codeforcesUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((cfUser) => {
           return cfUser.username

@@ -129,7 +129,6 @@ export const GithubTable = ({
   }
   useEffect(() => {
     getghfriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -141,7 +140,6 @@ export const GithubTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((ghUser) => {
           return ghUser.username
@@ -150,13 +148,11 @@ export const GithubTable = ({
         }),
       );
     }
-    // eslint-disable-next-line
   }, [ghshowfriends, githubfriends, searchfield, githubUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((ghUser) => {
           return ghUser.username

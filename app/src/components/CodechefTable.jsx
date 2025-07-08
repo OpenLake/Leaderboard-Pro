@@ -58,7 +58,7 @@ const Root = styled("div")({
     flexShrink: "0",
   },
 });
-const BACKEND = import.meta.env.VITE_BACKEND
+const BACKEND = import.meta.env.VITE_BACKEND;
 export const CodechefTable = ({
   darkmode,
   codechefUsers,
@@ -128,7 +128,6 @@ export const CodechefTable = ({
   }
   useEffect(() => {
     getccfriends();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -140,7 +139,6 @@ export const CodechefTable = ({
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((ccUser) => {
           return ccUser.username
@@ -149,13 +147,11 @@ export const CodechefTable = ({
         }),
       );
     }
-    // eslint-disable-next-line
   }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
     } else {
-      // eslint-disable-next-line
       setFilteredusers(
         todisplayusers.filter((ccUser) => {
           return ccUser.username
