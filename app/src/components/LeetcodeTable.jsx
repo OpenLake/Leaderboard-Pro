@@ -77,7 +77,8 @@ export const LeetcodeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
 
@@ -91,7 +92,8 @@ export const LeetcodeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e.username,
@@ -109,7 +111,8 @@ export const LeetcodeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e,
@@ -314,7 +317,9 @@ export const LeetcodeTable = ({
                               color: darkmode ? "#03DAC6" : "",
                             }}
                             href={
-                              "https://leetcode.com/" + ltUser.username + "/"
+                              "https://leetcode.com/" +
+                              ltUser.username +
+                              "/"
                             }
                             target="_blank"
                           >
@@ -369,7 +374,8 @@ export const LeetcodeTable = ({
                             }}
                             onClick={() => {
                               !leetcodefriends.some(
-                                (item) => item.username === ltUser.username,
+                                (item) =>
+                                  item.username === ltUser.username,
                               )
                                 ? addfriend(ltUser)
                                 : dropfriend(ltUser.username);

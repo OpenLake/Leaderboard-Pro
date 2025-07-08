@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from leaderboard.models import (
     DiscussionPost,
     LeetcodeUser,
@@ -10,7 +12,6 @@ from leaderboard.models import (
     githubUser,
     openlakeContributor,
 )
-from rest_framework import serializers
 
 
 class UpdateListSerializer(serializers.ListSerializer):

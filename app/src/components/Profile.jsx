@@ -22,7 +22,10 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://github.com/OpenLake/Leaderboard-Pro/">
+      <Link
+        color="inherit"
+        href="https://github.com/OpenLake/Leaderboard-Pro/"
+      >
         LeaderBoard-Pro
       </Link>{" "}
       {new Date().getFullYear()}

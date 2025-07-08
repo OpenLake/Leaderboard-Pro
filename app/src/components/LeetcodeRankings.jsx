@@ -58,7 +58,10 @@ const LeetcodeRankings = ({ darkmode }) => {
             style={{ marginLeft: '10px' }}
           />
         </label> */}
-        <button type="submit" style={{ marginLeft: "10px", marginTop: "10px" }}>
+        <button
+          type="submit"
+          style={{ marginLeft: "10px", marginTop: "10px" }}
+        >
           Get Rankings
         </button>
       </form>

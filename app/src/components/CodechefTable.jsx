@@ -76,7 +76,8 @@ export const CodechefTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
 
@@ -90,7 +91,8 @@ export const CodechefTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e.username,
@@ -109,7 +111,8 @@ export const CodechefTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e,
@@ -352,7 +355,8 @@ export const CodechefTable = ({
                             }}
                             onClick={() => {
                               !codecheffriends.some(
-                                (item) => item.username === ccUser.username,
+                                (item) =>
+                                  item.username === ccUser.username,
                               )
                                 ? addfriend(ccUser)
                                 : dropfriend(ccUser.username);

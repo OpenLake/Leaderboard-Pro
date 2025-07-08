@@ -77,7 +77,8 @@ export const OpenlakeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
     });
 
@@ -91,7 +92,8 @@ export const OpenlakeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e.username,
@@ -109,7 +111,8 @@ export const OpenlakeTable = ({
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("authTokens")).access,
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
         friendName: e,
@@ -298,7 +301,8 @@ export const OpenlakeTable = ({
                             }}
                             onClick={() => {
                               !codecheffriends.some(
-                                (item) => item.username === olUser.username,
+                                (item) =>
+                                  item.username === olUser.username,
                               )
                                 ? addfriend(olUser)
                                 : dropfriend(olUser.username);

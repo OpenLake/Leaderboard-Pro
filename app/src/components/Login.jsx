@@ -13,7 +13,9 @@ const Login = ({ darkmode }) => {
         marginTop: "4rem",
       }}
     >
-      <div style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}>
+      <div
+        style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}
+      >
         <SignIn loginUser={loginUser} googleAuth={SignInWithGoogle} />
       </div>
     </div>

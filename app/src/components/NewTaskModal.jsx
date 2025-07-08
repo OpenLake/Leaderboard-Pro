@@ -21,7 +21,9 @@ const NewTaskModal = ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: darkmode ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0.4)",
+    backgroundColor: darkmode
+      ? "rgba(0, 0, 0, 0.8)"
+      : "rgba(0, 0, 0, 0.4)",
     zIndex: 1000,
     display: "flex",
     alignItems: "center",
@@ -97,13 +99,17 @@ const NewTaskModal = ({
           type="text"
           placeholder="Task Title"
           value={newTask.text}
-          onChange={(e) => setNewTask({ ...newTask, text: e.target.value })}
+          onChange={(e) =>
+            setNewTask({ ...newTask, text: e.target.value })
+          }
           style={inputStyle}
         />
         <textarea
           placeholder="Description (optional)"
           value={newTask.details}
-          onChange={(e) => setNewTask({ ...newTask, details: e.target.value })}
+          onChange={(e) =>
+            setNewTask({ ...newTask, details: e.target.value })
+          }
           style={{ ...inputStyle, height: "80px", resize: "vertical" }}
         />
         <div style={{ display: "flex", justifyContent: "space-between" }}>

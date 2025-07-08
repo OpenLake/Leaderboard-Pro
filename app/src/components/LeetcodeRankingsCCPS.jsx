@@ -157,7 +157,9 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
             >
               <TableHead>
                 <TableRow
-                  style={{ backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC" }}
+                  style={{
+                    backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC",
+                  }}
                 >
                   <StyledTableCell
                     className={classes.tableCell}

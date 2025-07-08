@@ -6,7 +6,9 @@ const Jumotron = () => {
       <h1 className="display-3">Community</h1>
       <p className="lead">We &lt;3 people who code!</p>
       <hr className="my-4" />
-      <p className="lead">A disscussion forum for enthusiastic developers.</p>
+      <p className="lead">
+        A disscussion forum for enthusiastic developers.
+      </p>
     </div>
   );
 };
