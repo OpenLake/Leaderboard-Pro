@@ -4,6 +4,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { Button as NewButton } from "@/components/ui/button.jsx";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
@@ -115,6 +116,8 @@ const items = [
 ];
 const links = ["Openlake", "Github", "LeetCode", "Codeforces", "Codechef"];
 export const NewNavbar = () => {
+  const navigate = useNavigate();
+  const { user, logoutUser } = useAuth();
   return (
     <Sidebar>
       <SidebarHeader>Leaderboard Pro</SidebarHeader>
@@ -127,7 +130,7 @@ export const NewNavbar = () => {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
+                  <SidebarMenuButton asChild>
                     <Link to={item.url}>
                       <item.icon className="mr-1 inline-flex" />
                       <span>{item.title}</span>
@@ -148,7 +151,7 @@ export const NewNavbar = () => {
                 var linkLower = link.toLowerCase();
                 return (
                   <SidebarMenuItem key={link}>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton asChild>
                       <Link to={linkLower}>
                         <img
                           src={`icons/${linkLower}.svg`}
@@ -164,7 +167,17 @@ export const NewNavbar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>Hello World</SidebarFooter>
+      <SidebarFooter>
+        {(user ?? false) ? (
+          <NewButton className="" onClick={logoutUser}>
+            Logout
+          </NewButton>
+        ) : (
+          <NewButton className="" onClick={() => navigate("/login")}>
+            Login
+          </NewButton>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 };
