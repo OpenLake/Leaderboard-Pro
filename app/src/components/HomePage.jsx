@@ -2,7 +2,6 @@ const HomePage = () => {
   return (
     <div
       style={{
-        marginTop: "9vh",
         textAlign: "center",
         display: "flex",
         flexDirection: "column",

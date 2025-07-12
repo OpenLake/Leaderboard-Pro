@@ -4,6 +4,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { Button as NewButton } from "@/components/ui/button.jsx";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
@@ -21,6 +22,27 @@ import LeetcodeRankingsLogo from "../icons/leetcodecontest.png";
 import CCPS from "../icons/CCPS.jpeg";
 import { useMediaQuery } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+  SidebarFooter,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "./ui/sidebar";
+import {
+  Calendar,
+  Home,
+  ChartColumn,
+  Trophy,
+  Users,
+  Award,
+  User,
+} from "lucide-react";
 
 const PREFIX = "Navbar";
 
@@ -59,6 +81,106 @@ const Root = styled("div")(({ theme }) => ({
     },
   },
 }));
+const items = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: Home,
+  },
+  {
+    title: "Leaderboards",
+    url: "/",
+    icon: Trophy,
+  },
+  {
+    title: "Analytics",
+    url: "/",
+    icon: ChartColumn,
+  },
+  {
+    title: "Friends",
+    url: "/",
+    icon: Users,
+  },
+  {
+    title: "Contests",
+    url: "/",
+    icon: Calendar,
+  },
+  {
+    title: "Achievements",
+    url: "/",
+    icon: Award,
+  },
+  { title: "Profile", url: "profile", icon: User },
+];
+const links = ["Openlake", "Github", "LeetCode", "Codeforces", "Codechef"];
+export const NewNavbar = () => {
+  const navigate = useNavigate();
+  const { user, logoutUser } = useAuth();
+  return (
+    <Sidebar>
+      <SidebarHeader>Leaderboard Pro</SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xl font-extrabold">
+            Navigation
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.url}>
+                      <item.icon className="mr-1 inline-flex" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xl font-extrabold">
+            Leaderboards
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {links.map((link) => {
+                var linkLower = link.toLowerCase();
+                return (
+                  <SidebarMenuItem key={link}>
+                    <SidebarMenuButton asChild>
+                      <Link to={linkLower}>
+                        <img
+                          src={`icons/${linkLower}.svg`}
+                          className="mr-2 inline-flex h-5 w-5"
+                        />
+                        <span>{link}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        {(user ?? false) ? (
+          <NewButton className="" onClick={logoutUser}>
+            Logout
+          </NewButton>
+        ) : (
+          <NewButton className="" onClick={() => navigate("/login")}>
+            Login
+          </NewButton>
+        )}
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
 
 export const Navbar = ({ darkmode, toggle }) => {
   const navigate = useNavigate();
