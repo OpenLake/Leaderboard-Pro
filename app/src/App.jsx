@@ -7,7 +7,7 @@ import {
   adaptV4Theme,
 } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Navbar, NewNavbar } from "./components/Navbar.jsx";
+import { Navbar } from "./components/Navbar.jsx";
 import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
@@ -111,19 +111,6 @@ function App() {
   const [ghshowfriends, setGhshowfriends] = useState(false);
   const [openlakefriends, setOpenlakefriends] = useState([]);
   const [olshowfriends, setOlshowfriends] = useState(false);
-  const toggle = () => {
-    setDarkmode(!darkmode);
-    const g = localStorage.getItem("dark-mode");
-    if (g === "off") localStorage.setItem("dark-mode", "on");
-    else localStorage.setItem("dark-mode", "off");
-  };
-  useEffect(() => {
-    const dm = localStorage.getItem("dark-mode");
-    if (dm != null) {
-      if (dm === "on") setDarkmode(true);
-      else setDarkmode(false);
-    }
-  }, []);
   useEffect(() => {
     fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
@@ -169,10 +156,9 @@ function App() {
         <Router>
           <AuthProvider>
             <SidebarProvider>
-              <NewNavbar />
+              <Navbar />
               <div className="App">
                 <SidebarTrigger />
-                {/* <Navbar darkmode={darkmode} toggle={toggle} /> */}
                 <Routes>
                   <Route
                     exact
