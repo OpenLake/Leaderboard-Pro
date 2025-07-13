@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { useSidebar } from "./ui/sidebar";
 
 const PREFIX = "LeetcodeRankingsCCPS";
 
@@ -43,6 +44,7 @@ const Root = styled("div")({
 const LeetcodeRankingsCCPS = ({ darkmode }) => {
   const [contestId, setContestId] = useState("");
   const [rankings, setRankings] = useState([]);
+  const { open } = useSidebar();
 
   const handleContestIdChange = (event) => {
     const selectedContest = event.target.value;
@@ -104,7 +106,7 @@ const LeetcodeRankingsCCPS = ({ darkmode }) => {
           display: "flex",
           justifyContent: "center",
           marginTop: "9vh",
-          width: "99vw",
+          width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
           flexShrink: "0",
         }}
       >

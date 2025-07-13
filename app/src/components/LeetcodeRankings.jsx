@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useSidebar } from "./ui/sidebar";
 
 const LeetcodeRankings = ({ darkmode }) => {
+  const { open } = useSidebar();
   const [contestId, setContestId] = useState("");
   // const [usernames, setUsernames] = useState([]);
   const [rankings, setRankings] = useState([]);
@@ -39,7 +41,13 @@ const LeetcodeRankings = ({ darkmode }) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ marginTop: "100px" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          marginTop: "100px",
+          width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        }}
+      >
         <label style={{ display: "block", marginBottom: "10px" }}>
           Contest ID:
           <input

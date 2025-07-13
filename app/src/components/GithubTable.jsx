@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
+import { useSidebar } from "./ui/sidebar";
 
 const PREFIX = "GithubTable";
 
@@ -72,6 +73,7 @@ export const GithubTable = ({
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
+  const { open } = useSidebar();
   const getghfriends = async () => {
     const response = await fetch(BACKEND + "/githubFL/", {
       method: "GET",
@@ -179,7 +181,7 @@ export const GithubTable = ({
           position: "relative",
           marginBottom: "10px",
           alignItems: "center",
-          width: "100vw",
+          width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
         }}
       >
         <TextField
