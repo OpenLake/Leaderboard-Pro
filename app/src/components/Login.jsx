@@ -4,13 +4,16 @@ import { useSidebar } from "./ui/sidebar";
 
 const Login = ({ darkmode }) => {
   let { SignInWithGoogle, loginUser } = useAuth();
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   return (
     <div
       style={{
         position: "absolute",
         backgroundColor: darkmode ? "black" : "",
-        width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
         height: "93vh",
         marginTop: "4rem",
       }}

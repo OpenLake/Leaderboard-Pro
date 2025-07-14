@@ -16,7 +16,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
-import useScreenWidth from "../hooks/useScreeWidth";
 import { useSidebar } from "./ui/sidebar";
 
 const PREFIX = "GithubTable";
@@ -73,7 +72,7 @@ export const GithubTable = ({
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   const getghfriends = async () => {
     const response = await fetch(BACKEND + "/githubFL/", {
       method: "GET",
@@ -167,8 +166,6 @@ export const GithubTable = ({
 
   const StyledTableCell = TableCell;
 
-  const isMobile = useScreenWidth(786);
-
   return (
     <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
@@ -181,7 +178,10 @@ export const GithubTable = ({
           position: "relative",
           marginBottom: "10px",
           alignItems: "center",
-          width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+          width:
+            open && !isMobile
+              ? "calc(100vw - var(--sidebar-width))"
+              : "100vw",
         }}
       >
         <TextField
