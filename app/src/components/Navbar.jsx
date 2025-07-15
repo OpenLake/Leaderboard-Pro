@@ -110,13 +110,9 @@ export const Navbar = () => {
       </SidebarContent>
       <SidebarFooter>
         {(user ?? false) ? (
-          <Button className="" onClick={logoutUser}>
-            Logout
-          </Button>
+          <Button onClick={logoutUser}>Logout</Button>
         ) : (
-          <Button className="" onClick={() => navigate("/login")}>
-            Login
-          </Button>
+          <Button onClick={() => navigate("/login")}>Login</Button>
         )}
       </SidebarFooter>
     </Sidebar>
