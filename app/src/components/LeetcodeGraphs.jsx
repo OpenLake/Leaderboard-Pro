@@ -10,7 +10,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
   const [options, setOptions] = useState({});
   const [series, setSeries] = useState([]);
   const [contestID, setContestID] = useState([]);
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -94,7 +94,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     <div
       style={{
         marginTop: "100px",
-        width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        width: open && !isMobile ? "calc(100vw - var(--sidebar-width))" : "100vw",
       }}
     >
       {username}
