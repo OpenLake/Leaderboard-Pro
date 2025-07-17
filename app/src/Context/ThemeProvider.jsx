@@ -28,6 +28,7 @@ export function ThemeProvider({
         : "light";
 
       root.classList.add(systemTheme);
+      setTheme(systemTheme); // extra line added for ease of future improvements with system theme
       return;
     }
 

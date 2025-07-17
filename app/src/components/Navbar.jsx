@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import { useTheme } from "@/Context/ThemeProvider";
 import {
   Sidebar,
   SidebarHeader,
@@ -12,7 +13,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "./ui/sidebar";
+} from "@/components/ui/sidebar";
+import { Switch } from "@/components/ui/switch";
 import {
   Calendar,
   Home,
@@ -21,6 +23,8 @@ import {
   Users,
   Award,
   User,
+  Sun,
+  Moon,
 } from "lucide-react";
 const items = [
   {
@@ -59,9 +63,24 @@ const links = ["Openlake", "Github", "LeetCode", "Codeforces", "Codechef"];
 export const Navbar = () => {
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
+  const { setTheme, theme } = useTheme();
   return (
     <Sidebar>
-      <SidebarHeader>Leaderboard Pro</SidebarHeader>
+      <SidebarHeader className="flex-row justify-between">
+        Leaderboard Pro
+        <div className="flex flex-row gap-1">
+          <Sun className="h-5 w-5" />
+          <Switch
+            className="h-5"
+            checked={theme == "dark"}
+            onCheckedChange={(val) => {
+              if (val) setTheme("dark");
+              else setTheme("light");
+            }}
+          />
+          <Moon className="h-5 w-5" />
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xl font-extrabold">
