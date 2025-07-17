@@ -1,6 +1,6 @@
 import SignIn from "./SignIn.jsx";
 import { useAuth } from "../Context/AuthContext.jsx";
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const Login = ({ darkmode }) => {
   let { SignInWithGoogle, loginUser } = useAuth();

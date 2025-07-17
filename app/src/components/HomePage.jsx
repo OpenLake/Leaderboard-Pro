@@ -1,4 +1,4 @@
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 const HomePage = () => {
   const { open, isMobile } = useSidebar();
   return (

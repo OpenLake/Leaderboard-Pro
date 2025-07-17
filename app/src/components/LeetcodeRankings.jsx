@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const LeetcodeRankings = ({ darkmode }) => {
   const { open, isMobile } = useSidebar();
