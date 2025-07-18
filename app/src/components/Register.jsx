@@ -1,15 +1,18 @@
 import SignUp from "./SignUp.jsx";
 import { useAuth } from "../Context/AuthContext.jsx";
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 const Register = ({ darkmode }) => {
   let { SignUpWithGoogle, registerUser } = useAuth();
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   return (
     <div
       style={{
         position: "absolute",
         backgroundColor: darkmode ? "black" : "",
-        width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
         height: "93vh",
       }}
     >

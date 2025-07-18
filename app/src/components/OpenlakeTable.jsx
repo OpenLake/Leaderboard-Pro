@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
 import useScreenWidth from "../hooks/useScreeWidth";
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const PREFIX = "OpenlakeTable";
 
@@ -72,7 +72,7 @@ export const OpenlakeTable = ({
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   const getccfriends = async () => {
     const response = await fetch(BACKEND + "/openlakeFL/", {
       method: "GET",
@@ -165,7 +165,6 @@ export const OpenlakeTable = ({
   }, [searchfield, todisplayusers]);
 
   const StyledTableCell = TableCell;
-  const isMobile = useScreenWidth(786);
 
   return (
     <Root
@@ -179,7 +178,10 @@ export const OpenlakeTable = ({
           position: "relative",
           marginBottom: "10px",
           alignItems: "center",
-          width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+          width:
+            open && !isMobile
+              ? "calc(100vw - var(--sidebar-width))"
+              : "100vw",
         }}
       >
         <TextField

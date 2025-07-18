@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const LeetcodeGraphs = ({ darkmode }) => {
   const { username } = useParams();
@@ -10,7 +10,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
   const [options, setOptions] = useState({});
   const [series, setSeries] = useState([]);
   const [contestID, setContestID] = useState([]);
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -94,7 +94,7 @@ const LeetcodeGraphs = ({ darkmode }) => {
     <div
       style={{
         marginTop: "100px",
-        width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        width: open && !isMobile ? "calc(100vw - var(--sidebar-width))" : "100vw",
       }}
     >
       {username}

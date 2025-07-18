@@ -1,6 +1,6 @@
-import { useSidebar } from "./ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 const HomePage = () => {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   return (
     <div
       style={{
@@ -8,7 +8,10 @@ const HomePage = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        width: open ? "calc(100vw - var(--sidebar-width))" : "100vw",
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
       }}
     >
       <h1>LeaderBoard-Pro</h1>

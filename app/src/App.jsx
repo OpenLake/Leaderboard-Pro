@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import {
-  ThemeProvider,
-  StyledEngineProvider,
-  createTheme,
-  adaptV4Theme,
-} from "@mui/material/styles";
+import { StyledEngineProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Navbar } from "./components/Navbar.jsx";
 import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
@@ -30,69 +25,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "./components/ui/sidebar.jsx";
-const darkTheme = createTheme(
-  adaptV4Theme({
-    palette: {
-      mode: "dark",
-    },
-    components: {
-      MuiCssBaseline: {
-        styleOverrides: {
-          body: {
-            scrollbarColor: "#686868 #686868",
-            "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-              backgroundColor: "#424242",
-            },
-            "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-              borderRadius: 20,
-              backgroundColor: "#636363",
-              minHeight: 15,
-            },
-            "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
-              {
-                backgroundColor: "#4F4F4F",
-              },
-            "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
-              backgroundColor: "#686868",
-            },
-          },
-        },
-      },
-    },
-  }),
-);
-
-const lightTheme = createTheme(
-  adaptV4Theme({
-    palette: {
-      mode: "light",
-    },
-    components: {
-      MuiCssBaseline: {
-        styleOverrides: {
-          body: {
-            scrollbarColor: "#C1C1C1 #C1C1C1",
-            "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-              backgroundColor: "#F1F1F1",
-            },
-            "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-              borderRadius: 20,
-              backgroundColor: "#C1C1C1",
-              minHeight: 15,
-            },
-            "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
-              {
-                backgroundColor: "#B5B5B5",
-              },
-            "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
-              backgroundColor: "#C1C1C1",
-            },
-          },
-        },
-      },
-    },
-  }),
-);
+import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
@@ -151,7 +84,7 @@ function App() {
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={darkmode ? darkTheme : lightTheme}>
+      <ThemeProvider defaultTheme="dark">
         <CssBaseline />
         <Router>
           <AuthProvider>
