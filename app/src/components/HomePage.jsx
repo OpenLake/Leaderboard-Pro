@@ -9,6 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
   Trophy,
   Code2,
   Target,
@@ -25,28 +31,28 @@ function Cards(usernames) {
     {
       title: "Overall Rank",
       icon: Trophy,
-      info: `#${rank}`,
+      info: `#${rank ?? "N/A"}`,
       change: 100,
       suffix: "Among all users",
     },
     {
       title: "Codeforces Rating",
       icon: Code2,
-      info: `${usernames.codeforces.rating}`,
+      info: `${usernames.codeforces.rating ?? "N/A"}`,
       change: 100,
       suffix: "Title",
     },
     {
       title: "LeetCode Problems",
       icon: Target,
-      info: `${usernames.leetcode.total_solved}`,
+      info: `${usernames.leetcode.total_solved ?? "N/A"}`,
       change: -100,
       suffix: "This month",
     },
     {
       title: "Github Contributions",
       icon: GitBranch,
-      info: `${usernames.github.contributions}`,
+      info: `${usernames.github.contributions ?? "N/A"}`,
       change: 100,
       suffix: "This year",
     },
@@ -75,10 +81,12 @@ function Cards(usernames) {
               >
                 {info.change > 0 ? (
                   <>
-                    <ArrowUpRight className="inline-flex w-4" />+
+                    <ArrowUpRight className="inline-flex w-4" /> +
                   </>
                 ) : (
-                  <ArrowDownRight className="inline-flex w-4" />
+                  <>
+                    <ArrowDownRight className="inline-flex w-4" />{" "}
+                  </>
                 )}
                 {info.change}
               </span>{" "}
@@ -87,6 +95,71 @@ function Cards(usernames) {
           </CardFooter>
         </Card>
       ))}
+    </div>
+  );
+}
+function Overview() {
+  return (
+    <div className="flex size-full justify-center">
+      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
+    </div>
+  );
+}
+function Analytics() {
+  return (
+    <div className="flex size-full justify-center">
+      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
+    </div>
+  );
+}
+function Leaderboards() {
+  return (
+    <div className="flex size-full justify-center">
+      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
+    </div>
+  );
+}
+function Friends() {
+  return (
+    <div className="flex size-full justify-center">
+      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
+    </div>
+  );
+}
+function TabsView() {
+  const tabs = [
+    { title: "Overview", comp: Overview },
+    { title: "Analytics", comp: Analytics },
+    { title: "Leaderboards", comp: Leaderboards },
+    { title: "Friends", comp: Friends },
+  ];
+  tabs.map((item) => console.log(item));
+  return (
+    <div className="grow">
+      <Tabs
+        defaultValue={tabs[0].title.toLowerCase()}
+        className="h-full w-full"
+      >
+        <TabsList className="w-[100%]">
+          {tabs.map((item) => (
+            <TabsTrigger
+              value={item.title.toLowerCase()}
+              key={item.title.toLowerCase()}
+            >
+              {item.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {tabs.map((item) => (
+          <TabsContent
+            key={item.title.toLowerCase()}
+            value={item.title.toLowerCase()}
+            className="h-full"
+          >
+            <item.comp />
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 }
@@ -107,6 +180,7 @@ const HomePage = () => {
         Welcome back, {userNames.username}
       </div>
       <Cards usernames={userNames} />
+      <TabsView />
     </div>
   );
 };
