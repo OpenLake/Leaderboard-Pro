@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { StyledEngineProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import { Navbar } from "./components/Navbar.jsx";
 import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
@@ -83,167 +81,164 @@ function App() {
   }, []);
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider defaultTheme="dark">
-        <CssBaseline />
-        <Router>
-          <AuthProvider>
-            <SidebarProvider>
-              <Navbar />
-              <div className="App">
-                <SidebarTrigger />
-                <Routes>
-                  <Route
-                    exact
-                    path="/register"
-                    element={<Register darkmode={darkmode} />}
-                  />
-                  <Route
-                    exact
-                    path="/login"
-                    element={<Login darkmode={darkmode} />}
-                  />
-                  <Route
-                    exact
-                    path="/leetcoderankingsccps"
-                    element={<LeetcodeRankingsCCPS darkmode={darkmode} />}
-                  />
-                  <Route
-                    exact
-                    path="/"
-                    element={
-                      <PrivateRoute>
-                        <HomePage />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/codeforces"
-                    element={
-                      <PrivateRoute>
-                        <CodeforcesTable
-                          darkmode={darkmode}
-                          codeforcesfriends={codeforcesfriends}
-                          setCodeforcesfriends={setCodeforcesfriends}
-                          codeforcesUsers={codeforcesUsers}
-                          cfshowfriends={cfshowfriends}
-                          setCfshowfriends={setCfshowfriends}
-                        />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/codechef"
-                    element={
-                      <PrivateRoute>
-                        <CodechefTable
-                          darkmode={darkmode}
-                          codechefUsers={codechefUsers}
-                          codecheffriends={codecheffriends}
-                          setCodecheffriends={setCodecheffriends}
-                          ccshowfriends={ccshowfriends}
-                          setCCshowfriends={setCCshowfriends}
-                        />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/openlake"
-                    element={
-                      <PrivateRoute>
-                        <OpenlakeTable
-                          darkmode={darkmode}
-                          codechefUsers={openlakeContributor}
-                          codecheffriends={openlakefriends}
-                          setCodecheffriends={setOpenlakefriends}
-                          ccshowfriends={olshowfriends}
-                          setCCshowfriends={setOlshowfriends}
-                        />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/github"
-                    element={
-                      <PrivateRoute>
-                        <GithubTable
-                          darkmode={darkmode}
-                          githubUsers={githubUser}
-                          githubfriends={githubfriends}
-                          setGithubfriends={setGithubfriends}
-                          ghshowfriends={ghshowfriends}
-                          setGHshowfriends={setGhshowfriends}
-                        />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/leetcode"
-                    element={
-                      <PrivateRoute>
-                        <LeetcodeTable
-                          darkmode={darkmode}
-                          leetcodeUsers={leetcodeUsers}
-                          leetcodefriends={leetcodefriends}
-                          setLeetcodefriends={setLeetcodefriends}
-                          ltshowfriends={ltshowfriends}
-                          setLTshowfriends={setLtshowfriends}
-                        />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/profile"
-                    element={
-                      <PrivateRoute>
-                        <Profile darkmode={darkmode} />-
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/leetcoderankings"
-                    element={
-                      <PrivateRoute>
-                        <LeetcodeRankings darkmode={darkmode} />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/leetcoderanking/:username"
-                    element={
-                      <PrivateRoute>
-                        <LeetcodeGraphs darkmode={darkmode} />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    exact
-                    path="/dashboard"
-                    element={
-                      <PrivateRoute>
-                        <Dashboard />
-                      </PrivateRoute>
-                    }
-                  />
-                  {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
-                  <Route exact path="/*" element={<HomePage />} />
-                </Routes>
-                <GoToTop />
-                <Footer />
-              </div>
-            </SidebarProvider>
-          </AuthProvider>
-        </Router>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider defaultTheme="dark">
+      <Router>
+        <AuthProvider>
+          <SidebarProvider>
+            <Navbar />
+            <div className="App bg-background">
+              <SidebarTrigger className="text-foreground" />
+              <Routes>
+                <Route
+                  exact
+                  path="/register"
+                  element={<Register darkmode={darkmode} />}
+                />
+                <Route
+                  exact
+                  path="/login"
+                  element={<Login darkmode={darkmode} />}
+                />
+                <Route
+                  exact
+                  path="/leetcoderankingsccps"
+                  element={<LeetcodeRankingsCCPS darkmode={darkmode} />}
+                />
+                <Route
+                  exact
+                  path="/"
+                  element={
+                    <PrivateRoute>
+                      <HomePage />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/codeforces"
+                  element={
+                    <PrivateRoute>
+                      <CodeforcesTable
+                        darkmode={darkmode}
+                        codeforcesfriends={codeforcesfriends}
+                        setCodeforcesfriends={setCodeforcesfriends}
+                        codeforcesUsers={codeforcesUsers}
+                        cfshowfriends={cfshowfriends}
+                        setCfshowfriends={setCfshowfriends}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/codechef"
+                  element={
+                    <PrivateRoute>
+                      <CodechefTable
+                        darkmode={darkmode}
+                        codechefUsers={codechefUsers}
+                        codecheffriends={codecheffriends}
+                        setCodecheffriends={setCodecheffriends}
+                        ccshowfriends={ccshowfriends}
+                        setCCshowfriends={setCCshowfriends}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/openlake"
+                  element={
+                    <PrivateRoute>
+                      <OpenlakeTable
+                        darkmode={darkmode}
+                        codechefUsers={openlakeContributor}
+                        codecheffriends={openlakefriends}
+                        setCodecheffriends={setOpenlakefriends}
+                        ccshowfriends={olshowfriends}
+                        setCCshowfriends={setOlshowfriends}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/github"
+                  element={
+                    <PrivateRoute>
+                      <GithubTable
+                        darkmode={darkmode}
+                        githubUsers={githubUser}
+                        githubfriends={githubfriends}
+                        setGithubfriends={setGithubfriends}
+                        ghshowfriends={ghshowfriends}
+                        setGHshowfriends={setGhshowfriends}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/leetcode"
+                  element={
+                    <PrivateRoute>
+                      <LeetcodeTable
+                        darkmode={darkmode}
+                        leetcodeUsers={leetcodeUsers}
+                        leetcodefriends={leetcodefriends}
+                        setLeetcodefriends={setLeetcodefriends}
+                        ltshowfriends={ltshowfriends}
+                        setLTshowfriends={setLtshowfriends}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile darkmode={darkmode} />-
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/leetcoderankings"
+                  element={
+                    <PrivateRoute>
+                      <LeetcodeRankings darkmode={darkmode} />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/leetcoderanking/:username"
+                  element={
+                    <PrivateRoute>
+                      <LeetcodeGraphs darkmode={darkmode} />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
+                <Route exact path="/*" element={<HomePage />} />
+              </Routes>
+              <GoToTop />
+              <Footer />
+            </div>
+          </SidebarProvider>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 export default App;
