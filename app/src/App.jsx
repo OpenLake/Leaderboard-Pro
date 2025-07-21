@@ -24,6 +24,7 @@ import {
   SidebarTrigger,
 } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
+import { NavMenu } from "./components/NavMenu";
 const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
@@ -87,7 +88,7 @@ function App() {
           <SidebarProvider>
             <Navbar />
             <div className="App bg-background">
-              <SidebarTrigger className="text-foreground" />
+              <NavMenu />
               <Routes>
                 <Route
                   exact
