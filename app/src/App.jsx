@@ -87,7 +87,7 @@ function App() {
         <AuthProvider>
           <SidebarProvider>
             <Navbar />
-            <div className="App bg-background">
+            <div className="App bg-background w-full">
               <NavMenu />
               <Routes>
                 <Route
