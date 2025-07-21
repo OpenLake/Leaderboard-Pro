@@ -57,7 +57,6 @@ const items = [
     url: "/",
     icon: Award,
   },
-  { title: "Profile", url: "profile", icon: User },
 ];
 const links = ["Openlake", "Github", "LeetCode", "Codeforces", "Codechef"];
 export const Navbar = () => {
@@ -68,18 +67,6 @@ export const Navbar = () => {
     <Sidebar>
       <SidebarHeader className="flex-row justify-between">
         Leaderboard Pro
-        <div className="flex flex-row gap-1">
-          <Sun className="h-5 w-5" />
-          <Switch
-            className="h-5"
-            checked={theme == "dark"}
-            onCheckedChange={(val) => {
-              if (val) setTheme("dark");
-              else setTheme("light");
-            }}
-          />
-          <Moon className="h-5 w-5" />
-        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
