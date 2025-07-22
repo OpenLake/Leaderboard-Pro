@@ -1,42 +1,15 @@
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
+import { Button } from "@/components/ui/button";
 
 const Footer = () => {
-  function Copyright(props) {
-    return (
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="center"
-        style={{ color: "white" }}
-        {...props}
-      >
-        {"Copyright © "}
-        <Link
-          color="inherit"
-          href="https://github.com/OpenLake/Leaderboard-Pro/"
-        >
-          LeaderBoard-Pro
-        </Link>{" "}
-        {new Date().getFullYear()}
-        {"."}
-      </Typography>
-    );
-  }
-
   return (
-    <div
-      style={{
-        backgroundColor: "#1976d2",
-        padding: "0.5rem",
-        color: "white",
-        position: "fixed",
-        bottom: 0, // Align to the bottom
-        left: 0, // Optional, align to the left
-        right: 0, // Optional, align to the right
-      }}
-    >
-      <Copyright />
+    <div className="text-foreground bg-accent flex h-8 justify-center">
+      <span>Copyright ©</span>
+      <Button variant="link" className="h-fit px-2 py-0.5" asChild>
+        <a href="https://github.com/OpenLake/Leaderboard-Pro/">
+          LeaderBoard-Pro
+        </a>
+      </Button>
+      {`${new Date().getFullYear().toString()}.`}
     </div>
   );
 };
