@@ -16,7 +16,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
-import useScreenWidth from "../hooks/useScreeWidth";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const PREFIX = "CodechefTable";
 
@@ -67,6 +67,7 @@ export const CodechefTable = ({
   ccshowfriends,
   setCCshowfriends,
 }) => {
+  const { open, isMobile } = useSidebar();
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -163,8 +164,6 @@ export const CodechefTable = ({
   }, [searchfield, todisplayusers]);
   const StyledTableCell = TableCell;
 
-  const isMobile = useScreenWidth(786);
-
   return (
     <Root
       className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
@@ -177,7 +176,10 @@ export const CodechefTable = ({
           position: "relative",
           marginBottom: "10px",
           alignItems: "center",
-          width: "100vw",
+          width:
+            open && !isMobile
+              ? "calc(100vw - var(--sidebar-width))"
+              : "100vw",
         }}
       >
         <TextField
