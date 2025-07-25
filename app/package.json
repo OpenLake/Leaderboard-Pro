@@ -93,6 +93,7 @@
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tw-animate-css": "^1.3.5",
     "vite": "^7.0.0",
-    "vite-plugin-eslint": "^1.8.1"
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }
