@@ -26,6 +26,11 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import Openlake from "@/icons/openlake.svg?react";
+import Github from "@/icons/github.svg?react";
+import LeetCode from "@/icons/leetcode.svg?react";
+import Codeforces from "@/icons/codeforces.svg?react";
+import Codechef from "@/icons/codechef.svg?react";
 const items = [
   {
     title: "Dashboard",
@@ -58,7 +63,13 @@ const items = [
     icon: Award,
   },
 ];
-const links = ["Openlake", "Github", "LeetCode", "Codeforces", "Codechef"];
+const links = [
+  { title: "Openlake", icon: Openlake },
+  { title: "Github", icon: Github },
+  { title: "LeetCode", icon: LeetCode },
+  { title: "Codeforces", icon: Codeforces },
+  { title: "Codechef", icon: Codechef },
+];
 export const Navbar = () => {
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
@@ -95,16 +106,13 @@ export const Navbar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {links.map((link) => {
-                var linkLower = link.toLowerCase();
+                var linkLower = link.title.toLowerCase();
                 return (
-                  <SidebarMenuItem key={link}>
+                  <SidebarMenuItem key={link.title}>
                     <SidebarMenuButton asChild>
                       <Link to={linkLower}>
-                        <img
-                          src={`icons/${linkLower}.svg`}
-                          className="mr-2 inline-flex h-5 w-5"
-                        />
-                        <span>{link}</span>
+                        <link.icon className="h-5 w-5 fill-black dark:fill-white" />
+                        <span>{link.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

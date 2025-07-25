@@ -23,6 +23,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
+import { cn } from "@/lib/utils";
 var rank = 0;
 
 function Cards(usernames) {
@@ -77,7 +78,11 @@ function Cards(usernames) {
           <CardFooter>
             <CardDescription>
               <span
-                className={`text-${info.change > 0 ? "green" : "red"}-600`}
+                className={
+                  info.change > 0
+                    ? cn("text-green-600")
+                    : cn("text-red-600")
+                }
               >
                 {info.change > 0 ? (
                   <>
