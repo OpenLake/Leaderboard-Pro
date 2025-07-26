@@ -6,7 +6,7 @@ import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { OpenlakeTable } from "./components/OpenlakeTable";
+import { OpenlakeTable, OLTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import HomePage from "./components/HomePage";
 import Register from "./components/Register";
@@ -151,14 +151,15 @@ function App() {
                   path="/openlake"
                   element={
                     <PrivateRoute>
-                      <OpenlakeTable
+                      {/* <OpenlakeTable
                         darkmode={darkmode}
                         codechefUsers={openlakeContributor}
                         codecheffriends={openlakefriends}
                         setCodecheffriends={setOpenlakefriends}
                         ccshowfriends={olshowfriends}
                         setCCshowfriends={setOlshowfriends}
-                      />
+                      /> */}
+                      <OLTable OLUsers={openlakeContributor} />
                     </PrivateRoute>
                   }
                 />

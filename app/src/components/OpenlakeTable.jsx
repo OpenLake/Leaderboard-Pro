@@ -15,8 +15,10 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import Button from "@mui/material/Button";
+import { Button as NewButton } from "@/components/ui/button";
 import useScreenWidth from "../hooks/useScreeWidth";
 import { useSidebar } from "@/components/ui/sidebar";
+import { DataTable } from "./ui/data-table";
 
 const PREFIX = "OpenlakeTable";
 
@@ -60,7 +62,142 @@ const Root = styled("div")({
 });
 
 const BACKEND = import.meta.env.VITE_BACKEND;
+export function OLTable({ OLUsers }) {
+  console.log(OLUsers);
+  const [searchfield, setSearchfield] = useState("");
+  const [filteredusers, setFilteredusers] = useState([]);
+  const [todisplayusers, setTodisplayusers] = useState([]);
+  const [OLFriends, setOLFriends] = useState([]);
+  const [showOLFriends, setShowOLFriends] = useState(false);
+  const { open, isMobile } = useSidebar();
+  const columns = [
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return (
+          <NewButton variant="link" asChild>
+            <a
+              href={`https://github.com/${username}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {username}
+            </a>
+          </NewButton>
+        );
+      },
+    },
+    {
+      accessorKey: "contributions",
+      header: "Contributions",
+    },
+  ];
+  const getccfriends = async () => {
+    const response = await fetch(BACKEND + "/openlakeFL/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
+      },
+    });
 
+    const newData = await response.json();
+    setOLFriends(newData);
+  };
+
+  async function addfriend(e) {
+    const response = await fetch(BACKEND + "/openlakeFA/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
+      },
+      body: JSON.stringify({
+        friendName: e.username,
+      }),
+    });
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
+      setOLFriends((current) => [...current, e]);
+    }
+  }
+  async function dropfriend(e) {
+    const response = await fetch(BACKEND + "/openlakeFD/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " +
+          JSON.parse(localStorage.getItem("authTokens")).access,
+      },
+      body: JSON.stringify({
+        friendName: e,
+      }),
+    });
+    if (response.status !== 200) {
+      alert("ERROR!!!!");
+    } else {
+      setOLFriends((current) =>
+        current.filter((fruit) => fruit.username !== e),
+      );
+    }
+  }
+  useEffect(() => {
+    getccfriends();
+  }, []);
+
+  useEffect(() => {
+    if (showOLFriends) {
+      setTodisplayusers(OLFriends);
+    } else {
+      setTodisplayusers(OLUsers);
+    }
+    if (searchfield === "") {
+      setFilteredusers(todisplayusers);
+    } else {
+      setFilteredusers(
+        todisplayusers.filter((cfUser) => {
+          return cfUser.username
+            .toLowerCase()
+            .includes(searchfield.toLowerCase());
+        }),
+      );
+    }
+  }, [showOLFriends, OLFriends, searchfield, OLFriends]);
+  useEffect(() => {
+    if (searchfield === "") {
+      setFilteredusers(todisplayusers);
+    } else {
+      setFilteredusers(
+        todisplayusers.filter((cfUser) => {
+          return cfUser.username
+            .toLowerCase()
+            .includes(searchfield.toLowerCase());
+        }),
+      );
+    }
+  }, [searchfield, todisplayusers]);
+  return (
+    <div
+      className="h-full px-1.5 py-1"
+      style={{
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
+      }}
+    >
+      <DataTable data={OLUsers} columns={columns} />
+    </div>
+  );
+}
 export const OpenlakeTable = ({
   darkmode,
   codechefUsers,
