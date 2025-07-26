@@ -19,6 +19,7 @@ import { Button as NewButton } from "@/components/ui/button";
 import useScreenWidth from "../hooks/useScreeWidth";
 import { useSidebar } from "@/components/ui/sidebar";
 import { DataTable } from "./ui/data-table";
+import { Input } from "@/components/ui/input";
 
 const PREFIX = "OpenlakeTable";
 
@@ -214,6 +215,20 @@ export function OLTable({ OLUsers }) {
             : "100vw",
       }}
     >
+      <div className="flex flex-row justify-between p-0">
+        <Input
+          placeholder="Search OpenLake contributors..."
+          className="mb-2 w-[40%]"
+          onChange={(val) => setSearchfield(val.target.value)}
+          type="search"
+        />
+        <NewButton
+          variant="secondary"
+          onClick={() => setShowOLFriends(!showOLFriends)}
+        >
+          {showOLFriends ? "Show all users" : "Show friends"}
+        </NewButton>
+      </div>
       <DataTable data={filteredusers} columns={columns} />
     </div>
   );
