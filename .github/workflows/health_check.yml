@@ -1,6 +1,7 @@
 name: healthcheck
 
 on:
+  push:
   schedule:
     - cron: "*/12 * * * *"
 jobs:
