@@ -97,20 +97,24 @@ export function OLTable({ OLUsers }) {
       id: "actions",
       cell: ({ row }) => {
         const username = row.getValue("username");
-        return OLFriends.includes(username) ? (
-          <NewButton
-            variant="secondary"
-            onClick={() => dropfriend(username)}
-          >
-            Remove Friend
-          </NewButton>
-        ) : (
-          <NewButton
-            variant="secondary"
-            onClick={() => addfriend(username)}
-          >
-            Add Friend
-          </NewButton>
+        return (
+          <div className="flex justify-end">
+            {OLFriends.includes(username) ? (
+              <NewButton
+                variant="secondary"
+                onClick={() => dropfriend(username)}
+              >
+                Remove Friend
+              </NewButton>
+            ) : (
+              <NewButton
+                variant="secondary"
+                onClick={() => addfriend(username)}
+              >
+                Add Friend
+              </NewButton>
+            )}
+          </div>
         );
       },
     },
