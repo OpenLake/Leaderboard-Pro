@@ -63,7 +63,6 @@ const Root = styled("div")({
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 export function OLTable({ OLUsers }) {
-  console.log(OLUsers);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -93,6 +92,27 @@ export function OLTable({ OLUsers }) {
       accessorKey: "contributions",
       header: "Contributions",
     },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return OLFriends.includes(username) ? (
+          <NewButton
+            variant="secondary"
+            onClick={() => dropfriend(username)}
+          >
+            Remove Friend
+          </NewButton>
+        ) : (
+          <NewButton
+            variant="secondary"
+            onClick={() => addfriend(username)}
+          >
+            Add Friend
+          </NewButton>
+        );
+      },
+    },
   ];
   const getccfriends = async () => {
     const response = await fetch(BACKEND + "/openlakeFL/", {
@@ -119,7 +139,7 @@ export function OLTable({ OLUsers }) {
           JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        friendName: e.username,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
@@ -170,7 +190,7 @@ export function OLTable({ OLUsers }) {
         }),
       );
     }
-  }, [showOLFriends, OLFriends, searchfield, OLFriends]);
+  }, [showOLFriends, OLFriends, searchfield, OLUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -194,7 +214,7 @@ export function OLTable({ OLUsers }) {
             : "100vw",
       }}
     >
-      <DataTable data={OLUsers} columns={columns} />
+      <DataTable data={filteredusers} columns={columns} />
     </div>
   );
 }
