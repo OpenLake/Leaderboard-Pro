@@ -6,7 +6,7 @@ import { CodechefTable } from "./components/CodechefTable";
 import { GithubTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { OpenlakeTable, OLTable } from "./components/OpenlakeTable";
+import { OpenLakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import HomePage from "./components/HomePage";
 import Register from "./components/Register";
@@ -19,10 +19,7 @@ import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import Dashboard from "./components/discussion-forum/dashboard.jsx";
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from "./components/ui/sidebar.jsx";
+import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 const BACKEND = import.meta.env.VITE_BACKEND;
@@ -41,8 +38,6 @@ function App() {
   const [leetcodefriends, setLeetcodefriends] = useState([]);
   const [githubfriends, setGithubfriends] = useState([]);
   const [ghshowfriends, setGhshowfriends] = useState(false);
-  const [openlakefriends, setOpenlakefriends] = useState([]);
-  const [olshowfriends, setOlshowfriends] = useState(false);
   useEffect(() => {
     fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
@@ -151,15 +146,7 @@ function App() {
                   path="/openlake"
                   element={
                     <PrivateRoute>
-                      {/* <OpenlakeTable
-                        darkmode={darkmode}
-                        codechefUsers={openlakeContributor}
-                        codecheffriends={openlakefriends}
-                        setCodecheffriends={setOpenlakefriends}
-                        ccshowfriends={olshowfriends}
-                        setCCshowfriends={setOlshowfriends}
-                      /> */}
-                      <OLTable OLUsers={openlakeContributor} />
+                      <OpenLakeTable OLUsers={openlakeContributor} />
                     </PrivateRoute>
                   }
                 />
