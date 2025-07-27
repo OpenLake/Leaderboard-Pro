@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
-import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
+import {
+  CFTable,
+  CodeforcesTable,
+} from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
 import { GHTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
@@ -110,14 +113,15 @@ function App() {
                   path="/codeforces"
                   element={
                     <PrivateRoute>
-                      <CodeforcesTable
+                      {/* <CodeforcesTable
                         darkmode={darkmode}
                         codeforcesfriends={codeforcesfriends}
                         setCodeforcesfriends={setCodeforcesfriends}
                         codeforcesUsers={codeforcesUsers}
                         cfshowfriends={cfshowfriends}
                         setCfshowfriends={setCfshowfriends}
-                      />
+                      /> */}
+                      <CFTable codeforcesUsers={codeforcesUsers} />
                     </PrivateRoute>
                   }
                 />
