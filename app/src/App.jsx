@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
 import { CFTable } from "./components/CodeforcesTable.jsx";
-import { CCTable, CodechefTable } from "./components/CodechefTable";
+import { CCTable } from "./components/CodechefTable";
 import { GHTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -30,8 +30,6 @@ function App() {
   const [leetcodeUsers, setLeetcodeUsers] = useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
   const [githubUser, setGithubUser] = useState([]);
-  const [ccshowfriends, setCCshowfriends] = useState(false);
-  const [codecheffriends, setCodecheffriends] = useState([]);
   useEffect(() => {
     fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
@@ -117,14 +115,6 @@ function App() {
                   path="/codechef"
                   element={
                     <PrivateRoute>
-                      {/* <CodechefTable
-                        darkmode={darkmode}
-                        codechefUsers={codechefUsers}
-                        codecheffriends={codecheffriends}
-                        setCodecheffriends={setCodecheffriends}
-                        ccshowfriends={ccshowfriends}
-                        setCCshowfriends={setCCshowfriends}
-                      /> */}
                       <CCTable codechefUsers={codechefUsers} />
                     </PrivateRoute>
                   }
