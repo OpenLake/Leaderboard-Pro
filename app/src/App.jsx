@@ -3,7 +3,7 @@ import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
 import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
-import { GithubTable } from "./components/GithubTable";
+import { GithubTable, GHTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { OpenLakeTable } from "./components/OpenlakeTable";
@@ -155,14 +155,15 @@ function App() {
                   path="/github"
                   element={
                     <PrivateRoute>
-                      <GithubTable
+                      {/* <GithubTable
                         darkmode={darkmode}
                         githubUsers={githubUser}
                         githubfriends={githubfriends}
                         setGithubfriends={setGithubfriends}
                         ghshowfriends={ghshowfriends}
                         setGHshowfriends={setGhshowfriends}
-                      />
+                      /> */}
+                      <GHTable githubUsers={githubUser} />
                     </PrivateRoute>
                   }
                 />
