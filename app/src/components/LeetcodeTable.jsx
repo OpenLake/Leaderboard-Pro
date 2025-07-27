@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Button as NewButton } from "./ui/button";
+import { Button } from "./ui/button";
 import { DataTable } from "./ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "./ui/switch";
 import {
-  Avatar as NewAvatar,
+  Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
@@ -27,12 +27,12 @@ export function LCTable({ leetcodeUsers }) {
       cell: ({ row }) => {
         console.log(row.getValue("avatar"));
         return (
-          <NewAvatar>
+          <Avatar>
             <AvatarImage src={row.getValue("avatar")} />
             <AvatarFallback>
               <User />
             </AvatarFallback>
-          </NewAvatar>
+          </Avatar>
         );
       },
     },
@@ -42,7 +42,7 @@ export function LCTable({ leetcodeUsers }) {
       cell: ({ row }) => {
         const username = row.getValue("username");
         return (
-          <NewButton variant="link" asChild>
+          <Button variant="link" asChild>
             <a
               href={`https://github.com/${username}`}
               target="_blank"
@@ -50,7 +50,7 @@ export function LCTable({ leetcodeUsers }) {
             >
               {username}
             </a>
-          </NewButton>
+          </Button>
         );
       },
     },
@@ -81,19 +81,19 @@ export function LCTable({ leetcodeUsers }) {
         return (
           <div className="flex justify-end">
             {leetcodefriends.includes(username) ? (
-              <NewButton
+              <Button
                 variant="outline"
                 onClick={() => dropfriend(username)}
               >
                 Remove Friend
-              </NewButton>
+              </Button>
             ) : (
-              <NewButton
+              <Button
                 variant="secondary"
                 onClick={() => addfriend(username)}
               >
                 Add Friend
-              </NewButton>
+              </Button>
             )}
           </div>
         );
