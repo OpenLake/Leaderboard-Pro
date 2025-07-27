@@ -215,7 +215,7 @@ export function LCTable({ leetcodeUsers }) {
       </div>
       <DataTable
         data={filteredusers.sort((a, b) =>
-          a.contributions < b.contributions ? 1 : -1,
+          a.ranking > b.ranking ? 1 : -1,
         )}
         columns={columns}
       />
