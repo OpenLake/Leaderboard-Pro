@@ -1,78 +1,91 @@
-import { styled } from "@mui/material/styles";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Link,
-  Avatar,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
-import ToggleButton from "@mui/material/ToggleButton";
-import Button from "@mui/material/Button";
 import { useSidebar } from "@/components/ui/sidebar";
-
-const PREFIX = "GithubTable";
-
-const classes = {
-  root: `${PREFIX}-root`,
-  table: `${PREFIX}-table`,
-  table_dark: `${PREFIX}-table_dark`,
-  medium_page: `${PREFIX}-medium_page`,
-  large_page: `${PREFIX}-large_page`,
-};
-
-const Root = styled("div")({
-  [`& .${classes.table}`]: {
-    minWidth: 500,
-  },
-  [`& .${classes.table_dark}`]: {
-    minWidth: 500,
-    backgroundColor: "Black",
-    border: "2px solid White",
-    borderRadius: "10px",
-  },
-  [`& .${classes.medium_page}`]: {
-    display: "flex",
-    justifyContent: "space-around",
-    flexDirection: "column-reverse",
-    paddingLeft: "2.5vw",
-    paddingRight: "2.5vw",
-    marginTop: "9vh",
-    width: "100vw",
-    flexShrink: "0",
-  },
-  [`& .${classes.large_page}`]: {
-    display: "flex",
-    justifyContent: "space-around",
-    flexDirection: "row",
-    padding: "auto",
-    marginTop: "10vh",
-    width: "99vw",
-    flexShrink: "0",
-  },
-});
-
+import { Button } from "./ui/button";
+import { DataTable } from "./ui/data-table";
+import { Input } from "@/components/ui/input";
+import { Switch } from "./ui/switch";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 const BACKEND = import.meta.env.VITE_BACKEND;
-
-export const GithubTable = ({
-  darkmode,
-  githubUsers,
-  githubfriends,
-  setGithubfriends,
-  ghshowfriends,
-  setGHshowfriends,
-}) => {
+export function GHTable({ githubUsers }) {
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
+  const [githubfriends, setGithubfriends] = useState([]);
+  const [ghshowfriends, setGHshowfriends] = useState(false);
   const { open, isMobile } = useSidebar();
+  const columns = [
+    {
+      accessorKey: "avatar",
+      header: "Avatar",
+      cell: ({ row }) => {
+        return (
+          <Avatar>
+            <AvatarImage src={row.getValue("avatar")} />
+            <AvatarFallback>{row.getValue("username")}</AvatarFallback>
+          </Avatar>
+        );
+      },
+    },
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return (
+          <Button variant="link" asChild>
+            <a
+              href={`https://github.com/${username}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {username}
+            </a>
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "contributions",
+      header: "Contributions",
+    },
+    {
+      accessorKey: "repositories",
+      header: "Repositories",
+    },
+    {
+      accessorKey: "stars",
+      header: "Stars",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return (
+          <div className="flex justify-end">
+            {githubfriends.includes(username) ? (
+              <Button
+                variant="outline"
+                onClick={() => dropfriend(username)}
+              >
+                Remove Friend
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() => addfriend(username)}
+              >
+                Add Friend
+              </Button>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
   const getghfriends = async () => {
     const response = await fetch(BACKEND + "/githubFL/", {
       method: "GET",
@@ -98,7 +111,7 @@ export const GithubTable = ({
           JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        friendName: e.username,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
@@ -163,208 +176,37 @@ export const GithubTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-
-  const StyledTableCell = TableCell;
-
   return (
-    <Root
-      className={`codechef ${isMobile ? classes.medium_page : classes.large_page}`}
+    <div
+      className="h-full px-1.5 py-1"
+      style={{
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginTop: "15vh",
-          position: "relative",
-          marginBottom: "10px",
-          alignItems: "center",
-          width:
-            open && !isMobile
-              ? "calc(100vw - var(--sidebar-width))"
-              : "100vw",
-        }}
-      >
-        <TextField
-          id="outlined-basic"
-          label="Search Usernames"
-          variant="outlined"
-          defaultValue=""
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          onChange={(e) => {
-            setSearchfield(e.target.value);
-          }}
+      <div className="mb-2 flex flex-row justify-between">
+        <Input
+          placeholder="Search Github contributors..."
+          className="w-[40%]"
+          onChange={(val) => setSearchfield(val.target.value)}
+          type="search"
         />
-        <ToggleButton
-          value="check"
-          selected={ghshowfriends}
-          onChange={() => {
-            setGHshowfriends(!ghshowfriends);
-          }}
-          style={{
-            backgroundColor: darkmode ? "#02055a" : "#2196f3",
-            color: "white",
-            marginTop: isMobile ? "2vh" : "4vh",
-          }}
-        >
-          {ghshowfriends ? "Show All" : "Show Friends"}
-        </ToggleButton>
-        <div
-          style={{
-            marginTop: isMobile ? "2vh" : "4vh",
-          }}
-        >
-          {!filteredusers.length ? (
-            "No users"
-          ) : (
-            <TableContainer component={Paper}>
-              <Table
-                className={darkmode ? classes.table_dark : classes.table}
-                aria-label="github-table"
-              >
-                <TableHead>
-                  <TableRow
-                    style={{
-                      backgroundColor: darkmode ? "#1c2e4a" : "#1CA7FC",
-                    }}
-                  >
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Avatar
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Username
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Contributions
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Repositories
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Stars
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    ></StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredusers
-                    .sort((a, b) =>
-                      a.contributions < b.contributions ? 1 : -1,
-                    )
-                    .map((glUser) => (
-                      <TableRow key={glUser.id}>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          <Avatar
-                            src={glUser.avatar}
-                            alt={`${glUser.username} avatar`}
-                          />
-                          {/* TODO: Lazy load the avatars ? */}
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          <Link
-                            style={{
-                              fontWeight: "bold",
-                              textDecoration: "none",
-                              color: darkmode ? "#03DAC6" : "",
-                            }}
-                            href={`https://github.com/${glUser.username}`}
-                            target="_blank"
-                          >
-                            {glUser.username}
-                          </Link>
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          {glUser.contributions}
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          {glUser.repositories}
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          {glUser.stars}
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          <Button
-                            variant="contained"
-                            style={{
-                              backgroundColor: darkmode ? "#146ca4" : "",
-                            }}
-                            onClick={() => {
-                              !githubfriends.some(
-                                (item) =>
-                                  item.username === glUser.username,
-                              )
-                                ? addfriend(glUser)
-                                : dropfriend(glUser.username);
-                            }}
-                          >
-                            {githubfriends.some(
-                              (item) => item.username === glUser.username,
-                            )
-                              ? "Remove Friend"
-                              : "Add Friend"}
-                          </Button>
-                        </StyledTableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+        <div>
+          Friends Only
+          <Switch
+            className="mx-1 align-middle"
+            onCheckedChange={(val) => setGHshowfriends(val)}
+          />
         </div>
       </div>
-    </Root>
+      <DataTable
+        data={filteredusers.sort((a, b) =>
+          a.contributions < b.contributions ? 1 : -1,
+        )}
+        columns={columns}
+      />
+    </div>
   );
-};
+}

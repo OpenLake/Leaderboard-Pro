@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
-import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
-import { CodechefTable } from "./components/CodechefTable";
-import { GithubTable } from "./components/GithubTable";
+import { CFTable } from "./components/CodeforcesTable.jsx";
+import { CCTable } from "./components/CodechefTable";
+import { GHTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { OpenlakeTable } from "./components/OpenlakeTable";
+import { OpenLakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import HomePage from "./components/HomePage";
 import Register from "./components/Register";
-import { LeetcodeTable } from "./components/LeetcodeTable";
+import { LCTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
 import GoToTop from "./components/GoToTop";
 import Footer from "./components/Footer";
@@ -19,10 +19,7 @@ import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import Dashboard from "./components/discussion-forum/dashboard.jsx";
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from "./components/ui/sidebar.jsx";
+import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 const BACKEND = import.meta.env.VITE_BACKEND;
@@ -33,16 +30,6 @@ function App() {
   const [leetcodeUsers, setLeetcodeUsers] = useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
   const [githubUser, setGithubUser] = useState([]);
-  const [codeforcesfriends, setCodeforcesfriends] = useState([]);
-  const [cfshowfriends, setCfshowfriends] = useState(false);
-  const [ccshowfriends, setCCshowfriends] = useState(false);
-  const [codecheffriends, setCodecheffriends] = useState([]);
-  const [ltshowfriends, setLtshowfriends] = useState(false);
-  const [leetcodefriends, setLeetcodefriends] = useState([]);
-  const [githubfriends, setGithubfriends] = useState([]);
-  const [ghshowfriends, setGhshowfriends] = useState(false);
-  const [openlakefriends, setOpenlakefriends] = useState([]);
-  const [olshowfriends, setOlshowfriends] = useState(false);
   useEffect(() => {
     fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
@@ -119,14 +106,7 @@ function App() {
                   path="/codeforces"
                   element={
                     <PrivateRoute>
-                      <CodeforcesTable
-                        darkmode={darkmode}
-                        codeforcesfriends={codeforcesfriends}
-                        setCodeforcesfriends={setCodeforcesfriends}
-                        codeforcesUsers={codeforcesUsers}
-                        cfshowfriends={cfshowfriends}
-                        setCfshowfriends={setCfshowfriends}
-                      />
+                      <CFTable codeforcesUsers={codeforcesUsers} />
                     </PrivateRoute>
                   }
                 />
@@ -135,14 +115,7 @@ function App() {
                   path="/codechef"
                   element={
                     <PrivateRoute>
-                      <CodechefTable
-                        darkmode={darkmode}
-                        codechefUsers={codechefUsers}
-                        codecheffriends={codecheffriends}
-                        setCodecheffriends={setCodecheffriends}
-                        ccshowfriends={ccshowfriends}
-                        setCCshowfriends={setCCshowfriends}
-                      />
+                      <CCTable codechefUsers={codechefUsers} />
                     </PrivateRoute>
                   }
                 />
@@ -151,14 +124,7 @@ function App() {
                   path="/openlake"
                   element={
                     <PrivateRoute>
-                      <OpenlakeTable
-                        darkmode={darkmode}
-                        codechefUsers={openlakeContributor}
-                        codecheffriends={openlakefriends}
-                        setCodecheffriends={setOpenlakefriends}
-                        ccshowfriends={olshowfriends}
-                        setCCshowfriends={setOlshowfriends}
-                      />
+                      <OpenLakeTable OLUsers={openlakeContributor} />
                     </PrivateRoute>
                   }
                 />
@@ -167,14 +133,7 @@ function App() {
                   path="/github"
                   element={
                     <PrivateRoute>
-                      <GithubTable
-                        darkmode={darkmode}
-                        githubUsers={githubUser}
-                        githubfriends={githubfriends}
-                        setGithubfriends={setGithubfriends}
-                        ghshowfriends={ghshowfriends}
-                        setGHshowfriends={setGhshowfriends}
-                      />
+                      <GHTable githubUsers={githubUser} />
                     </PrivateRoute>
                   }
                 />
@@ -183,14 +142,7 @@ function App() {
                   path="/leetcode"
                   element={
                     <PrivateRoute>
-                      <LeetcodeTable
-                        darkmode={darkmode}
-                        leetcodeUsers={leetcodeUsers}
-                        leetcodefriends={leetcodefriends}
-                        setLeetcodefriends={setLeetcodefriends}
-                        ltshowfriends={ltshowfriends}
-                        setLTshowfriends={setLtshowfriends}
-                      />
+                      <LCTable leetcodeUsers={leetcodeUsers} />
                     </PrivateRoute>
                   }
                 />

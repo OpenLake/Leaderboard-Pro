@@ -1,78 +1,67 @@
-import { styled } from "@mui/material/styles";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Link,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
 import { useEffect, useState } from "react";
-import ToggleButton from "@mui/material/ToggleButton";
-import Button from "@mui/material/Button";
-import useScreenWidth from "../hooks/useScreeWidth";
+import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-
-const PREFIX = "OpenlakeTable";
-
-const classes = {
-  root: `${PREFIX}-root`,
-  table: `${PREFIX}-table`,
-  table_dark: `${PREFIX}-table_dark`,
-  medium_page: `${PREFIX}-medium_page`,
-  large_page: `${PREFIX}-large_page`,
-};
-
-const Root = styled("div")({
-  [`& .${classes.table}`]: {
-    minWidth: 500,
-  },
-  [`& .${classes.table_dark}`]: {
-    minWidth: 500,
-    backgroundColor: "Black",
-    border: "2px solid White",
-    borderRadius: "10px",
-  },
-  [`& .${classes.medium_page}`]: {
-    display: "flex",
-    justifyContent: "space-around",
-    flexDirection: "column-reverse",
-    paddingLeft: "2.5vw",
-    paddingRight: "2.5vw",
-    marginTop: "9vh",
-    width: "100vw",
-    flexShrink: "0",
-  },
-  [`& .${classes.large_page}`]: {
-    display: "flex",
-    justifyContent: "space-around",
-    flexDirection: "row",
-    padding: "auto",
-    marginTop: "10vh",
-    width: "99vw",
-    flexShrink: "0",
-  },
-});
+import { DataTable } from "./ui/data-table";
+import { Input } from "@/components/ui/input";
+import { Switch } from "./ui/switch";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
-
-export const OpenlakeTable = ({
-  darkmode,
-  codechefUsers,
-  codecheffriends,
-  setCodecheffriends,
-  ccshowfriends,
-  setCCshowfriends,
-}) => {
+export function OpenLakeTable({ OLUsers }) {
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
+  const [OLFriends, setOLFriends] = useState([]);
+  const [showOLFriends, setShowOLFriends] = useState(false);
   const { open, isMobile } = useSidebar();
+  const columns = [
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return (
+          <Button variant="link" asChild>
+            <a
+              href={`https://github.com/${username}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {username}
+            </a>
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "contributions",
+      header: "Contributions",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const username = row.getValue("username");
+        return (
+          <div className="flex justify-end">
+            {OLFriends.includes(username) ? (
+              <Button
+                variant="secondary"
+                onClick={() => dropfriend(username)}
+              >
+                Remove Friend
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() => addfriend(username)}
+              >
+                Add Friend
+              </Button>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
   const getccfriends = async () => {
     const response = await fetch(BACKEND + "/openlakeFL/", {
       method: "GET",
@@ -85,7 +74,7 @@ export const OpenlakeTable = ({
     });
 
     const newData = await response.json();
-    setCodecheffriends(newData);
+    setOLFriends(newData);
   };
 
   async function addfriend(e) {
@@ -98,13 +87,13 @@ export const OpenlakeTable = ({
           JSON.parse(localStorage.getItem("authTokens")).access,
       },
       body: JSON.stringify({
-        friendName: e.username,
+        friendName: e,
       }),
     });
     if (response.status !== 200) {
       alert("ERROR!!!!");
     } else {
-      setCodecheffriends((current) => [...current, e]);
+      setOLFriends((current) => [...current, e]);
     }
   }
   async function dropfriend(e) {
@@ -123,7 +112,7 @@ export const OpenlakeTable = ({
     if (response.status !== 200) {
       alert("ERROR!!!!");
     } else {
-      setCodecheffriends((current) =>
+      setOLFriends((current) =>
         current.filter((fruit) => fruit.username !== e),
       );
     }
@@ -133,10 +122,10 @@ export const OpenlakeTable = ({
   }, []);
 
   useEffect(() => {
-    if (ccshowfriends) {
-      setTodisplayusers(codecheffriends);
+    if (showOLFriends) {
+      setTodisplayusers(OLFriends);
     } else {
-      setTodisplayusers(codechefUsers);
+      setTodisplayusers(OLUsers);
     }
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -149,7 +138,7 @@ export const OpenlakeTable = ({
         }),
       );
     }
-  }, [ccshowfriends, codecheffriends, searchfield, codechefUsers]);
+  }, [showOLFriends, OLFriends, searchfield, OLUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -163,166 +152,32 @@ export const OpenlakeTable = ({
       );
     }
   }, [searchfield, todisplayusers]);
-
-  const StyledTableCell = TableCell;
-
   return (
-    <Root
-      className={`openlake ${isMobile ? classes.medium_page : classes.large_page}`}
+    <div
+      className="h-full px-1.5 py-1"
+      style={{
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginTop: "15vh",
-          position: "relative",
-          marginBottom: "10px",
-          alignItems: "center",
-          width:
-            open && !isMobile
-              ? "calc(100vw - var(--sidebar-width))"
-              : "100vw",
-        }}
-      >
-        <TextField
-          id="outlined-basic"
-          label="Search Usernames"
-          variant="outlined"
-          defaultValue=""
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          onChange={(e) => {
-            setSearchfield(e.target.value);
-          }}
+      <div className="mb-2 flex flex-row justify-between">
+        <Input
+          placeholder="Search OpenLake contributors..."
+          className="w-[40%]"
+          onChange={(val) => setSearchfield(val.target.value)}
+          type="search"
         />
-        <ToggleButton
-          value="check"
-          selected={ccshowfriends}
-          onChange={() => {
-            setCCshowfriends(!ccshowfriends);
-          }}
-          style={{
-            backgroundColor: darkmode ? "#02055a" : "#2196f3",
-            color: "white",
-            marginTop: isMobile ? "2vh" : "4vh",
-          }}
-        >
-          {ccshowfriends ? "Show All" : "Show Friends"}
-        </ToggleButton>
-        <div
-          style={{
-            marginTop: isMobile ? "2vh" : "4vh",
-          }}
-        >
-          {!filteredusers.length ? (
-            "No users"
-          ) : (
-            <TableContainer component={Paper}>
-              <Table
-                className={darkmode ? classes.table_dark : classes.table}
-                aria-label="openlake-table"
-              >
-                <TableHead>
-                  <TableRow
-                    style={{
-                      backgroundColor: darkmode ? "#1c2e4a " : "#1CA7FC",
-                    }}
-                  >
-                    <StyledTableCell
-                      style={{ textAlign: "center" }}
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Username
-                    </StyledTableCell>
-                    <StyledTableCell
-                      style={{ textAlign: "center" }}
-                      classes={{
-                        root: classes.root,
-                      }}
-                    >
-                      Contributions
-                    </StyledTableCell>
-                    <StyledTableCell
-                      classes={{
-                        root: classes.root,
-                      }}
-                    ></StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredusers
-                    .sort((a, b) =>
-                      a.contributions < b.contributions ? 1 : -1,
-                    )
-                    .map((olUser) => (
-                      <TableRow key={olUser.id}>
-                        <StyledTableCell
-                          style={{ textAlign: "center" }}
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          <Link
-                            style={{
-                              fontWeight: "bold",
-                              textDecoration: "none",
-                              color: darkmode ? "#03DAC6" : "",
-                            }}
-                            href={`https://github.com/${olUser.username}`}
-                            target="_blank"
-                          >
-                            {olUser.username}
-                          </Link>
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{ textAlign: "center" }}
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          {olUser.contributions}
-                        </StyledTableCell>
-                        <StyledTableCell
-                          classes={{
-                            root: classes.root,
-                          }}
-                        >
-                          <Button
-                            variant="contained"
-                            style={{
-                              backgroundColor: darkmode ? "#146ca4" : "",
-                            }}
-                            onClick={() => {
-                              !codecheffriends.some(
-                                (item) =>
-                                  item.username === olUser.username,
-                              )
-                                ? addfriend(olUser)
-                                : dropfriend(olUser.username);
-                            }}
-                          >
-                            {codecheffriends.some(
-                              (item) => item.username === olUser.username,
-                            )
-                              ? "Remove Friend"
-                              : "Add Friend"}
-                          </Button>
-                        </StyledTableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+        <div>
+          Friends Only
+          <Switch
+            className="mx-1 align-middle"
+            onCheckedChange={(val) => setShowOLFriends(val)}
+          />
         </div>
       </div>
-    </Root>
+      <DataTable data={filteredusers} columns={columns} />
+    </div>
   );
-};
+}
