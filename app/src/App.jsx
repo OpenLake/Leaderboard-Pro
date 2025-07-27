@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
-import { CodeforcesTable } from "./components/CodeforcesTable.jsx";
+import { CFTable } from "./components/CodeforcesTable.jsx";
 import { CodechefTable } from "./components/CodechefTable";
 import { GHTable } from "./components/GithubTable";
 import Profile from "./components/Profile.jsx";
@@ -30,8 +30,6 @@ function App() {
   const [leetcodeUsers, setLeetcodeUsers] = useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);
   const [githubUser, setGithubUser] = useState([]);
-  const [codeforcesfriends, setCodeforcesfriends] = useState([]);
-  const [cfshowfriends, setCfshowfriends] = useState(false);
   const [ccshowfriends, setCCshowfriends] = useState(false);
   const [codecheffriends, setCodecheffriends] = useState([]);
   useEffect(() => {
@@ -110,14 +108,7 @@ function App() {
                   path="/codeforces"
                   element={
                     <PrivateRoute>
-                      <CodeforcesTable
-                        darkmode={darkmode}
-                        codeforcesfriends={codeforcesfriends}
-                        setCodeforcesfriends={setCodeforcesfriends}
-                        codeforcesUsers={codeforcesUsers}
-                        cfshowfriends={cfshowfriends}
-                        setCfshowfriends={setCfshowfriends}
-                      />
+                      <CFTable codeforcesUsers={codeforcesUsers} />
                     </PrivateRoute>
                   }
                 />
