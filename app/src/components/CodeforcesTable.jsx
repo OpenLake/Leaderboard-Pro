@@ -225,7 +225,7 @@ export function CFTable({ codeforcesUsers }) {
     >
       <div className="mb-2 flex flex-row justify-between">
         <Input
-          placeholder="Search Leetcode users..."
+          placeholder="Search Codeforces users..."
           className="w-[40%]"
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
@@ -239,9 +239,7 @@ export function CFTable({ codeforcesUsers }) {
         </div>
       </div>
       <DataTable
-        data={filteredusers.sort((a, b) =>
-          a.contributions < b.contributions ? 1 : -1,
-        )}
+        data={filteredusers.sort((a, b) => (a.rating < b.rating ? 1 : -1))}
         columns={columns}
       />
     </div>
