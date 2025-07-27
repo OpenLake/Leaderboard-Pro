@@ -24,17 +24,14 @@ export function LCTable({ leetcodeUsers }) {
     {
       accessorKey: "avatar",
       header: "Avatar",
-      cell: ({ row }) => {
-        console.log(row.getValue("avatar"));
-        return (
-          <Avatar>
-            <AvatarImage src={row.getValue("avatar")} />
-            <AvatarFallback>
-              <User />
-            </AvatarFallback>
-          </Avatar>
-        );
-      },
+      cell: ({ row }) => (
+        <Avatar>
+          <AvatarImage src={row.getValue("avatar")} />
+          <AvatarFallback>
+            <User />
+          </AvatarFallback>
+        </Avatar>
+      ),
     },
     {
       accessorKey: "username",
