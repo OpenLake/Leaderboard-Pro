@@ -10,7 +10,7 @@ import { OpenLakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import HomePage from "./components/HomePage";
 import Register from "./components/Register";
-import { LCTable, LeetcodeTable } from "./components/LeetcodeTable";
+import { LCTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
 import GoToTop from "./components/GoToTop";
 import Footer from "./components/Footer";
@@ -34,8 +34,6 @@ function App() {
   const [cfshowfriends, setCfshowfriends] = useState(false);
   const [ccshowfriends, setCCshowfriends] = useState(false);
   const [codecheffriends, setCodecheffriends] = useState([]);
-  const [ltshowfriends, setLtshowfriends] = useState(false);
-  const [leetcodefriends, setLeetcodefriends] = useState([]);
   useEffect(() => {
     fetch(BACKEND + "/codeforces/")
       .then((res) => res.json())
@@ -162,14 +160,6 @@ function App() {
                   path="/leetcode"
                   element={
                     <PrivateRoute>
-                      {/* <LeetcodeTable
-                        darkmode={darkmode}
-                        leetcodeUsers={leetcodeUsers}
-                        leetcodefriends={leetcodefriends}
-                        setLeetcodefriends={setLeetcodefriends}
-                        ltshowfriends={ltshowfriends}
-                        setLTshowfriends={setLtshowfriends}
-                      /> */}
                       <LCTable leetcodeUsers={leetcodeUsers} />
                     </PrivateRoute>
                   }
