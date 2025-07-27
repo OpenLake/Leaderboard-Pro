@@ -197,7 +197,7 @@ export function CCTable({ codechefUsers }) {
     >
       <div className="mb-2 flex flex-row justify-between">
         <Input
-          placeholder="Search Leetcode users..."
+          placeholder="Search Codechef users..."
           className="w-[40%]"
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
