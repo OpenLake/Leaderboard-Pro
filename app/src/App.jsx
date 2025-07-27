@@ -10,7 +10,7 @@ import { OpenLakeTable } from "./components/OpenlakeTable";
 import Login from "./components/Login";
 import HomePage from "./components/HomePage";
 import Register from "./components/Register";
-import { LeetcodeTable } from "./components/LeetcodeTable";
+import { LCTable, LeetcodeTable } from "./components/LeetcodeTable";
 import PrivateRoute from "./utils/PrivateRoute";
 import GoToTop from "./components/GoToTop";
 import Footer from "./components/Footer";
@@ -162,14 +162,15 @@ function App() {
                   path="/leetcode"
                   element={
                     <PrivateRoute>
-                      <LeetcodeTable
+                      {/* <LeetcodeTable
                         darkmode={darkmode}
                         leetcodeUsers={leetcodeUsers}
                         leetcodefriends={leetcodefriends}
                         setLeetcodefriends={setLeetcodefriends}
                         ltshowfriends={ltshowfriends}
                         setLTshowfriends={setLtshowfriends}
-                      />
+                      /> */}
+                      <LCTable leetcodeUsers={leetcodeUsers} />
                     </PrivateRoute>
                   }
                 />
