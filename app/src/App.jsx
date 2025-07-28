@@ -77,11 +77,7 @@ function App() {
             <div className="App bg-background w-full">
               <NavMenu />
               <Routes>
-                <Route
-                  exact
-                  path="/register"
-                  element={<Register darkmode={darkmode} />}
-                />
+                <Route exact path="/register" element={<Register />} />
                 <Route exact path="/login" element={<Login />} />
                 <Route
                   exact
