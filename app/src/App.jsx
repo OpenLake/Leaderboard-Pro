@@ -82,11 +82,7 @@ function App() {
                   path="/register"
                   element={<Register darkmode={darkmode} />}
                 />
-                <Route
-                  exact
-                  path="/login"
-                  element={<Login darkmode={darkmode} />}
-                />
+                <Route exact path="/login" element={<Login />} />
                 <Route
                   exact
                   path="/leetcoderankingsccps"

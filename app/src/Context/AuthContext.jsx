@@ -50,16 +50,15 @@ export const AuthProvider = ({ children }) => {
     }
     return usernames_data;
   };
-  let loginUser = async (e) => {
-    e.preventDefault();
+  let loginUser = async (form_data) => {
     let response = await fetch(BACKEND + "/api/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: e.target.form.UserName.value,
-        password: e.target.form.password.value,
+        username: form_data.username,
+        password: form_data.password,
       }),
     });
     let data = await response.json();
