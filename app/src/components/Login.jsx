@@ -52,7 +52,7 @@ const Login = () => {
             : "100vw",
       }}
     >
-      <div className="m-auto w-1/5 space-y-2">
+      <div className="m-auto w-[60%] space-y-2 md:w-[40%] lg:w-1/3">
         <div className="flex justify-center font-mono font-extrabold">
           Login
         </div>
