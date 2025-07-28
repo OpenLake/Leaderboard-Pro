@@ -143,7 +143,7 @@ function App() {
                   path="/profile"
                   element={
                     <PrivateRoute>
-                      <Profile darkmode={darkmode} />-
+                      <Profile />-
                     </PrivateRoute>
                   }
                 />

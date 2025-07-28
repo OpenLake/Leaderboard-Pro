@@ -127,11 +127,8 @@ export const AuthProvider = ({ children }) => {
       alert("ERROR!!!!");
     }
   };
-  let update_addUsernames = async (e) => {
-    e.preventDefault();
+  let update_addUsernames = async (form_data) => {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log(e.target.form);
-    // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
     let response = await fetch(BACKEND + "/api/insertapi/", {
       method: "POST",
       headers: {
@@ -139,10 +136,10 @@ export const AuthProvider = ({ children }) => {
         Authorization: "Bearer " + authTokens.access,
       },
       body: JSON.stringify({
-        cc_uname: e.target.form.codechef.value,
-        cf_uname: e.target.form.codeforces.value,
-        gh_uname: e.target.form.github.value,
-        lt_uname: e.target.form.leetcode.value,
+        cc_uname: form_data.codechef,
+        cf_uname: form_data.codeforces,
+        gh_uname: form_data.github,
+        lt_uname: form_data.leetcode,
       }),
     });
     if (response.status === 201) {
