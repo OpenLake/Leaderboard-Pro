@@ -32,8 +32,7 @@ function LetterAvatar({ name }) {
 
 export function NavMenu() {
   const { setTheme, theme } = useTheme();
-  const { userNames } = useAuth();
-
+  const { user, userNames } = useAuth();
   return (
     <NavigationMenu className="grid-row m-1 max-w-full border-b-1 pb-3">
       <div className="grid w-full grid-cols-5 grid-rows-1 gap-10">
@@ -42,12 +41,16 @@ export function NavMenu() {
             <NavigationMenuItem asChild>
               <SidebarTrigger className="text-foreground mr-4" />
             </NavigationMenuItem>
-            <NavigationMenuItem className={"ml-auto flex grow"}>
-              <Input
-                className="w-full"
-                placeholder="Search users, contests, problems..."
-              ></Input>
-            </NavigationMenuItem>
+            {(user ?? false) ? (
+              <NavigationMenuItem className={"ml-auto flex grow"}>
+                <Input
+                  className="w-full"
+                  placeholder="Search users, contests, problems..."
+                ></Input>
+              </NavigationMenuItem>
+            ) : (
+              <></>
+            )}
           </NavigationMenuList>
         </div>
         <div className={"col-start-5 col-end-6"}>
@@ -56,7 +59,7 @@ export function NavMenu() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full"
+                className="text-foreground rounded-full"
                 onClick={() => {
                   if (theme == "light") setTheme("dark");
                   else setTheme("light");
@@ -69,17 +72,19 @@ export function NavMenu() {
                 )}
               </Button>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild className="rounded-full">
-                <Link to="/profile" className="rounded-full">
-                  <Avatar className="bg-accent size-9">
-                    <LetterAvatar name={userNames.username} />
-                    {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                    {/* <AvatarFallback>CN</AvatarFallback> */}
-                  </Avatar>
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {(user ?? false) ? (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className="rounded-full">
+                  <Link to="/profile" className="rounded-full">
+                    <Avatar className="bg-accent size-9">
+                      <LetterAvatar name={userNames.username} />
+                    </Avatar>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ) : (
+              <></>
+            )}
           </NavigationMenuList>
         </div>
       </div>
