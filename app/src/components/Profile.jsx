@@ -81,6 +81,9 @@ export default function Profile() {
       }}
     >
       <div className="m-auto w-[60%] space-y-2.5 md:w-[40%] lg:w-1/3">
+        <div className="mb-5 flex justify-center text-2xl font-extrabold">
+          Profile
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(update_addUsernames)}

@@ -53,7 +53,7 @@ const Login = () => {
       }}
     >
       <div className="m-auto w-[60%] space-y-2 md:w-[40%] lg:w-1/3">
-        <div className="flex justify-center font-mono font-extrabold">
+        <div className="mb-5 flex justify-center text-2xl font-extrabold">
           Login
         </div>
         <Form {...form}>
