@@ -1,4 +1,4 @@
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { ArrowUp } from "lucide-react";
 
 const GoToTop = () => {
   const gotop = () => {
@@ -8,6 +8,7 @@ const GoToTop = () => {
   return (
     <div>
       <button
+        className="bg-foreground text-background"
         style={{
           position: "fixed",
           bottom: "3rem", // Adjust this value as needed to position above the footer
@@ -19,13 +20,10 @@ const GoToTop = () => {
           height: "3rem",
           alignItems: "center",
           borderRadius: "50%",
-          backgroundColor: "#1976d2",
-          color: "#f1f1f1",
-          border: "1px solid #fefefe",
         }}
         onClick={gotop}
       >
-        <ArrowUpwardIcon />
+        <ArrowUp />
       </button>
     </div>
   );

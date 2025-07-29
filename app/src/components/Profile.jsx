@@ -1,40 +1,27 @@
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import {
-  createTheme,
-  ThemeProvider,
-  StyledEngineProvider,
-} from "@mui/material/styles";
-import { Grid } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useSidebar } from "@/components/ui/sidebar";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link
-        color="inherit"
-        href="https://github.com/OpenLake/Leaderboard-Pro/"
-      >
-        LeaderBoard-Pro
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-const theme = createTheme();
+const FormSchema = z.object({
+  codechef: z.string(),
+  codeforces: z.string(),
+  github: z.string(),
+  leetcode: z.string(),
+});
 
 let fields = [
   { label: "CodeChef Username", tag: "codechef" },
@@ -43,8 +30,18 @@ let fields = [
   { label: "Github Username", tag: "github" },
 ];
 
-export default function Profile({ darkmode }) {
+export default function Profile() {
   let { update_addUsernames, userNames } = useAuth();
+  const { open, isMobile } = useSidebar();
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      codechef: "",
+      codeforces: "",
+      github: "",
+      leetcode: "",
+    },
+  });
   if (userNames) {
     fields.forEach((x) => {
       x["helperText"] = userNames[x["tag"]]?.username
@@ -57,58 +54,46 @@ export default function Profile({ darkmode }) {
     });
   }
   let elems = fields.map((x) => (
-    <Grid key={x["tag"]} size={12}>
-      <TextField
-        fullWidth
-        name={x["label"]}
-        label={x["label"]}
-        type={x["tag"]}
-        id={x["tag"]}
-        autoComplete={`new-${x["tag"]}`}
-        helperText={x["helperText"]}
-      />
-    </Grid>
+    <FormField
+      key={x["tag"]}
+      control={form.control}
+      name={x["tag"]}
+      render={({ field }) => (
+        <FormItem className="w-full">
+          <FormLabel>{x["label"]}</FormLabel>
+          <FormControl>
+            <Input {...field} className="inline" />
+          </FormControl>
+          <FormDescription>{x["helperText"]}</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   ));
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
+    <div
+      className="text-foreground flex h-full flex-col"
+      style={{
+        width:
+          open && !isMobile
+            ? "calc(100vw - var(--sidebar-width))"
+            : "100vw",
+      }}
+    >
+      <div className="m-auto w-[60%] space-y-2.5 md:w-[40%] lg:w-1/3">
+        <div className="mb-5 flex justify-center text-2xl font-extrabold">
+          Profile
+        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(update_addUsernames)}
+            className="space-y-2.5"
           >
-            <Typography component="h1" variant="h5">
-              Profile
-            </Typography>
-            <Box component="form" noValidate sx={{ mt: 3 }}>
-              <Grid container spacing={2}>
-                {elems}
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                style={{ backgroundColor: darkmode ? "#ff8c0b" : "" }}
-                onClick={update_addUsernames}
-              >
-                Update
-              </Button>
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="center"
-              ></Grid>
-            </Box>
-          </Box>
-          <Copyright sx={{ mt: 5 }} />
-        </Container>
-      </ThemeProvider>
-    </StyledEngineProvider>
+            {elems}
+            <Button type="submit">Update</Button>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 }

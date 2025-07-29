@@ -1,27 +1,102 @@
-import SignIn from "./SignIn.jsx";
 import { useAuth } from "../Context/AuthContext.jsx";
 import { useSidebar } from "@/components/ui/sidebar";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const Login = ({ darkmode }) => {
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Link, useNavigate } from "react-router-dom";
+
+const FormSchema = z.object({
+  username: z.string().min(1, {
+    message: "Please enter your username.",
+  }),
+  password: z.string().min(1, {
+    message: "Please enter your password",
+  }),
+});
+
+const Login = () => {
   let { SignInWithGoogle, loginUser } = useAuth();
   const { open, isMobile } = useSidebar();
+  const navigate = useNavigate();
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+  async function handleGoogleAuth(e) {
+    e.preventDefault();
+    await SignInWithGoogle();
+    navigate("/");
+  }
+
   return (
     <div
+      className="text-foreground flex h-full flex-col"
       style={{
-        position: "absolute",
-        backgroundColor: darkmode ? "black" : "",
         width:
           open && !isMobile
             ? "calc(100vw - var(--sidebar-width))"
             : "100vw",
-        height: "93vh",
-        marginTop: "4rem",
       }}
     >
-      <div
-        style={{ width: "100vw", filter: darkmode ? "invert(100)" : "" }}
-      >
-        <SignIn loginUser={loginUser} googleAuth={SignInWithGoogle} />
+      <div className="m-auto w-[60%] space-y-2 md:w-[40%] lg:w-1/3">
+        <div className="mb-5 flex justify-center text-2xl font-extrabold">
+          Login
+        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(loginUser)}
+            className="space-y-3"
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Login</Button>
+          </form>
+        </Form>
+        <Button onClick={handleGoogleAuth}>Login with Google</Button>
+        <div>
+          {"Don't have an account?"}{" "}
+          <Button variant="link" className="p-0 text-blue-500">
+            <Link to="/register">Sign Up</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

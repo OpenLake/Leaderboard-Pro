@@ -50,16 +50,15 @@ export const AuthProvider = ({ children }) => {
     }
     return usernames_data;
   };
-  let loginUser = async (e) => {
-    e.preventDefault();
+  let loginUser = async (form_data) => {
     let response = await fetch(BACKEND + "/api/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: e.target.form.UserName.value,
-        password: e.target.form.password.value,
+        username: form_data.username,
+        password: form_data.password,
       }),
     });
     let data = await response.json();
@@ -84,23 +83,22 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
     if (auth.currentUser) return signOut(auth);
   };
-  let registerUser = async (e) => {
-    e.preventDefault();
+  let registerUser = async (form_data) => {
     let response = await fetch(BACKEND + "/api/register/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        first_name: e.target.form.first_name.value,
-        email: e.target.form.email.value,
-        username: e.target.form.username.value,
-        password: e.target.form.password.value,
-        last_name: e.target.form.last_name.value,
-        cc_uname: e.target.form.cc_uname.value,
-        cf_uname: e.target.form.cf_uname.value,
-        gh_uname: e.target.form.gh_uname.value,
-        lt_uname: e.target.form.lt_uname.value,
+        first_name: form_data.first_name,
+        email: form_data.email,
+        username: form_data.username,
+        password: form_data.password,
+        last_name: form_data.last_name,
+        cc_uname: form_data.cc_uname,
+        cf_uname: form_data.cf_uname,
+        gh_uname: form_data.gh_uname,
+        lt_uname: form_data.lt_uname,
       }),
     });
     if (response.status === 200) {
@@ -110,8 +108,8 @@ export const AuthProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: e.target.form.username.value,
-          password: e.target.form.password.value,
+          username: form_data.username,
+          password: form_data.password,
         }),
       });
       let data = await response.json();
@@ -129,11 +127,8 @@ export const AuthProvider = ({ children }) => {
       alert("ERROR!!!!");
     }
   };
-  let update_addUsernames = async (e) => {
-    e.preventDefault();
+  let update_addUsernames = async (form_data) => {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log(e.target.form);
-    // console.log(JSON.parse(localStorage.getItem('authTokens')).access);https://leaderboard-stswe61wi-aditya062003.vercel.app
     let response = await fetch(BACKEND + "/api/insertapi/", {
       method: "POST",
       headers: {
@@ -141,10 +136,10 @@ export const AuthProvider = ({ children }) => {
         Authorization: "Bearer " + authTokens.access,
       },
       body: JSON.stringify({
-        cc_uname: e.target.form.codechef.value,
-        cf_uname: e.target.form.codeforces.value,
-        gh_uname: e.target.form.github.value,
-        lt_uname: e.target.form.leetcode.value,
+        cc_uname: form_data.codechef,
+        cf_uname: form_data.codeforces,
+        gh_uname: form_data.github,
+        lt_uname: form_data.leetcode,
       }),
     });
     if (response.status === 201) {
