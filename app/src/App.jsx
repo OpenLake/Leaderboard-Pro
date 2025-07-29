@@ -82,7 +82,7 @@ function App() {
                 <Route
                   exact
                   path="/leetcoderankingsccps"
-                  element={<LeetcodeRankingsCCPS darkmode={darkmode} />}
+                  element={<LeetcodeRankingsCCPS />}
                 />
                 <Route
                   exact
