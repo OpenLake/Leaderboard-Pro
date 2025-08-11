@@ -92,7 +92,7 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 
 
 ## 🧑‍💻 Maintainers
-- [Bassam Adnan](https://github.com/bassamadnan)
+- [Sumagna Das](https://github.com/sumagnadas)
 - [Amay Dixit](https://github.com/amaydixit11)
 
 ## 💻 Contributing Guidelines
