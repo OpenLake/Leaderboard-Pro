@@ -101,8 +101,7 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 - To stop the Docker container, you can press `Ctrl+C` in the terminal where the container is running. Alternatively, you can stop the container from another terminal using the `docker stop` command with the container ID.
 
 ## 🧑‍💻 Maintainers
-
-- [Bassam Adnan](https://github.com/bassamadnan)
+- [Sumagna Das](https://github.com/sumagnadas)
 - [Amay Dixit](https://github.com/amaydixit11)
 
 ## 💻 Contributing Guidelines
