@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to the Leaderboard project 👋</h1>
+<h1 align="center">Welcome to the LeaderboardPro project 👋</h1>
 
 ## 🤔 Problem
 
@@ -101,8 +101,8 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 - To stop the Docker container, you can press `Ctrl+C` in the terminal where the container is running. Alternatively, you can stop the container from another terminal using the `docker stop` command with the container ID.
 
 ## 🧑‍💻 Maintainers
+
 - [Sumagna Das](https://github.com/sumagnadas)
-- [Amay Dixit](https://github.com/amaydixit11)
 
 ## 💻 Contributing Guidelines
 
@@ -112,4 +112,4 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 
 ## 👀 Hosted App
 
-[https://openlake-leaderboardpro.vercel.app](https://openlake-leaderboardpro.vercel.app)
+[https://leaderboardpro.vercel.app](https://leaderboardpro.vercel.app)
