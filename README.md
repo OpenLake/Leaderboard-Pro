@@ -57,7 +57,7 @@ How do people become good at something ? By doing it regularly, right ? That's w
   ```
 - Visit http://localhost:8000/ and http://localhost:3000/
 
-## 🐳 Running with Docker Compose
+## 🐳 Running with Docker Compose (up to date as of now)
 
 ### Prerequisites
 
