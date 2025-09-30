@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to the Leaderboard project 👋</h1>
+<h1 align="center">Welcome to the LeaderboardPro project 👋</h1>
 
 ## 🤔 Problem
 
@@ -57,6 +57,22 @@ How do people become good at something ? By doing it regularly, right ? That's w
   ```
 - Visit http://localhost:8000/ and http://localhost:3000/
 
+## 🐳 Running with Docker Compose
+
+### Prerequisites
+
+- Ensure you have Docker Compose installed on your machine.
+
+### Command
+
+Just run
+
+```bash
+docker compose up -w
+```
+
+(`-w` for syncing the code in the container with the host version)
+
 ## 🐳 Running with Docker
 
 Docker provides a consistent and isolated environment for running the Leaderboard project, ensuring that it works the same way on every machine. Follow these steps to get the application up and running with Docker:
@@ -101,8 +117,8 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 - To stop the Docker container, you can press `Ctrl+C` in the terminal where the container is running. Alternatively, you can stop the container from another terminal using the `docker stop` command with the container ID.
 
 ## 🧑‍💻 Maintainers
+
 - [Sumagna Das](https://github.com/sumagnadas)
-- [Amay Dixit](https://github.com/amaydixit11)
 
 ## 💻 Contributing Guidelines
 
@@ -112,4 +128,4 @@ Docker provides a consistent and isolated environment for running the Leaderboar
 
 ## 👀 Hosted App
 
-[https://openlake-leaderboardpro.vercel.app](https://openlake-leaderboardpro.vercel.app)
+[https://leaderboardpro.vercel.app](https://leaderboardpro.vercel.app)
