@@ -1,0 +1,63 @@
+services:
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: friends
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    volumes:
+      - mongodb:/data/db
+  rmq:
+    image: rabbitmq
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "rabbitmq"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASSWORD: "rabbitmq"
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "leaderboardpro"
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: "5432"
+    volumes:
+      - leaderboardpro_data:/var/lib/postgresql/data
+  frontend:
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    build:
+      dockerfile: docker/frontend.Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: ./app/package.json
+        - action: sync
+          path: ./app/
+          target: /frontend
+        - action: sync
+          path: ./app/.env.frontend
+          target: /frontend/.env
+  backend:
+    ports:
+      - "8000:8000"
+    build:
+      dockerfile: docker/backend.Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./api/
+          target: /backend
+        - action: rebuild
+          path: ./docker/backend.Dockerfile
+        - action: rebuild
+          path: ./app/requirements.txt
+
+    depends_on:
+      - db
+      - rmq
+      - mongo
+volumes:
+  leaderboardpro_data:
+  mongodb:

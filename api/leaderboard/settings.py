@@ -155,10 +155,10 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 # }
 POSTGRES_ENGINE = "django.db.backends.postgresql"
 POSTGRES_NAME = "postgres"
-POSTGRES_USER = str(os.getenv("POSTGRES_USER"))
-POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
-POSTGRES_HOST = str(os.getenv("POSTGRES_HOST"))
-POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
+POSTGRES_USER = str(os.getenv("POSTGRES_USER", "leaderboardpro"))
+POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD", "leaderboardpro"))
+POSTGRES_HOST = str(os.getenv("POSTGRES_HOST", "127.0.0.1"))
+POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
 
 DATABASES = {
     "default": {
