@@ -147,7 +147,7 @@ export function CFTable({ codeforcesUsers }) {
       alert("ERROR!!!!");
     } else {
       setCodeforcesfriends((current) =>
-        current.filter((fruit) => fruit.username !== e),
+        current.filter((fruit) => fruit !== e),
       );
     }
   }
