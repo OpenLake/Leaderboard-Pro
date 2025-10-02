@@ -146,7 +146,7 @@ export function CCTable({ codechefUsers }) {
       alert("ERROR!!!!");
     } else {
       setCodecheffriends((current) =>
-        current.filter((fruit) => fruit.username !== e),
+        current.filter((fruit) => fruit !== e),
       );
     }
   }
