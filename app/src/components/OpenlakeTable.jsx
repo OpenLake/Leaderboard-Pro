@@ -113,7 +113,7 @@ export function OpenLakeTable({ OLUsers }) {
       alert("ERROR!!!!");
     } else {
       setOLFriends((current) =>
-        current.filter((fruit) => fruit.username !== e),
+         current.filter((fruit) => fruit !== e),
       );
     }
   }
