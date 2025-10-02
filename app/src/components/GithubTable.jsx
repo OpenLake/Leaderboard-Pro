@@ -137,7 +137,7 @@ export function GHTable({ githubUsers }) {
       alert("ERROR!!!!");
     } else {
       setGithubfriends((current) =>
-        current.filter((fruit) => fruit.username !== e),
+         current.filter((fruit) => fruit !== e),
       );
     }
   }
