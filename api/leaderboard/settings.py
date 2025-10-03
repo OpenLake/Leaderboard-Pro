@@ -230,7 +230,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
 
 CC_INTV = 5
 GH_INTV = 10
-OL_INTV = 60
+OL_INTV = 10
 LT_INTV = 5
 CF_INTV = 5
 
