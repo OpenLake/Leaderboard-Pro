@@ -3,6 +3,24 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
+    "skipLibCheck": true,
+
+    // Type definitions resolution
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node"],
+
+    "lib": ["dom", "esnext"]
+  },
+
+  "include": ["src/**/*", "types/**/*"],
+  "exclude": ["node_modules"]
 }
