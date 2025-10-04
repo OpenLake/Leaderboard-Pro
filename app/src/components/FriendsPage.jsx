@@ -1,110 +1,110 @@
 import React from 'react';
-import useFriends from '../hooks/useFriends'; // Correct path: from components/ up to src/, then down to hooks/
-import { Button } from './ui/button.jsx'; // Correct path: ui/ is assumed to be a subdirectory of components/
-import { UserX } from 'lucide-react';
-
-/**
- * Renders the main Friends page, displaying the list of friends, 
- * their leaderboard rankings, and controls to unfriend them.
- */
+import useFriends from '@/hooks/useFriends';
+import { Button } from '@/components/ui/button.jsx';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+    CardDescription,
+} from '@/components/ui/card';
+import { Loader2, UserX } from 'lucide-react';
 const FriendsPage = () => {
-    // 1. Fetch data and state management from the custom hook
+    // Fetches data and state from the custom hook
     const { friends, isLoading, error, unfriend } = useFriends();
-    
-    // Mapping of leaderboard keys to display names
-    const leaderboardNames = {
-        openlake: 'OpenLake',
-        github: 'GitHub',
-        leetcode: 'LeetCode',
-        codeforces: 'Codeforces',
-        codechef: 'CodeChef'
-    };
 
-    /**
-     * Handles the unfriend button click, showing a confirmation prompt 
-     * before calling the unfriend action.
-     * @param {number} friendId The ID of the friend to remove.
-     * @param {string} friendName The name of the friend for the confirmation message.
-     */
     const handleUnfriend = (friendId, friendName) => {
-        // IMPORTANT: In a production app, use a custom modal UI instead of window.confirm
+        // IMPORTANT: Use custom modal UI instead of window.confirm in production
         if (window.confirm(`Are you sure you want to unfriend ${friendName}?`)) {
             unfriend(friendId);
         }
     };
 
-    // --- Loading and Error States ---
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-screen-minus-header p-8">
-                <p className="text-xl text-foreground animate-pulse">Loading friends list...</p>
-            </div>
-        );
-    }
+    const leaderboardOrder = [
+        'openlake',
+        'github',
+        'leetcode',
+        'codeforces',
+        'codechef',
+    ];
 
-    if (error) {
-        return (
-            <div className="flex justify-center items-center h-screen-minus-header p-8">
-                <p className="text-xl text-red-500 font-semibold">{error}</p>
-            </div>
-        );
-    }
+    const formatLeaderboardName = (key) => {
+        // Simple function to capitalize the first letter
+        return key.charAt(0).toUpperCase() + key.slice(1);
+    };
 
-    // --- Main Content ---
     return (
-        <div className="p-4 sm:p-8 max-w-5xl mx-auto">
-            <h1 className="text-3xl font-extrabold mb-8 text-foreground border-b pb-2 border-border">
-                My Friends ({friends.length})
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <h1 className="text-4xl font-extrabold mb-8 text-center">
+                Your Friends Leaderboard
             </h1>
-            
-            <div className="space-y-4">
-                {friends.length === 0 ? (
-                    <div className="text-center p-10 bg-card rounded-xl shadow-lg">
-                        <p className="text-lg text-muted-foreground">
-                            You don't seem to have any friends yet! Start following other users to see them here.
-                        </p>
-                    </div>
-                ) : (
-                    friends.map(friend => (
-                        <div 
-                            key={friend.id} 
-                            className="bg-card text-card-foreground p-4 sm:p-6 rounded-xl shadow-md flex flex-col lg:flex-row justify-between items-start lg:items-center transition-all duration-200 hover:shadow-xl hover:scale-[1.01]"
-                        >
-                            
-                            {/* Friend Info and Avatar */}
-                            <div className="flex items-center w-full lg:w-1/4 mb-4 lg:mb-0">
-                                <img 
-                                    src={friend.avatarUrl} 
-                                    alt={friend.name} 
-                                    className="w-12 h-12 rounded-full mr-4 border-2 border-primary object-cover"
-                                    // Fallback for missing images
-                                    onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/48x48/6366F1/FFFFFF?text=${friend.name[0]}` }} 
-                                />
-                                <h2 className="text-xl font-bold truncate">{friend.name}</h2>
-                            </div>
 
-                            {/* Leaderboard Rankings Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-3 text-sm text-muted-foreground w-full lg:w-2/3 mb-4 lg:mb-0">
-                                {Object.entries(friend.rankings).map(([boardKey, rank]) => (
-                                    <div key={boardKey} className="flex flex-col">
-                                        <span className="font-semibold text-primary">{leaderboardNames[boardKey] || boardKey}</span>
-                                        <span className="text-lg font-mono text-foreground font-bold">#{rank}</span>
-                                    </div>
-                                ))}
-                            </div>
+            {isLoading && (
+                <div className="flex justify-center items-center h-40">
+                    <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                    <p className="text-lg text-muted-foreground">Loading friends data...</p>
+                </div>
+            )}
 
-                            {/* Unfriend Action */}
-                            <Button 
-                                variant="destructive" 
-                                className="w-full lg:w-fit mt-4 lg:mt-0 whitespace-nowrap"
+            {error && (
+                <Card className="bg-red-900/20 border-red-500 text-red-300">
+                    <CardHeader>
+                        <CardTitle>Error Loading Data</CardTitle>
+                        <CardDescription className="text-red-400">
+                        Failed to fetch friends list: {error}. Please check your API connection.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            )}
+
+            {!isLoading && !error && friends.length === 0 && (
+                <Card className="text-center p-6">
+                    <CardTitle className="text-xl">No Friends Found</CardTitle>
+                    <CardDescription className="mt-2">
+                        It looks like your friends list is empty. Time to start connecting!
+                    </CardDescription>
+                </Card>
+            )}
+
+            <div className="grid grid-cols-1 gap-6">
+                {friends.map((friend) => (
+                    <Card key={friend.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-2xl font-bold">
+                                {friend.name}
+                            </CardTitle>
+                            <Button
+                                variant="destructive"
+                                size="sm"
                                 onClick={() => handleUnfriend(friend.id, friend.name)}
+                                className="flex items-center space-x-1"
                             >
-                                <UserX className="w-4 h-4 mr-2" />
-                                Unfriend
+                                <UserX className="h-4 w-4" />
+                                <span>Unfriend</span>
                             </Button>
-                        </div>
-                    ))
-                )}
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                            <h3 className="text-lg font-semibold mb-3 border-b pb-1">
+                                Leaderboard Rankings
+                            </h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2 gap-x-4">
+                                {leaderboardOrder.map((board) => {
+                                    const rank = friend.rankings?.[board];
+                                    return (
+                                        <div key={board} className="flex flex-col">
+                                            <span className="text-sm font-medium capitalize text-muted-foreground">
+                                                {formatLeaderboardName(board)}:
+                                            </span>
+                                            <span className="text-lg font-mono font-semibold">
+                                                #{rank || 'N/A'}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </div>
     );
