@@ -41,7 +41,7 @@ export function LCTable({ leetcodeUsers }) {
         return (
           <Button variant="link" asChild>
             <a
-              href={`https://github.com/${username}`}
+              href={`https://leetcode.com/u/${username}`}
               target="_blank"
               rel="noreferrer"
             >
