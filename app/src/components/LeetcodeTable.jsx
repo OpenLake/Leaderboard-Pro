@@ -149,7 +149,7 @@ export function LCTable({ leetcodeUsers }) {
       alert("ERROR!!!!");
     } else {
       setLeetcodefriends((current) =>
-         current.filter((fruit) => fruit !== e),
+        current.filter((fruit) => fruit !== e),
       );
     }
   }
@@ -159,7 +159,11 @@ export function LCTable({ leetcodeUsers }) {
 
   useEffect(() => {
     if (LTshowfriends) {
-      setTodisplayusers(leetcodefriends);
+      setTodisplayusers(
+        leetcodeUsers.filter((leetcodeUser) =>
+          leetcodefriends.includes(leetcodeUser.username),
+        ),
+      );
     } else {
       setTodisplayusers(leetcodeUsers);
     }

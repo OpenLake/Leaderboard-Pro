@@ -112,9 +112,7 @@ export function OpenLakeTable({ OLUsers }) {
     if (response.status !== 200) {
       alert("ERROR!!!!");
     } else {
-      setOLFriends((current) =>
-         current.filter((fruit) => fruit !== e),
-      );
+      setOLFriends((current) => current.filter((fruit) => fruit !== e));
     }
   }
   useEffect(() => {
@@ -123,7 +121,9 @@ export function OpenLakeTable({ OLUsers }) {
 
   useEffect(() => {
     if (showOLFriends) {
-      setTodisplayusers(OLFriends);
+      setTodisplayusers(
+        OLUsers.filter((OLUser) => OLFriends.includes(OLUser.username)),
+      );
     } else {
       setTodisplayusers(OLUsers);
     }

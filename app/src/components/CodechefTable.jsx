@@ -156,7 +156,11 @@ export function CCTable({ codechefUsers }) {
 
   useEffect(() => {
     if (ccshowfriends) {
-      setTodisplayusers(codecheffriends);
+      setTodisplayusers(
+        codechefUsers.filter((codechefUser) =>
+          codecheffriends.includes(codechefUser.username),
+        ),
+      );
     } else {
       setTodisplayusers(codechefUsers);
     }

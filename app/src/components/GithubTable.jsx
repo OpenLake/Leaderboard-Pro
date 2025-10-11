@@ -137,7 +137,7 @@ export function GHTable({ githubUsers }) {
       alert("ERROR!!!!");
     } else {
       setGithubfriends((current) =>
-         current.filter((fruit) => fruit !== e),
+        current.filter((fruit) => fruit !== e),
       );
     }
   }
@@ -147,7 +147,11 @@ export function GHTable({ githubUsers }) {
 
   useEffect(() => {
     if (ghshowfriends) {
-      setTodisplayusers(githubfriends);
+      setTodisplayusers(
+        githubUsers.filter((ghUser) =>
+          githubfriends.includes(ghUser.username),
+        ),
+      );
     } else {
       setTodisplayusers(githubUsers);
     }

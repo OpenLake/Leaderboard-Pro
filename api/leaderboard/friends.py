@@ -111,10 +111,8 @@ def codeforcesFriendList(request):
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:
-                friendList.append({"friendName": i})
-        serializer = Name_Serializer(friendList, many=True)
-        logger.error(serializer.data)
-        return Response(serializer.data)
+                friendList.append(i)
+        return Response(friendList)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -205,9 +203,8 @@ def codechefFriendList(request):
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:
-                friendList.append({"friendName": i})
-        serializer = Name_Serializer(friendList, many=True)
-        return Response(serializer.data)
+                friendList.append(i)
+        return Response(friendList)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -296,9 +293,8 @@ def leetcodeFriendList(request):
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:
-                friendList.append({"friendName": i})
-        serializer = Name_Serializer(friendList, many=True)
-        return Response(serializer.data)
+                friendList.append(i)
+        return Response(friendList)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -388,9 +384,8 @@ def githubFriendList(request):
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:
-                friendList.append({"friendName": i})
-        serializer = Name_Serializer(friendList, many=True)
-        return Response(serializer.data)
+                friendList.append(i)
+        return Response(friendList)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -480,9 +475,8 @@ def openlakeFriendList(request):
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:
-                friendList.append({"friendName": i})
-        serializer = Name_Serializer(friendList, many=True)
-        return Response(serializer.data)
+                friendList.append(i)
+        return Response(friendList)
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
