@@ -243,10 +243,13 @@ class Command(BaseCommand):
     def openlake_contributor_update(self):
         updated_list = {}
         url = "https://api.github.com/users/OpenLake/repos"
-        headers = {
-            "Authorization": f"Bearer {os.environ.get("GITHUB_TOKEN")}",
-            "Accept": "application/vnd.github.v3+json",  # Recommended for GitHub API
-        }
+        if os.environ.get("GITHUB_TOKEN", False):
+            headers = {
+                "Authorization": f"Bearer {os.environ.get("GITHUB_TOKEN")}",
+                "Accept": "application/vnd.github.v3+json",  # Recommended for GitHub API
+            }
+        else:
+            headers = {}
         response = requests.get(url, headers=headers).json()
 
         for i in range(len(response)):
