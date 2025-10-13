@@ -1,0 +1,24 @@
+name: update_db
+
+on:
+  push:
+  schedule:
+    - cron: "*/12 * * * *"
+jobs:
+  update_db:
+    name: Update Database
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip" # caching pip dependencies
+      - name: Install dependencies
+        run: cd api/ && pip install -r requirements.txt
+      - name: Add .env file
+        env:
+          ENV_FILE: ${{ secrets.ENV_TXT}}
+        run: echo "$ENV_FILE" > .env
+      - name: Update DB with current stats
+        run: python manage.py update_db
