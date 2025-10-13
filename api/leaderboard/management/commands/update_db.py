@@ -21,7 +21,7 @@ from leaderboard.serializers import (
 )
 
 logger = logging.getLogger(__name__)
-
+logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "leaderboard.settings")
 
@@ -251,7 +251,6 @@ class Command(BaseCommand):
 
         for i in range(len(response)):
             repo_url = str(response[i]["contributors_url"])
-            self.stdout.write(repo_url)
             try:
                 repo_response = requests.get(repo_url).json()
                 for j in range(len(repo_response)):
