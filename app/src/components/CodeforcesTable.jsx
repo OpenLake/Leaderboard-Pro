@@ -157,7 +157,11 @@ export function CFTable({ codeforcesUsers }) {
 
   useEffect(() => {
     if (cfshowfriends) {
-      setTodisplayusers(codeforcesfriends);
+      setTodisplayusers(
+        codeforcesUsers.filter((codeforcesUser) =>
+          codeforcesfriends.includes(codeforcesUser.username),
+        ),
+      );
     } else {
       setTodisplayusers(codeforcesUsers);
     }
