@@ -14,9 +14,9 @@ services:
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASSWORD: "rabbitmq"
   db:
-    image: postgres
+    image: postgres:15
     environment:
-      POSTGRES_DB: "postgres"
+      POSTGRES_DB: "leaderboard"
       POSTGRES_USER: "leaderboardpro"
       POSTGRES_PASSWORD: postgres
       POSTGRES_PORT: "5432"
