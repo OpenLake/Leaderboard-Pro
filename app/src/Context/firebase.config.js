@@ -23,7 +23,7 @@ try {
 
     auth = getAuth(app);
 }
-catch (e) {
+catch {
     auth = null;
 }
 

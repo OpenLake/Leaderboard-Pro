@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
 import { CFTable } from "./components/CodeforcesTable.jsx";
@@ -25,7 +25,7 @@ import { NavMenu } from "./components/NavMenu";
 const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
-  const [darkmode, setDarkmode] = useState(false);
+  const [darkmode] = useState(false);
   const [codeforcesUsers, setCodeforcesUsers] = useState([]);
   const [leetcodeUsers, setLeetcodeUsers] = useState([]);
   const [openlakeContributor, setOpenlakeContributor] = useState([]);

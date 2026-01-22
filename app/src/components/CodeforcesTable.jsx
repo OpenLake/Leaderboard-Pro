@@ -9,17 +9,15 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { User, Trophy, Users, Loader2, Search, X, Crown } from "lucide-react";
+import { User, Trophy, Users, Loader2, Search,Crown } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 export function CFTable({ codeforcesUsers }) {
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
-  const [todisplayusers, setTodisplayusers] = useState([]);
   const { open, isMobile } = useSidebar();
   const [codeforcesfriends, setCodeforcesfriends] = useState([]);
-  const [cfshowfriends, setCfshowfriends] = useState(false);
   const [activeTab, setActiveTab] = useState("friends");
   const [contestId, setContestId] = useState("");
   const [contestStandings, setContestStandings] = useState([]);

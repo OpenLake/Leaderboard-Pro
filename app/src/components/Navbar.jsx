@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import { useTheme } from "@/Context/ThemeProvider";
 import {
   Sidebar,
   SidebarHeader,
@@ -14,7 +13,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Calendar,
   Home,
@@ -22,15 +21,14 @@ import {
   Trophy,
   Users,
   Award,
-  User,
-  Sun,
-  Moon,
 } from "lucide-react";
+
 import Openlake from "@/icons/openlake.svg?react";
 import Github from "@/icons/github.svg?react";
 import LeetCode from "@/icons/leetcode.svg?react";
 import Codeforces from "@/icons/codeforces.svg?react";
 import Codechef from "@/icons/codechef.svg?react";
+
 const items = [
   {
     title: "Dashboard",
@@ -63,6 +61,7 @@ const items = [
     icon: Award,
   },
 ];
+
 const links = [
   { title: "Openlake", icon: Openlake },
   { title: "Github", icon: Github },
@@ -70,18 +69,20 @@ const links = [
   { title: "Codeforces", icon: Codeforces },
   { title: "Codechef", icon: Codechef },
 ];
+
 export const Navbar = () => {
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
-  const { setTheme, theme } = useTheme();
+
   return (
     <Sidebar>
       <SidebarHeader className="flex-row justify-between">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-         <Openlake className="h-6 w-6" />
-         <span>Leaderboard Pro</span>
+          <Openlake className="h-6 w-6" />
+          <span>Leaderboard Pro</span>
         </Link>
-     </SidebarHeader>
+      </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xl font-extrabold">
@@ -102,6 +103,7 @@ export const Navbar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel className="text-xl font-extrabold">
             Leaderboards
@@ -109,7 +111,7 @@ export const Navbar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {links.map((link) => {
-                var linkLower = link.title.toLowerCase();
+                const linkLower = link.title.toLowerCase();
                 return (
                   <SidebarMenuItem key={link.title}>
                     <SidebarMenuButton asChild>
@@ -125,6 +127,7 @@ export const Navbar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         {(user ?? false) ? (
           <Button onClick={logoutUser}>Logout</Button>
