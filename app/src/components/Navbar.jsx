@@ -77,11 +77,14 @@ export const Navbar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="flex-row justify-between">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <Openlake className="h-6 w-6" />
-          <span>Leaderboard Pro</span>
-        </Link>
-      </SidebarHeader>
+        <Link
+          to="/"
+          className="flex items-center gap-2"
+          aria-label="Leaderboard Pro Home"
+          title="Leaderboard Pro">
+         <Openlake className="h-7 w-7" />
+       </Link>
+     </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>

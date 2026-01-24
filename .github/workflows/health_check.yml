@@ -4,16 +4,19 @@ on:
   push:
   schedule:
     - cron: "*/12 * * * *"
+
 jobs:
   healthcheck:
     name: Health Check
     runs-on: ubuntu-latest
+
     steps:
-      - name: server-check
-        run: wget leaderboard-pro.onrender.com --tries=1 -T 70 # Check if the server is working and turn it on if not working.
-      - name: Output error code
-        id: error
-        run: echo "error=$?" >> $GITHUB_OUTPUT
-      - name: Error code check
+      - name: Backend healthcheck (Render)
         run: |
-          if [[ ${{ steps.error.outputs.error}} == 0 ]]; then exit 0; else exit 1; fi
+          echo "Checking Backend..."
+          curl -L --fail --max-time 120 https://leaderboard-pro.onrender.com || exit 1
+
+      - name: Frontend healthcheck
+        run: |
+          echo "Checking Frontend..."
+          curl -L --fail --max-time 60 https://leaderboard-pro.vercel.app || exit 1
