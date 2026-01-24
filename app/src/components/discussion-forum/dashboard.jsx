@@ -60,7 +60,7 @@ const Dashboard = ({ user, posts, tags }) => {
           </div>
           <div className="col-3">
             <ListGroup
-              items={[]}
+              items={tags || []}
               selectedTag={selectedTag}
               onTagSelect={handleTagSelect}
             />

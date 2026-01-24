@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     authTokens ? jwtDecode(authTokens.access) : null,
   );
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+ const [loading] = useState(false);
   let [userNames, setUserNames] = useState(
     localStorage.getItem("userNames")
       ? JSON.parse(localStorage.getItem("userNames"))

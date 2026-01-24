@@ -1,5 +1,3 @@
-import React from "react";
-
 const Jumotron = () => {
   return (
     <div className="jumbotron">
