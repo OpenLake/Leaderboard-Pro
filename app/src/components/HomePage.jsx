@@ -24,10 +24,14 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
 import { cn } from "@/lib/utils";
+import Heatmap from "@/components/Heatmap"; // Import the Heatmap component
+import { useState } from "react";
+
 var rank = 0;
 
 function Cards(usernames) {
   usernames = usernames.usernames;
+  
   var CardInfo = [
     {
       title: "Overall Rank",
@@ -35,53 +39,78 @@ function Cards(usernames) {
       info: `#${rank ?? "N/A"}`,
       change: 100,
       suffix: "Among all users",
+      hasHeatmap: false,
     },
     {
       title: "Codeforces Rating",
       icon: Code2,
-      info: `${usernames.codeforces.rating ?? "N/A"}`,
+      info: `${usernames.codeforces?.rating ?? "N/A"}`,
       change: 100,
       suffix: "Title",
+      hasHeatmap: true,
+      platform: 'codeforces',
+      heatmapLabel: "Contest Activity",
+      username: usernames.codeforces?.username || "",
     },
     {
       title: "LeetCode Problems",
       icon: Target,
-      info: `${usernames.leetcode.total_solved ?? "N/A"}`,
+      info: `${usernames.leetcode?.total_solved ?? "N/A"}`,
       change: -100,
       suffix: "This month",
+      hasHeatmap: false,
     },
     {
       title: "Github Contributions",
       icon: GitBranch,
-      info: `${usernames.github.contributions ?? "N/A"}`,
+      info: `${usernames.github?.contributions ?? "N/A"}`,
       change: 100,
       suffix: "This year",
+      hasHeatmap: true,
+      platform: 'github',
+      heatmapLabel: "Commit History",
+      username: usernames.github?.username || "",
     },
   ];
+  
   return (
     <div className="col-span-full grid grid-cols-2 gap-4 lg:grid-cols-4">
       {CardInfo.map((info) => (
         <Card
           id="codeforces"
-          className="w-[100%]"
+          className="w-[100%] hover:shadow-md transition-all duration-300"
           key={info.title.split(" ")[0].toLowerCase()}
         >
-          <CardHeader>
-            {info.title}
-            <CardAction>
-              <info.icon />
-            </CardAction>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">{info.title}</div>
+              <CardAction>
+                <info.icon className="h-5 w-5" />
+              </CardAction>
+            </div>
           </CardHeader>
           <CardContent>
-            <CardTitle>{info.info}</CardTitle>
+            <CardTitle className="text-2xl font-bold mb-1">{info.info}</CardTitle>
+            
+            {/* Heatmap for Codeforces and GitHub */}
+            {info.hasHeatmap && (
+              <>
+                <div className="text-xs text-gray-500 mb-1">{info.heatmapLabel}</div>
+                <Heatmap 
+                  platform={info.platform} 
+                  contributions={info.platform === 'github' ? (usernames.github?.contributions || 0) : 0}
+                  username={info.username}
+                />
+              </>
+            )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="pt-2">
             <CardDescription>
               <span
                 className={
                   info.change > 0
-                    ? cn("text-green-600")
-                    : cn("text-red-600")
+                    ? cn("text-green-600 font-medium")
+                    : cn("text-red-600 font-medium")
                 }
               >
                 {info.change > 0 ? (
@@ -110,6 +139,7 @@ function Overview() {
     </div>
   );
 }
+
 function Analytics() {
   return (
     <div className="flex size-full justify-center">
@@ -117,6 +147,7 @@ function Analytics() {
     </div>
   );
 }
+
 function Leaderboards() {
   return (
     <div className="flex size-full justify-center">
@@ -124,6 +155,7 @@ function Leaderboards() {
     </div>
   );
 }
+
 function Friends() {
   return (
     <div className="flex size-full justify-center">
@@ -131,6 +163,7 @@ function Friends() {
     </div>
   );
 }
+
 function TabsView() {
   const tabs = [
     { title: "Overview", comp: Overview },
@@ -138,7 +171,7 @@ function TabsView() {
     { title: "Leaderboards", comp: Leaderboards },
     { title: "Friends", comp: Friends },
   ];
-  tabs.map((item) => console.log(item));
+  
   return (
     <div className="grow">
       <Tabs
@@ -168,9 +201,11 @@ function TabsView() {
     </div>
   );
 }
+
 const HomePage = () => {
   const { open, isMobile } = useSidebar();
   const { userNames } = useAuth();
+  
   return (
     <div
       className="text-foreground flex h-[100%] flex-col gap-5 px-10"
