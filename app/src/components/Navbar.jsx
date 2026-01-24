@@ -77,8 +77,15 @@ export const Navbar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="flex-row justify-between">
-        Leaderboard Pro
-      </SidebarHeader>
+        <Link
+          to="/"
+          className="flex items-center gap-2"
+          aria-label="Leaderboard Pro Home"
+          title="Leaderboard Pro">
+         <Openlake className="h-7 w-7" />
+       </Link>
+     </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xl font-extrabold">
