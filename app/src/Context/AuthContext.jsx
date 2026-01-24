@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react"; // add useEffect
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,11 +29,24 @@ export const AuthProvider = ({ children }) => {
   );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // add
   let [userNames, setUserNames] = useState(
     localStorage.getItem("userNames")
       ? JSON.parse(localStorage.getItem("userNames"))
       : null,
   );
+  useEffect(() => {
+    if (authTokens) {
+      setUser(jwtDecode(authTokens.access));
+      setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+    setLoading(false);
+  }, []);
+
   let getUsernamesData = async (authToken) => {
     let usernames_response = await fetch(BACKEND + "/userDetails/", {
       method: "GET",
@@ -227,6 +240,7 @@ export const AuthProvider = ({ children }) => {
   let contextData = {
     user: user,
     authTokens: authTokens,
+    isAuthenticated, 
     loginUser: loginUser,
     registerUser: registerUser,
     logoutUser: logoutUser,
@@ -238,6 +252,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     userNames: userNames,
   };
+  
   // useEffect(() => {
 
   //     const token = async (username) => {
