@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+// test pre-commit hook
 import "./App.css";
 import { Navbar } from "./components/Navbar.jsx";
 import { CFTable } from "./components/CodeforcesTable.jsx";
