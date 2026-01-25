@@ -1,5 +1,3 @@
-import React from "react";
-
 const ListGroup = (props) => {
   const { items, selectedTag, onTagSelect } = props;
   return (
