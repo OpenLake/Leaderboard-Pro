@@ -30,22 +30,21 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // add
+  const isAuthenticated = Boolean(authTokens?.access);
   let [userNames, setUserNames] = useState(
     localStorage.getItem("userNames")
       ? JSON.parse(localStorage.getItem("userNames"))
       : null,
   );
   useEffect(() => {
-    if (authTokens) {
-      setUser(jwtDecode(authTokens.access));
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
-      setIsAuthenticated(false);
-    }
-    setLoading(false);
-  }, []);
+  if (authTokens) {
+    setUser(jwtDecode(authTokens.access));
+  } else {
+    setUser(null);
+  }
+  setLoading(false);
+}, [authTokens]);
+
 
   let getUsernamesData = async (authToken) => {
     let usernames_response = await fetch(BACKEND + "/userDetails/", {
