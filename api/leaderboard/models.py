@@ -19,10 +19,7 @@ class githubUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
@@ -35,10 +32,7 @@ class openlakeContributor(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
@@ -59,10 +53,7 @@ class codeforcesUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username} ({self.rating})"
@@ -82,10 +73,7 @@ class codechefUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3):
-            return True
-        else:
-            False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3)
 
     def __str__(self):
         return f"{self.username} ({self.rating})"
@@ -129,10 +117,7 @@ class LeetcodeUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
