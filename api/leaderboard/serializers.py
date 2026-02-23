@@ -11,6 +11,7 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     githubUser,
     openlakeContributor,
+    AtcoderUser
 )
 
 
@@ -147,3 +148,17 @@ class ReplyPost_Serializer(serializers.ModelSerializer):
     class Meta:
         model = ReplyPost
         fields = "__all__"
+
+
+class AtcoderUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AtcoderUser
+        fields = "__all__"
+
+
+class AC_Update_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = AtcoderUser
+        fields = "__all__"
+        read_only_fields = ("username",)
+        list_serializer_class = UpdateListSerializer

@@ -69,8 +69,8 @@ export function NavMenu() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className="rounded-full">
                   <Link to="/profile" className="rounded-full">
-                    <Avatar className="bg-accent size-9">
-                      <LetterAvatar name={userNames.username} />
+                    <Avatar className="bg-accent size-9">                      
+                      <LetterAvatar name={userNames?.username || "User"} />
                     </Avatar>
                   </Link>
                 </NavigationMenuLink>

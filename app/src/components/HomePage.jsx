@@ -30,8 +30,7 @@ import { useState } from "react";
 var rank = 0;
 
 function Cards(usernames) {
-  usernames = usernames.usernames;
-  
+  usernames = usernames?.usernames;
   var CardInfo = [
     {
       title: "Overall Rank",
@@ -44,18 +43,18 @@ function Cards(usernames) {
     {
       title: "Codeforces Rating",
       icon: Code2,
-      info: `${usernames.codeforces?.rating ?? "N/A"}`,
+      info: `${usernames?.codeforces?.rating ?? "N/A"}`,
       change: 100,
       suffix: "Title",
       hasHeatmap: true,
       platform: 'codeforces',
       heatmapLabel: "Contest Activity",
-      username: usernames.codeforces?.username || "",
+      username: usernames?.codeforces?.username || "",
     },
     {
       title: "LeetCode Problems",
       icon: Target,
-      info: `${usernames.leetcode?.total_solved ?? "N/A"}`,
+      info: `${usernames?.leetcode?.total_solved ?? "N/A"}`,
       change: -100,
       suffix: "This month",
       hasHeatmap: false,
@@ -63,13 +62,13 @@ function Cards(usernames) {
     {
       title: "Github Contributions",
       icon: GitBranch,
-      info: `${usernames.github?.contributions ?? "N/A"}`,
+      info: `${usernames?.github?.contributions ?? "N/A"}`,
       change: 100,
       suffix: "This year",
       hasHeatmap: true,
       platform: 'github',
       heatmapLabel: "Commit History",
-      username: usernames.github?.username || "",
+      username: usernames?.github?.username || "",
     },
   ];
   
@@ -217,7 +216,7 @@ const HomePage = () => {
       }}
     >
       <div className="text-3xl font-semibold">
-        Welcome back, {userNames.username}
+        Welcome back, {userNames?.username}
       </div>
       <Cards usernames={userNames} />
       <TabsView />
