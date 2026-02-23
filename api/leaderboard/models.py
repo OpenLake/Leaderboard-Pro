@@ -166,3 +166,23 @@ class ReplyPost(models.Model):
     parent = models.ForeignKey(
         DiscussionPost, on_delete=models.CASCADE, null=True, blank=True
     )
+
+class AtcoderUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    rating = models.PositiveIntegerField(default=0)  # Algorithm Rating
+    highest_rating = models.PositiveIntegerField(default=0)
+    rank = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"{self.username} ({self.rating})"
+
+    class Meta:
+        ordering = ["-rating"]

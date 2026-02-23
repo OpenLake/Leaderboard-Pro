@@ -88,6 +88,11 @@ urlpatterns = [
         views.CodechefLeaderboard.as_view(),
         name="codechef-leaderboard",
     ),
+    path(
+        "atcoder/",
+        views.AtcoderViewSet.as_view(),
+        name="atcoder-leaderboard",
+    ),
     path("github/", views.GithubUserAPI.as_view(), name="github-leaderboard"),
     path(
         "openlake/",
@@ -174,6 +179,7 @@ urlpatterns = [
         users.getUserDetails,
         name="userDetails",
     ),
+    
     path("admin/", admin.site.urls),
 ]
 
