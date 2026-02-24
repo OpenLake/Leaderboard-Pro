@@ -25,6 +25,7 @@ import {
 import { useAuth } from "@/Context/AuthContext";
 import { cn } from "@/lib/utils";
 import Heatmap from "@/components/Heatmap"; // Import the Heatmap component
+import { PlatformStreakFetcher } from "@/components/PlatformStreakFetcher"; // Import the hidden streak fetcher
 import { useState } from "react";
 
 var rank = 0;
@@ -58,6 +59,8 @@ function Cards(usernames) {
       change: -100,
       suffix: "This month",
       hasHeatmap: false,
+      platform: 'leetcode',
+      username: usernames?.leetcode?.username || "",
     },
     {
       title: "Github Contributions",
@@ -102,6 +105,11 @@ function Cards(usernames) {
                 />
               </>
             )}
+            
+            {/* Hidden streak fetcher for platforms without heatmaps */}
+            {!info.hasHeatmap && info.platform && info.username && (
+              <PlatformStreakFetcher platform={info.platform} username={info.username} />
+            )}
           </CardContent>
           <CardFooter className="pt-2">
             <CardDescription>
@@ -128,6 +136,14 @@ function Cards(usernames) {
           </CardFooter>
         </Card>
       ))}
+
+      {/* Explicit streak fetchers for platforms without Cards */}
+      {usernames?.atcoder?.username && (
+        <PlatformStreakFetcher platform="atcoder" username={usernames.atcoder.username} />
+      )}
+      {usernames?.codechef?.username && (
+        <PlatformStreakFetcher platform="codechef" username={usernames.codechef.username} />
+      )}
     </div>
   );
 }

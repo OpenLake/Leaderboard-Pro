@@ -24,6 +24,8 @@ import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 import ContestCalendar from "./components/ContestCalendar";
+import Blogs from "./components/Blogs.jsx";
+import Achievements from "./components/Achievements.jsx";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -207,6 +209,24 @@ function App() {
                   element={
                     <PrivateRoute>
                       <ContestCalendar />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/blogs"
+                  element={
+                    <PrivateRoute>
+                      <Blogs />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/achievements"
+                  element={
+                    <PrivateRoute>
+                      <Achievements />
                     </PrivateRoute>
                   }
                 />
