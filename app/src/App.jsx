@@ -23,6 +23,7 @@ import Dashboard from "./components/discussion-forum/dashboard.jsx";
 import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
+import PublicRoute from "./Context/PublicRoute";
 import ContestCalendar from "./components/ContestCalendar";
 import Blogs from "./components/Blogs.jsx";
 import Achievements from "./components/Achievements.jsx";
@@ -97,8 +98,9 @@ function App() {
             <div className="App bg-background w-full">
               <NavMenu />
               <Routes>
-                <Route exact path="/register" element={<Register />} />
-                <Route exact path="/login" element={<Login />} />
+
+                <Route exact path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+                <Route exact path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route
                   exact
                   path="/leetcoderankingsccps"

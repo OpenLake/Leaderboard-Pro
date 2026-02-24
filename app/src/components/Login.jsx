@@ -3,6 +3,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react"; 
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,9 +27,16 @@ const FormSchema = z.object({
 });
 
 const Login = () => {
-  let { SignInWithGoogle, loginUser } = useAuth();
+  let { SignInWithGoogle, loginUser, isAuthenticated, loading } = useAuth(); // Get isAuthenticated and loading
   const { open, isMobile } = useSidebar();
   const navigate = useNavigate();
+   
+  useEffect(() => {
+    if (isAuthenticated && !loading) {
+      navigate("/");
+    }
+  }, [isAuthenticated, loading, navigate]);
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -36,10 +44,31 @@ const Login = () => {
       password: "",
     },
   });
+  
   async function handleGoogleAuth(e) {
     e.preventDefault();
     await SignInWithGoogle();
     navigate("/");
+  } 
+  if (loading) {
+    return (
+      <div
+        className="text-foreground flex h-full flex-col"
+        style={{
+          width:
+            open && !isMobile
+              ? "calc(100vw - var(--sidebar-width))"
+              : "100vw",
+        }}
+      >
+        <div className="m-auto">Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render login form if already authenticated (will redirect)
+  if (isAuthenticated) {
+    return null; // Or a loading spinner since useEffect will redirect
   }
 
   return (
