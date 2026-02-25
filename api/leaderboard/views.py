@@ -160,7 +160,7 @@ class GithubOrganisationAPI(
     def _get_pr_key_contributions(self, pr_key):
         normalized_key = pr_key.strip().strip("[]")
         if not normalized_key:
-            return []
+            return [], None, status.HTTP_200_OK
 
         contributions = Counter()
         page = 1
@@ -175,11 +175,28 @@ class GithubOrganisationAPI(
             )
 
             if response.status_code != 200:
-                break
+                error_detail = None
+                try:
+                    error_detail = response.json()
+                except ValueError:
+                    error_detail = response.text
+                return (
+                    [],
+                    {
+                        "error": "Failed to fetch data from GitHub.",
+                        "upstream_status": response.status_code,
+                        "details": error_detail,
+                    },
+                    response.status_code,
+                )
 
             payload = response.json()
             items = payload.get("items", [])
             for item in items:
+                title = item.get("title", "")
+                trimmed_title = title.lstrip()
+                if not trimmed_title.startswith(f"[{normalized_key}]"):
+                    continue
                 username = item.get("user", {}).get("login")
                 if username:
                     contributions[username] += 1
@@ -192,15 +209,22 @@ class GithubOrganisationAPI(
         ordered_contributors = sorted(
             contributions.items(), key=lambda x: x[1], reverse=True
         )
-        return [
-            {"username": username, "contributions": contribution_count}
-            for username, contribution_count in ordered_contributors
-        ]
+        return (
+            [
+                {"username": username, "contributions": contribution_count}
+                for username, contribution_count in ordered_contributors
+            ],
+            None,
+            status.HTTP_200_OK,
+        )
 
     def get(self, request):
         pr_key = request.query_params.get("pr_key", "").strip()
         if pr_key:
-            return Response(self._get_pr_key_contributions(pr_key))
+            data, error_payload, response_status = self._get_pr_key_contributions(pr_key)
+            if error_payload:
+                return Response(error_payload, status=response_status)
+            return Response(data, status=response_status)
 
         ol_contributors = openlakeContributor.objects.all()
         serializer = OL_Serializer(ol_contributors, many=True)

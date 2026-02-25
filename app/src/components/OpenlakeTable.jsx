@@ -130,15 +130,26 @@ export function OpenLakeTable({ OLUsers }) {
       return;
     }
 
+    const controller = new AbortController();
+    const { signal } = controller;
+
     const getPrKeyFilteredUsers = async () => {
       setIsFetchingPrKeyData(true);
       try {
         const response = await fetch(
           BACKEND + `/openlake/?pr_key=${encodeURIComponent(appliedPrKey)}`,
+          { signal },
         );
+        if (!response.ok) {
+          setKeyFilteredUsers([]);
+          return;
+        }
         const data = await response.json();
         setKeyFilteredUsers(Array.isArray(data) ? data : []);
-      } catch {
+      } catch (error) {
+        if (error.name === "AbortError") {
+          return;
+        }
         setKeyFilteredUsers([]);
       } finally {
         setIsFetchingPrKeyData(false);
@@ -146,6 +157,10 @@ export function OpenLakeTable({ OLUsers }) {
     };
 
     getPrKeyFilteredUsers();
+
+    return () => {
+      controller.abort();
+    };
   }, [appliedPrKey]);
 
   useEffect(() => {
