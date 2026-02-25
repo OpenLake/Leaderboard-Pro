@@ -1,6 +1,8 @@
 import logging
+import os
 import re
 import urllib.parse
+from collections import Counter
 from datetime import datetime
 
 import requests
@@ -148,7 +150,58 @@ class GithubOrganisationAPI(
     queryset = openlakeContributor.objects.all()
     serializer_class = OL_Serializer
 
+    def _github_headers(self):
+        token = os.getenv("GITHUB_TOKEN", "").strip()
+        headers = {"Accept": "application/vnd.github+json"}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return headers
+
+    def _get_pr_key_contributions(self, pr_key):
+        normalized_key = pr_key.strip().strip("[]")
+        if not normalized_key:
+            return []
+
+        contributions = Counter()
+        page = 1
+
+        while True:
+            query = f'org:OpenLake is:pr state:all in:title "[{normalized_key}]"'
+            response = requests.get(
+                "https://api.github.com/search/issues",
+                params={"q": query, "per_page": 100, "page": page},
+                headers=self._github_headers(),
+                timeout=20,
+            )
+
+            if response.status_code != 200:
+                break
+
+            payload = response.json()
+            items = payload.get("items", [])
+            for item in items:
+                username = item.get("user", {}).get("login")
+                if username:
+                    contributions[username] += 1
+
+            if len(items) < 100:
+                break
+
+            page += 1
+
+        ordered_contributors = sorted(
+            contributions.items(), key=lambda x: x[1], reverse=True
+        )
+        return [
+            {"username": username, "contributions": contribution_count}
+            for username, contribution_count in ordered_contributors
+        ]
+
     def get(self, request):
+        pr_key = request.query_params.get("pr_key", "").strip()
+        if pr_key:
+            return Response(self._get_pr_key_contributions(pr_key))
+
         ol_contributors = openlakeContributor.objects.all()
         serializer = OL_Serializer(ol_contributors, many=True)
         return Response(serializer.data)
