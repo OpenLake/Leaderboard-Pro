@@ -6,6 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "./ui/switch";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
+
+const readJsonIfAvailable = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const fallbackText = await response.text();
+    return {
+      isJson: false,
+      data: null,
+      message: fallbackText || `Unexpected response (${response.status})`,
+    };
+  }
+
+  try {
+    const data = await response.json();
+    return { isJson: true, data, message: null };
+  } catch {
+    return { isJson: false, data: null, message: "Invalid JSON response" };
+  }
+};
+
 export function OpenLakeTable({ OLUsers }) {
   let accessToken = null;
   try {
@@ -78,16 +98,26 @@ export function OpenLakeTable({ OLUsers }) {
       setOLFriends([]);
       return;
     }
-    const response = await fetch(BACKEND + "/openlakeFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-    });
-
-    const newData = await response.json();
-    setOLFriends(newData);
+    try {
+      const response = await fetch(BACKEND + "/openlakeFL/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok || !parsed.isJson) {
+        console.error("Failed to fetch OpenLake friends:", parsed.message);
+        setOLFriends([]);
+        return;
+      }
+      const newData = parsed.data;
+      setOLFriends(Array.isArray(newData) ? newData : []);
+    } catch (error) {
+      console.error("Failed to fetch OpenLake friends:", error);
+      setOLFriends([]);
+    }
   };
 
   async function addfriend(e) {
@@ -95,20 +125,27 @@ export function OpenLakeTable({ OLUsers }) {
       alert("Please login to add friends.");
       return;
     }
-    const response = await fetch(BACKEND + "/openlakeFA/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    try {
+      const response = await fetch(BACKEND + "/openlakeFA/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to add OpenLake friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setOLFriends((current) => [...current, e]);
+    } catch (error) {
+      console.error("Failed to add OpenLake friend:", error);
+      alert("ERROR!!!!");
     }
   }
   async function dropfriend(e) {
@@ -116,20 +153,27 @@ export function OpenLakeTable({ OLUsers }) {
       alert("Please login to remove friends.");
       return;
     }
-    const response = await fetch(BACKEND + "/openlakeFD/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    try {
+      const response = await fetch(BACKEND + "/openlakeFD/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to remove OpenLake friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setOLFriends((current) => current.filter((fruit) => fruit !== e));
+    } catch (error) {
+      console.error("Failed to remove OpenLake friend:", error);
+      alert("ERROR!!!!");
     }
   }
   useEffect(() => {

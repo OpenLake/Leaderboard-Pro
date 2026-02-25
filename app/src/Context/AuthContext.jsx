@@ -38,6 +38,15 @@ const readJsonSafely = async (response) => {
   }
 };
 
+const safeJwtDecode = (token) => {
+  if (!token) return null;
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
+  }
+};
+
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
@@ -45,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     parseStoredJSON("authTokens"),
   );
   let [user, setUser] = useState(
-    authTokens ? jwtDecode(authTokens.access) : null,
+    authTokens ? safeJwtDecode(authTokens.access) : null,
   );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -56,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   );
   useEffect(() => {
     if (authTokens) {
-      setUser(jwtDecode(authTokens.access));
+      setUser(safeJwtDecode(authTokens.access));
     } else {
       setUser(null);
     }
@@ -101,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       let data = await readJsonSafely(response);
       if (response.status === 200 && data?.access) {
         setAuthTokens(data);
-        setUser(jwtDecode(data.access));
+        setUser(safeJwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
         let usernames_data = await getUsernamesData(data);
         setUserNames(usernames_data);
@@ -156,7 +165,7 @@ export const AuthProvider = ({ children }) => {
         let data = await readJsonSafely(tokenResponse);
         if (tokenResponse.status === 200 && data?.access) {
           setAuthTokens(data);
-          setUser(jwtDecode(data.access));
+          setUser(safeJwtDecode(data.access));
           localStorage.setItem("authTokens", JSON.stringify(data));
           navigate("/");
           let usernames_data = await getUsernamesData(data);
@@ -223,7 +232,7 @@ export const AuthProvider = ({ children }) => {
         if (logresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
@@ -265,7 +274,7 @@ export const AuthProvider = ({ children }) => {
         if (regresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);

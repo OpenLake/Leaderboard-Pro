@@ -28,6 +28,25 @@ import ContestCalendar from "./components/ContestCalendar";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
+const fetchListSafely = async (endpoint, setData) => {
+  if (!BACKEND) {
+    setData([]);
+    return;
+  }
+  try {
+    const res = await fetch(BACKEND + endpoint);
+    const contentType = res.headers.get("content-type") || "";
+    if (!res.ok || !contentType.toLowerCase().includes("application/json")) {
+      setData([]);
+      return;
+    }
+    const data = await res.json();
+    setData(Array.isArray(data) ? data : []);
+  } catch {
+    setData([]);
+  }
+};
+
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
   const [darkmode] = useState(false);
@@ -37,46 +56,12 @@ function App() {
   const [githubUser, setGithubUser] = useState([]);
   const [atcoderUsers, setAtcoderUsers] = useState([]);
 
-  const fetchListSafely = async (endpoint, setData) => {
-    if (!BACKEND) {
-      setData([]);
-      return;
-    }
-    try {
-      const res = await fetch(BACKEND + endpoint);
-      const contentType = res.headers.get("content-type") || "";
-      if (!res.ok || !contentType.toLowerCase().includes("application/json")) {
-        setData([]);
-        return;
-      }
-      const data = await res.json();
-      setData(Array.isArray(data) ? data : []);
-    } catch {
-      setData([]);
-    }
-  };
-
   useEffect(() => {
     fetchListSafely("/codeforces/", setCodeforcesUsers);
-  }, []);
-
-  useEffect(() => {
     fetchListSafely("/codechef/", setCodechefUsers);
-  }, []);
-
-  useEffect(() => {
     fetchListSafely("/leetcode/", setLeetcodeUsers);
-  }, []);
-
-  useEffect(() => {
     fetchListSafely("/openlake/", setOpenlakeContributor);
-  }, []);
-
-  useEffect(() => {
     fetchListSafely("/github/", setGithubUser);
-  }, []);
-
-  useEffect(() => {
     fetchListSafely("/atcoder/", setAtcoderUsers);
   }, []);
 

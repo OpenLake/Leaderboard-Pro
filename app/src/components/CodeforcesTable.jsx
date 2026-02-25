@@ -699,9 +699,11 @@ useEffect(() => {
                     : "Add friends to see them here")
                   : "Guest mode: login to manage friends."}
                 </p>
-              <div className="text-sm text-gray-400">
-                <p>Click Add Friend on any user in the main leaderboard</p>
-              </div>
+              {isAuthenticated && (
+                <div className="text-sm text-gray-400">
+                  <p>Click Add Friend on any user in the main leaderboard</p>
+                </div>
+              )}
             </div>
           )}
         </div>

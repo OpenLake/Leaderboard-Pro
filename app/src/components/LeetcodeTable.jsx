@@ -13,6 +13,25 @@ import { User } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
+const readJsonIfAvailable = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const fallbackText = await response.text();
+    return {
+      isJson: false,
+      data: null,
+      message: fallbackText || `Unexpected response (${response.status})`,
+    };
+  }
+
+  try {
+    const data = await response.json();
+    return { isJson: true, data, message: null };
+  } catch {
+    return { isJson: false, data: null, message: "Invalid JSON response" };
+  }
+};
+
 export function LCTable({ leetcodeUsers }) {
   let accessToken = null;
   try {
@@ -114,16 +133,26 @@ export function LCTable({ leetcodeUsers }) {
       setLeetcodefriends([]);
       return;
     }
-    const response = await fetch(BACKEND + "/leetcodeFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-    });
-
-    const newData = await response.json();
-    setLeetcodefriends(newData);
+    try {
+      const response = await fetch(BACKEND + "/leetcodeFL/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok || !parsed.isJson) {
+        console.error("Failed to fetch LeetCode friends:", parsed.message);
+        setLeetcodefriends([]);
+        return;
+      }
+      const newData = parsed.data;
+      setLeetcodefriends(Array.isArray(newData) ? newData : []);
+    } catch (error) {
+      console.error("Failed to fetch LeetCode friends:", error);
+      setLeetcodefriends([]);
+    }
   };
 
   async function addfriend(e) {
@@ -131,20 +160,27 @@ export function LCTable({ leetcodeUsers }) {
       alert("Please login to add friends.");
       return;
     }
-    const response = await fetch(BACKEND + "/leetcodeFA/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    try {
+      const response = await fetch(BACKEND + "/leetcodeFA/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to add LeetCode friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setLeetcodefriends((current) => [...current, e]);
+    } catch (error) {
+      console.error("Failed to add LeetCode friend:", error);
+      alert("ERROR!!!!");
     }
   }
   async function dropfriend(e) {
@@ -152,22 +188,29 @@ export function LCTable({ leetcodeUsers }) {
       alert("Please login to remove friends.");
       return;
     }
-    const response = await fetch(BACKEND + "/leetcodeFD/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    try {
+      const response = await fetch(BACKEND + "/leetcodeFD/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to remove LeetCode friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setLeetcodefriends((current) =>
         current.filter((fruit) => fruit !== e),
       );
+    } catch (error) {
+      console.error("Failed to remove LeetCode friend:", error);
+      alert("ERROR!!!!");
     }
   }
   useEffect(() => {
