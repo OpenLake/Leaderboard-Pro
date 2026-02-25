@@ -57,8 +57,10 @@ const Register = () => {
 
   const handleGoogleRegister = async (e) => {
     e.preventDefault();
-    await SignUpWithGoogle();
-    navigate("/profile");
+    const success = await SignUpWithGoogle();
+    if (success) {
+      navigate("/profile");
+    }
   };
   return (
     <div
