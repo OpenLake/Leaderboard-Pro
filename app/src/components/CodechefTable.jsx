@@ -14,6 +14,13 @@ import { User } from "lucide-react";
 const BACKEND = import.meta.env.VITE_BACKEND;
 export function CCTable({ codechefUsers }) {
   const { open, isMobile } = useSidebar();
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -68,40 +75,46 @@ export function CCTable({ codechefUsers }) {
       accessorKey: "Country_rank",
       header: "Country Rank",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        return (
-          <div className="flex justify-end">
-            {codecheffriends.includes(username) ? (
-              <Button
-                variant="outline"
-                onClick={() => dropfriend(username)}
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              return (
+                <div className="flex justify-end">
+                  {codecheffriends.includes(username) ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => dropfriend(username)}
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   const getccfriends = async () => {
+    if (!accessToken) {
+      setCodecheffriends([]);
+      return;
+    }
     const response = await fetch(BACKEND + "/codechefFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
     });
 
@@ -110,13 +123,15 @@ export function CCTable({ codechefUsers }) {
   };
 
   async function addfriend(e) {
+    if (!accessToken) {
+      alert("Please login to add friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/codechefFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -130,13 +145,15 @@ export function CCTable({ codechefUsers }) {
     }
   }
   async function dropfriend(e) {
+    if (!accessToken) {
+      alert("Please login to remove friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/codechefFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -151,8 +168,13 @@ export function CCTable({ codechefUsers }) {
     }
   }
   useEffect(() => {
-    getccfriends();
-  }, []);
+    if (isAuthenticated) {
+      getccfriends();
+    } else {
+      setCodecheffriends([]);
+      setCCshowfriends(false);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (ccshowfriends) {
@@ -206,13 +228,19 @@ export function CCTable({ codechefUsers }) {
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
         />
-        <div>
-          Friends Only
-          <Switch
-            className="mx-1 align-middle"
-            onCheckedChange={(val) => setCCshowfriends(val)}
-          />
-        </div>
+        {isAuthenticated ? (
+          <div>
+            Friends Only
+            <Switch
+              className="mx-1 align-middle"
+              onCheckedChange={(val) => setCCshowfriends(val)}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            Login to use friend actions
+          </div>
+        )}
       </div>
       <DataTable
         data={filteredusers.sort((a, b) => (a.rating < b.rating ? 1 : -1))}

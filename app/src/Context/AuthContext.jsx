@@ -15,14 +15,34 @@ export const useAuth = () => {
 };
 const googleProvider = new GoogleAuthProvider();
 const BACKEND = import.meta.env.VITE_BACKEND;
+const parseStoredJSON = (key) => {
+  const rawValue = localStorage.getItem(key);
+  if (!rawValue) return null;
+  try {
+    return JSON.parse(rawValue);
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+};
+
+const readJsonSafely = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return null;
+  }
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
   let [authTokens, setAuthTokens] = useState(
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null,
+    parseStoredJSON("authTokens"),
   );
   let [user, setUser] = useState(
     authTokens ? jwtDecode(authTokens.access) : null,
@@ -32,56 +52,64 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = Boolean(authTokens?.access);
   let [userNames, setUserNames] = useState(
-    localStorage.getItem("userNames")
-      ? JSON.parse(localStorage.getItem("userNames"))
-      : null,
+    parseStoredJSON("userNames"),
   );
   useEffect(() => {
-  if (authTokens) {
-    setUser(jwtDecode(authTokens.access));
-  } else {
-    setUser(null);
-  }
-  setLoading(false);
-}, [authTokens]);
+    if (authTokens) {
+      setUser(jwtDecode(authTokens.access));
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  }, [authTokens]);
 
 
   let getUsernamesData = async (authToken) => {
-    let usernames_response = await fetch(BACKEND + "/userDetails/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + authToken.access,
-      },
-    });
-    let usernames_data = await usernames_response.json();
-    if (usernames_response.status === 200) {
-      localStorage.setItem("userNames", JSON.stringify(usernames_data));
-    } else {
-      console.log("ERROR!!!");
+    if (!authToken?.access) return null;
+    try {
+      let usernames_response = await fetch(BACKEND + "/userDetails/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + authToken.access,
+        },
+      });
+      let usernames_data = await readJsonSafely(usernames_response);
+      if (usernames_response.status === 200 && usernames_data) {
+        localStorage.setItem("userNames", JSON.stringify(usernames_data));
+        return usernames_data;
+      }
+      localStorage.removeItem("userNames");
+      return null;
+    } catch {
+      localStorage.removeItem("userNames");
+      return null;
     }
-    return usernames_data;
   };
   let loginUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: form_data.username,
-        password: form_data.password,
-      }),
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setAuthTokens(data);
-      setUser(jwtDecode(data.access));
-      localStorage.setItem("authTokens", JSON.stringify(data));
-      let usernames_data = await getUsernamesData(data);
-      setUserNames(usernames_data);
-      navigate("/");
-    } else {
+    try {
+      let response = await fetch(BACKEND + "/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form_data.username,
+          password: form_data.password,
+        }),
+      });
+      let data = await readJsonSafely(response);
+      if (response.status === 200 && data?.access) {
+        setAuthTokens(data);
+        setUser(jwtDecode(data.access));
+        localStorage.setItem("authTokens", JSON.stringify(data));
+        let usernames_data = await getUsernamesData(data);
+        setUserNames(usernames_data);
+        navigate("/");
+      } else {
+        alert("ERROR!!!!");
+      }
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -96,46 +124,50 @@ export const AuthProvider = ({ children }) => {
     if (auth.currentUser) return signOut(auth);
   };
   let registerUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        first_name: form_data.first_name,
-        email: form_data.email,
-        username: form_data.username,
-        password: form_data.password,
-        last_name: form_data.last_name,
-        cc_uname: form_data.cc_uname,
-        cf_uname: form_data.cf_uname,
-        gh_uname: form_data.gh_uname,
-        lt_uname: form_data.lt_uname,
-      }),
-    });
-    if (response.status === 200) {
-      let response = await fetch(BACKEND + "/api/token/", {
+    try {
+      let response = await fetch(BACKEND + "/api/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          first_name: form_data.first_name,
+          email: form_data.email,
           username: form_data.username,
           password: form_data.password,
+          last_name: form_data.last_name,
+          cc_uname: form_data.cc_uname,
+          cf_uname: form_data.cf_uname,
+          gh_uname: form_data.gh_uname,
+          lt_uname: form_data.lt_uname,
         }),
       });
-      let data = await response.json();
       if (response.status === 200) {
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        localStorage.setItem("authTokens", JSON.stringify(data));
-        navigate("/");
-        let usernames_data = await getUsernamesData(data);
-        setUserNames(usernames_data);
+        let tokenResponse = await fetch(BACKEND + "/api/token/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: form_data.username,
+            password: form_data.password,
+          }),
+        });
+        let data = await readJsonSafely(tokenResponse);
+        if (tokenResponse.status === 200 && data?.access) {
+          setAuthTokens(data);
+          setUser(jwtDecode(data.access));
+          localStorage.setItem("authTokens", JSON.stringify(data));
+          navigate("/");
+          let usernames_data = await getUsernamesData(data);
+          setUserNames(usernames_data);
+        } else {
+          alert("ERROR!!!!");
+        }
       } else {
         alert("ERROR!!!!");
       }
-    } else {
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -171,6 +203,11 @@ export const AuthProvider = ({ children }) => {
   const SignInWithGoogle = async () => {
     let response;
     try {
+      if (!auth) {
+        console.error("Firebase auth not initialized. Check your .env.frontend file.");
+        alert("Firebase configuration error. Please check console.");
+        return null;
+      }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         let logresponse = await fetch(BACKEND + "/api/token/google/", {
@@ -182,29 +219,36 @@ export const AuthProvider = ({ children }) => {
             token: response.user.accessToken,
           }),
         });
-        let data = await logresponse.json();
-        if (logresponse.status === 200) {
+        let data = await readJsonSafely(logresponse);
+        if (logresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
           setUser(jwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
+          navigate("/");
         } else {
-          alert(data.message);
+          console.error("Backend token error:", data);
+          alert(data?.message || "Backend error during login");
         }
       } else {
-        console.log("Please try logging in again");
+        console.log("Google sign-in was cancelled or failed");
       }
     } catch (error) {
-      console.log(error);
-      console.log("Please try logging in again");
+      console.error("Google login error:", error);
+      alert("Google login failed: " + error.message);
     }
     return response;
   };
   const SignUpWithGoogle = async () => {
     let response;
     try {
+      if (!auth) {
+        console.error("Firebase auth not initialized. Check your .env.frontend file.");
+        alert("Firebase configuration error. Please check console.");
+        return null;
+      }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         let regresponse = await fetch(BACKEND + "/api/register/google/", {
@@ -217,22 +261,26 @@ export const AuthProvider = ({ children }) => {
             username: response.user.email.split("@")[0],
           }),
         });
-        let data = await regresponse.json();
-        if (regresponse.status === 200) {
+        let data = await readJsonSafely(regresponse);
+        if (regresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
           setUser(jwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
+          let usernames_data = await getUsernamesData(token);
+          setUserNames(usernames_data);
+          navigate("/");
         } else {
-          alert("Please Try registering again");
+          console.error("Backend registration error:", data);
+          alert("Please try registering again: " + (data?.message || ""));
         }
         console.log(response);
       } else {
-        alert("Please Try registering again");
+        alert("Google registration was cancelled");
       }
     } catch (error) {
-      console.log(error);
-      alert("Please Try registering again");
+      console.error("Google signup error:", error);
+      alert("Google signup failed: " + error.message);
     }
     return response;
   };

@@ -11,6 +11,13 @@ import {
 } from "@/components/ui/avatar";
 const BACKEND = import.meta.env.VITE_BACKEND;
 export function GHTable({ githubUsers }) {
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -60,40 +67,46 @@ export function GHTable({ githubUsers }) {
       accessorKey: "stars",
       header: "Stars",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        return (
-          <div className="flex justify-end">
-            {githubfriends.includes(username) ? (
-              <Button
-                variant="outline"
-                onClick={() => dropfriend(username)}
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              return (
+                <div className="flex justify-end">
+                  {githubfriends.includes(username) ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => dropfriend(username)}
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   const getghfriends = async () => {
+    if (!accessToken) {
+      setGithubfriends([]);
+      return;
+    }
     const response = await fetch(BACKEND + "/githubFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
     });
 
@@ -102,13 +115,15 @@ export function GHTable({ githubUsers }) {
   };
 
   async function addfriend(e) {
+    if (!accessToken) {
+      alert("Please login to add friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/githubFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -121,13 +136,15 @@ export function GHTable({ githubUsers }) {
     }
   }
   async function dropfriend(e) {
+    if (!accessToken) {
+      alert("Please login to remove friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/githubFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -142,8 +159,13 @@ export function GHTable({ githubUsers }) {
     }
   }
   useEffect(() => {
-    getghfriends();
-  }, []);
+    if (isAuthenticated) {
+      getghfriends();
+    } else {
+      setGithubfriends([]);
+      setGHshowfriends(false);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (ghshowfriends) {
@@ -197,13 +219,19 @@ export function GHTable({ githubUsers }) {
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
         />
-        <div>
-          Friends Only
-          <Switch
-            className="mx-1 align-middle"
-            onCheckedChange={(val) => setGHshowfriends(val)}
-          />
-        </div>
+        {isAuthenticated ? (
+          <div>
+            Friends Only
+            <Switch
+              className="mx-1 align-middle"
+              onCheckedChange={(val) => setGHshowfriends(val)}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            Login to use friend actions
+          </div>
+        )}
       </div>
       <DataTable
         data={filteredusers.sort((a, b) =>

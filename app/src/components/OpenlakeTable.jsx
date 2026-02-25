@@ -7,6 +7,13 @@ import { Switch } from "./ui/switch";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 export function OpenLakeTable({ OLUsers }) {
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -36,40 +43,46 @@ export function OpenLakeTable({ OLUsers }) {
       accessorKey: "contributions",
       header: "Contributions",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        return (
-          <div className="flex justify-end">
-            {OLFriends.includes(username) ? (
-              <Button
-                variant="secondary"
-                onClick={() => dropfriend(username)}
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              return (
+                <div className="flex justify-end">
+                  {OLFriends.includes(username) ? (
+                    <Button
+                      variant="secondary"
+                      onClick={() => dropfriend(username)}
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   const getccfriends = async () => {
+    if (!accessToken) {
+      setOLFriends([]);
+      return;
+    }
     const response = await fetch(BACKEND + "/openlakeFL/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
     });
 
@@ -78,13 +91,15 @@ export function OpenLakeTable({ OLUsers }) {
   };
 
   async function addfriend(e) {
+    if (!accessToken) {
+      alert("Please login to add friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/openlakeFA/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -97,13 +112,15 @@ export function OpenLakeTable({ OLUsers }) {
     }
   }
   async function dropfriend(e) {
+    if (!accessToken) {
+      alert("Please login to remove friends.");
+      return;
+    }
     const response = await fetch(BACKEND + "/openlakeFD/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
         friendName: e,
@@ -116,8 +133,13 @@ export function OpenLakeTable({ OLUsers }) {
     }
   }
   useEffect(() => {
-    getccfriends();
-  }, []);
+    if (isAuthenticated) {
+      getccfriends();
+    } else {
+      setOLFriends([]);
+      setShowOLFriends(false);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (showOLFriends) {
@@ -169,13 +191,19 @@ export function OpenLakeTable({ OLUsers }) {
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
         />
-        <div>
-          Friends Only
-          <Switch
-            className="mx-1 align-middle"
-            onCheckedChange={(val) => setShowOLFriends(val)}
-          />
-        </div>
+        {isAuthenticated ? (
+          <div>
+            Friends Only
+            <Switch
+              className="mx-1 align-middle"
+              onCheckedChange={(val) => setShowOLFriends(val)}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            Login to use friend actions
+          </div>
+        )}
       </div>
       <DataTable data={filteredusers} columns={columns} />
     </div>

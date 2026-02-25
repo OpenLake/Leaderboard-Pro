@@ -37,54 +37,47 @@ function App() {
   const [githubUser, setGithubUser] = useState([]);
   const [atcoderUsers, setAtcoderUsers] = useState([]);
 
+  const fetchListSafely = async (endpoint, setData) => {
+    if (!BACKEND) {
+      setData([]);
+      return;
+    }
+    try {
+      const res = await fetch(BACKEND + endpoint);
+      const contentType = res.headers.get("content-type") || "";
+      if (!res.ok || !contentType.toLowerCase().includes("application/json")) {
+        setData([]);
+        return;
+      }
+      const data = await res.json();
+      setData(Array.isArray(data) ? data : []);
+    } catch {
+      setData([]);
+    }
+  };
+
   useEffect(() => {
-    fetch(BACKEND + "/codeforces/")
-      .then((res) => res.json())
-      .then((res) => {
-        setCodeforcesUsers(res);
-      });
+    fetchListSafely("/codeforces/", setCodeforcesUsers);
   }, []);
 
   useEffect(() => {
-    fetch(BACKEND + "/codechef/")
-      .then((res) => res.json())
-      .then((res) => {
-        setCodechefUsers(res);
-      });
+    fetchListSafely("/codechef/", setCodechefUsers);
   }, []);
 
   useEffect(() => {
-    fetch(BACKEND + "/leetcode/")
-      .then((res) => res.json())
-      .then((res) => {
-        setLeetcodeUsers(res);
-      });
+    fetchListSafely("/leetcode/", setLeetcodeUsers);
   }, []);
 
   useEffect(() => {
-    fetch(BACKEND + "/openlake/")
-      .then((res) => res.json())
-      .then((res) => {
-        setOpenlakeContributor(res);
-      });
+    fetchListSafely("/openlake/", setOpenlakeContributor);
   }, []);
 
   useEffect(() => {
-    fetch(BACKEND + "/github/")
-      .then((res) => res.json())
-      .then((res) => {
-        setGithubUser(res);
-      });
+    fetchListSafely("/github/", setGithubUser);
   }, []);
 
   useEffect(() => {
-    // Add check to ensure BACKEND is defined if needed. 
-    // Assuming it is fine as per other calls.
-    fetch(BACKEND + "/atcoder/")
-      .then((res) => res.json())
-      .then((res) => {
-        setAtcoderUsers(res);
-      });
+    fetchListSafely("/atcoder/", setAtcoderUsers);
   }, []);
 
   return (
@@ -107,47 +100,27 @@ function App() {
                 <Route
                   exact
                   path="/"
-                  element={
-                    <PrivateRoute>
-                      <HomePage />
-                    </PrivateRoute>
-                  }
+                  element={<HomePage />}
                 />
                 <Route
                   exact
                   path="/codeforces"
-                  element={
-                    <PrivateRoute>
-                      <CFTable codeforcesUsers={codeforcesUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<CFTable codeforcesUsers={codeforcesUsers} />}
                 />
                 <Route
                   exact
                   path="/codechef"
-                  element={
-                    <PrivateRoute>
-                      <CCTable codechefUsers={codechefUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<CCTable codechefUsers={codechefUsers} />}
                 />
                 <Route
                   exact
                   path="/openlake"
-                  element={
-                    <PrivateRoute>
-                      <OpenLakeTable OLUsers={openlakeContributor} />
-                    </PrivateRoute>
-                  }
+                  element={<OpenLakeTable OLUsers={openlakeContributor} />}
                 />
                 <Route
                   exact
                   path="/github"
-                  element={
-                    <PrivateRoute>
-                      <GHTable githubUsers={githubUser} />
-                    </PrivateRoute>
-                  }
+                  element={<GHTable githubUsers={githubUser} />}
                 />
                 <Route
                   exact
@@ -161,11 +134,7 @@ function App() {
                 <Route
                   exact
                   path="/leetcode"
-                  element={
-                    <PrivateRoute>
-                      <LCTable leetcodeUsers={leetcodeUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<LCTable leetcodeUsers={leetcodeUsers} />}
                 />
                 <Route
                   exact

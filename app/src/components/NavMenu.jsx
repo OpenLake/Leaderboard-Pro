@@ -14,8 +14,10 @@ import { useAuth } from "@/Context/AuthContext";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "./ui/button";
 function LetterAvatar({ name }) {
-  // just a placeholder for now, but will be used if no user-provided avatar.
-  const initials = name[0].toUpperCase();
+  // Fallback prevents crashes when auth profile data is unavailable.
+  const safeName =
+    typeof name === "string" && name.trim().length > 0 ? name.trim() : "Guest";
+  const initials = safeName[0].toUpperCase();
   return (
     <div className="text-foreground m-auto flex justify-center text-xl font-semibold">
       {initials}
@@ -26,6 +28,7 @@ function LetterAvatar({ name }) {
 export function NavMenu() {
   const { setTheme, theme } = useTheme();
   const { user, userNames } = useAuth();
+  const displayName = userNames?.username || user?.username || "Guest";
   return (
     <NavigationMenu className="grid-row m-1 max-w-full border-b-1 pb-3">
       <div className="grid w-full grid-cols-5 grid-rows-1 gap-10">
@@ -69,8 +72,8 @@ export function NavMenu() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className="rounded-full">
                   <Link to="/profile" className="rounded-full">
-                    <Avatar className="bg-accent size-9">                      
-                      <LetterAvatar name={userNames?.username || "User"} />
+                    <Avatar className="bg-accent size-9">
+                      <LetterAvatar name={displayName} />
                     </Avatar>
                   </Link>
                 </NavigationMenuLink>
