@@ -24,6 +24,7 @@ from leaderboard import friends, root, users, views
 
 from .models import User
 
+from analytics_views import UnifiedAnalyticsView
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -175,6 +176,7 @@ urlpatterns = [
         name="userDetails",
     ),
     path("admin/", admin.site.urls),
+    path("analytics/unified/", UnifiedAnalyticsView.as_view(), name="unified-analytics")
 ]
 
 urlpatterns += router.urls
