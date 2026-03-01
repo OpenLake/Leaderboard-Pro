@@ -14,6 +14,13 @@ import { User, Trophy, Users, Loader2, Search,Crown } from "lucide-react";
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 export function CFTable({ codeforcesUsers }) {
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const { open, isMobile } = useSidebar();
@@ -37,8 +44,11 @@ useEffect(() => {
   const fetchLoggedInUser = async () => {
     try {
       const authTokens = localStorage.getItem("authTokens");
-      if (authTokens) {
-        const tokens = JSON.parse(authTokens);
+      if (!authTokens) {
+        setLoggedInUser(null);
+        return;
+      }
+      const tokens = JSON.parse(authTokens);
         
         // Get user details from your backend endpoint
         const response = await fetch(`${BACKEND}/userDetails/`, {
@@ -140,18 +150,9 @@ useEffect(() => {
         if (codeforcesUsers.length > 0) {
           setLoggedInUser(codeforcesUsers[0]);
         }
-      } else {
-        console.warn("No auth tokens found");
-        if (codeforcesUsers.length > 0) {
-          setLoggedInUser(codeforcesUsers[0]);
-        }
-      }
     } catch (error) {
       console.error("Error fetching logged in user:", error);
-      // Fallback to first user
-      if (codeforcesUsers.length > 0) {
-        setLoggedInUser(codeforcesUsers[0]);
-      }
+      setLoggedInUser(null);
     } finally {
       setLoadingUser(false);
     }
@@ -237,6 +238,10 @@ useEffect(() => {
 
   // Friend functions
   async function addfriend(username) {
+    if (!isAuthenticated) {
+      alert("Please login to add friends.");
+      return;
+    }
     const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
     if (!currentFriends.includes(username)) {
       const updatedFriends = [...currentFriends, username];
@@ -246,6 +251,10 @@ useEffect(() => {
   } 
   
   async function dropfriend(username) {
+    if (!isAuthenticated) {
+      alert("Please login to remove friends.");
+      return;
+    }
     const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
     const updatedFriends = currentFriends.filter((friend) => friend !== username);
     setCodeforcesfriends(updatedFriends);
@@ -263,14 +272,13 @@ useEffect(() => {
     const friendsArray = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
     
     if (activeTab === "friends") {
-      // Always show friends in friends tab
-      usersToDisplay = usersToDisplay.filter((user) =>
-        friendsArray.includes(user.username)
-      );
-      
-      // Add logged in user to the list if not already a friend
-      if (loggedInUser && !friendsArray.includes(loggedInUser.username)) {
-        usersToDisplay = [loggedInUser, ...usersToDisplay];
+      if (isAuthenticated) {
+        usersToDisplay = usersToDisplay.filter((user) =>
+          friendsArray.includes(user.username)
+        );
+        if (loggedInUser && !friendsArray.includes(loggedInUser.username)) {
+          usersToDisplay = [loggedInUser, ...usersToDisplay];
+        }
       }
       
       // Apply search filter
@@ -285,7 +293,7 @@ useEffect(() => {
     usersToDisplay.sort((a, b) => b.rating - a.rating);
     
     setFilteredusers(usersToDisplay);
-  }, [activeTab, codeforcesfriends, codeforcesUsers, loggedInUser, searchfield]);
+  }, [activeTab, codeforcesfriends, codeforcesUsers, loggedInUser, searchfield, isAuthenticated]);
 
   // Filter contest standings by friends
   const filteredContestStandings = showFriendsInContest 
@@ -465,47 +473,51 @@ useEffect(() => {
       accessorKey: "total_solved",
       header: "Problems Solved",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        const isLoggedInUser = loggedInUser && loggedInUser.username === username;
-        const friendsArray = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
-        const isFriend = friendsArray.includes(username);
-        
-        if (isLoggedInUser) {
-          return (
-            <div className="flex justify-end">
-              <span className="px-3 py-1 text-sm text-green-700 bg-green-100 rounded-full">
-                You
-              </span>
-            </div>
-          );
-        }
-        
-        return (
-          <div className="flex justify-end">
-            {isFriend ? (
-              <Button
-                variant="outline"
-                onClick={() => dropfriend(username)}
-                size="sm"
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-                size="sm"
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              const isLoggedInUser = loggedInUser && loggedInUser.username === username;
+              const friendsArray = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
+              const isFriend = friendsArray.includes(username);
+              
+              if (isLoggedInUser) {
+                return (
+                  <div className="flex justify-end">
+                    <span className="px-3 py-1 text-sm text-green-700 bg-green-100 rounded-full">
+                      You
+                    </span>
+                  </div>
+                );
+              }
+              
+              return (
+                <div className="flex justify-end">
+                  {isFriend ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => dropfriend(username)}
+                      size="sm"
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                      size="sm"
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   function timeConverter(UNIX_timestamp) {
@@ -680,12 +692,18 @@ useEffect(() => {
             <div className="text-center p-8 border-2 border-dashed rounded-lg">
               <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold mb-2">No Friends Yet</h3>
-              <p className="text-gray-500 mb-4">
-                {loggedInUser ? `${loggedInUser.username}, you don't have any Codeforces friends yet.` : "Add friends to see them here"}
-              </p>
-              <div className="text-sm text-gray-400">
-                <p>Click Add Friend on any user in the main leaderboard</p>
-              </div>
+                <p className="text-gray-500 mb-4">
+                {isAuthenticated
+                  ? (loggedInUser
+                    ? `${loggedInUser.username}, you don't have any Codeforces friends yet.`
+                    : "Add friends to see them here")
+                  : "Guest mode: login to manage friends."}
+                </p>
+              {isAuthenticated && (
+                <div className="text-sm text-gray-400">
+                  <p>Click Add Friend on any user in the main leaderboard</p>
+                </div>
+              )}
             </div>
           )}
         </div>

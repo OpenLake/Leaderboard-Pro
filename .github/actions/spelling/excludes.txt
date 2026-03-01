@@ -1,9 +1,16 @@
 # See https://github.com/check-spelling/check-spelling/wiki/Configuration-Examples:-excludes
 (?:^|/)(?i)COPYRIGHT
 (?:^|/)(?i)LICEN[CS]E
+(?:^|/)__init__\.py$
+(?:^|/)codechef\.svg$
+(?:^|/)github\.svg$
+(?:^|/)leetcode\.svg$
 (?:^|/)package(?:-lock|)\.json$
+(?:^|/)pnpm-lock\.yaml$
 (?:^|/)vendor/
-ignore$
+[^/]\.eot$
+[^/]\.ttf$
+[^/]\.woff$
 \.avi$
 \.ico$
 \.jpe?g$
@@ -15,3 +22,12 @@ ignore$
 \.png$
 \.wav$
 ^\.github/
+^\Qapi/staticfiles_build/static/rest_framework/docs/js/highlight.pack.js\E$
+^\Qapi/staticfiles_build/static/rest_framework/js/coreapi-0.1.1.js\E$
+^api/leaderboard/contest_data\.json$
+^api/requirements\.txt$
+^api/staticfiles_build/static/admin/img/gis/
+^api/staticfiles_build/static/rest_framework/fonts/glyphicons-halflings-regular\.woff2$
+^app/dump\.rdb$
+^app/src/logo\.svg$
+ignore$
