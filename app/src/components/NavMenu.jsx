@@ -11,8 +11,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/Context/ThemeProvider";
 import { useAuth } from "@/Context/AuthContext";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Flame } from "lucide-react";
 import { Button } from "./ui/button";
+import { useStreak } from "@/Context/StreakContext";
+
 function LetterAvatar({ name }) {
   // Fallback prevents crashes when auth profile data is unavailable.
   const safeName =
@@ -28,6 +30,10 @@ function LetterAvatar({ name }) {
 export function NavMenu() {
   const { setTheme, theme } = useTheme();
   const { user, userNames } = useAuth();
+  const { streaks } = useStreak();
+  
+  // Calculate maximum streak globally
+  const globalStreak = Math.max(streaks.codeforces || 0, streaks.github || 0);
   const displayName = userNames?.username || user?.username || "Guest";
   return (
     <NavigationMenu className="grid-row m-1 max-w-full border-b-1 pb-3">
@@ -50,7 +56,15 @@ export function NavMenu() {
           </NavigationMenuList>
         </div>
         <div className={"col-start-5 col-end-6"}>
-          <NavigationMenuList className="justify-end">
+          <NavigationMenuList className="justify-end items-center">
+            {globalStreak >= 0 && (
+              <NavigationMenuItem className="flex items-center justify-center mr-2">
+                <div className="flex items-center gap-1.5 bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-full border border-orange-200 dark:border-orange-900/50 shadow-sm font-semibold text-sm">
+                  <Flame className="h-4 w-4" />
+                  <span>{globalStreak}</span>
+                </div>
+              </NavigationMenuItem>
+            )}
             <NavigationMenuItem className="flex flex-row gap-1" asChild>
               <Button
                 variant="ghost"

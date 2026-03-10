@@ -21,6 +21,7 @@ import {
   Trophy,
   Users,
   Award,
+  BookOpen,
 } from "lucide-react";
 
 import Openlake from "@/icons/openlake.svg?react";
@@ -58,8 +59,13 @@ const items = [
   },
   {
     title: "Achievements",
-    url: "/",
+    url: "/achievements",
     icon: Award,
+  },
+  {
+    title: "Blogs",
+    url: "/blogs",
+    icon: BookOpen,
   },
 ];
 
