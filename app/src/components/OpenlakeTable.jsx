@@ -35,11 +35,16 @@ export function OpenLakeTable({ OLUsers }) {
   }
   const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
+  const [prKeyInput, setPrKeyInput] = useState("");
+  const [appliedPrKey, setAppliedPrKey] = useState("");
+  const [keyFilteredUsers, setKeyFilteredUsers] = useState([]);
+  const [isFetchingPrKeyData, setIsFetchingPrKeyData] = useState(false);
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const [OLFriends, setOLFriends] = useState([]);
   const [showOLFriends, setShowOLFriends] = useState(false);
   const { open, isMobile } = useSidebar();
+  const sourceUsers = appliedPrKey ? keyFilteredUsers : OLUsers;
   const columns = [
     {
       accessorKey: "username",
@@ -186,12 +191,51 @@ export function OpenLakeTable({ OLUsers }) {
   }, [isAuthenticated]);
 
   useEffect(() => {
+    if (!appliedPrKey) {
+      setKeyFilteredUsers([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const getPrKeyFilteredUsers = async () => {
+      setIsFetchingPrKeyData(true);
+      try {
+        const response = await fetch(
+          BACKEND + `/openlake/?pr_key=${encodeURIComponent(appliedPrKey)}`,
+          { signal },
+        );
+        if (!response.ok) {
+          setKeyFilteredUsers([]);
+          return;
+        }
+        const data = await response.json();
+        setKeyFilteredUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (error.name === "AbortError") {
+          return;
+        }
+        setKeyFilteredUsers([]);
+      } finally {
+        setIsFetchingPrKeyData(false);
+      }
+    };
+
+    getPrKeyFilteredUsers();
+
+    return () => {
+      controller.abort();
+    };
+  }, [appliedPrKey]);
+
+  useEffect(() => {
     if (showOLFriends) {
       setTodisplayusers(
-        OLUsers.filter((OLUser) => OLFriends.includes(OLUser.username)),
+        sourceUsers.filter((OLUser) => OLFriends.includes(OLUser.username)),
       );
     } else {
-      setTodisplayusers(OLUsers);
+      setTodisplayusers(sourceUsers);
     }
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -204,7 +248,7 @@ export function OpenLakeTable({ OLUsers }) {
         }),
       );
     }
-  }, [showOLFriends, OLFriends, searchfield, OLUsers]);
+  }, [showOLFriends, OLFriends, searchfield, sourceUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -229,26 +273,58 @@ export function OpenLakeTable({ OLUsers }) {
       }}
     >
       <div className="mb-2 flex flex-row justify-between">
-        <Input
-          placeholder="Search OpenLake contributors..."
-          className="w-[40%]"
-          onChange={(val) => setSearchfield(val.target.value)}
-          type="search"
-        />
-        {isAuthenticated ? (
-          <div>
-            Friends Only
-            <Switch
-              className="mx-1 align-middle"
-              onCheckedChange={(val) => setShowOLFriends(val)}
-            />
-          </div>
-        ) : (
-          <div className="text-sm text-muted-foreground">
-            Login to use friend actions
-          </div>
-        )}
+        <div className="flex w-[65%] flex-row gap-2">
+          <Input
+            placeholder="Search OpenLake contributors..."
+            className="w-[55%]"
+            onChange={(val) => setSearchfield(val.target.value)}
+            type="search"
+          />
+          <Input
+            placeholder="Filter by PR key (e.g. FOSSOVERFLOW-2025)"
+            className="w-[45%]"
+            value={prKeyInput}
+            onChange={(e) => setPrKeyInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setAppliedPrKey(prKeyInput.trim());
+              }
+            }}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setAppliedPrKey(prKeyInput.trim())}
+          >
+            Apply Key
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setPrKeyInput("");
+              setAppliedPrKey("");
+            }}
+          >
+            Clear
+          </Button>
+        </div>
+        <div>
+          Friends Only
+          <Switch
+            className="mx-1 align-middle"
+            onCheckedChange={(val) => setShowOLFriends(val)}
+          />
+        </div>
       </div>
+      {isFetchingPrKeyData ? (
+        <div className="mb-2 text-sm text-muted-foreground">
+          Loading key-based contributions...
+        </div>
+      ) : null}
+      {appliedPrKey ? (
+        <div className="mb-2 text-sm text-muted-foreground">
+          Showing contributions for PR title key: [{appliedPrKey}]
+        </div>
+      ) : null}
       <DataTable data={filteredusers} columns={columns} />
     </div>
   );
