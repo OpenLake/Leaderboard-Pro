@@ -21,12 +21,14 @@ import {
   Trophy,
   Users,
   Award,
+  BookOpen,
 } from "lucide-react";
 
 import Openlake from "@/icons/openlake.svg?react";
 import Github from "@/icons/github.svg?react";
 import LeetCode from "@/icons/leetcode.svg?react";
 import Codeforces from "@/icons/codeforces.svg?react";
+import Atcoder from "@/icons/atcoder.svg?react";
 import Codechef from "@/icons/codechef.svg?react";
 
 const items = [
@@ -52,13 +54,18 @@ const items = [
   },
   {
     title: "Contests",
-    url: "/",
+    url: "/contests",
     icon: Calendar,
   },
   {
     title: "Achievements",
-    url: "/",
+    url: "/achievements",
     icon: Award,
+  },
+  {
+    title: "Blogs",
+    url: "/blogs",
+    icon: BookOpen,
   },
 ];
 
@@ -68,6 +75,7 @@ const links = [
   { title: "LeetCode", icon: LeetCode },
   { title: "Codeforces", icon: Codeforces },
   { title: "Codechef", icon: Codechef },
+  { title: "AtCoder", icon: Atcoder },
 ];
 
 export const Navbar = () => {

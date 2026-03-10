@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-
+from django.utils.timezone import now
 
 class User(AbstractUser):
     uid = models.CharField(max_length=64, unique=True, null=True, blank=True)
@@ -19,10 +19,7 @@ class githubUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
@@ -35,10 +32,7 @@ class openlakeContributor(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
@@ -51,7 +45,7 @@ class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.BigIntegerField(default=datetime.now().timestamp())
+    last_activity = models.BigIntegerField(default=lambda: int(now().timestamp()))
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
@@ -59,10 +53,7 @@ class codeforcesUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username} ({self.rating})"
@@ -82,10 +73,7 @@ class codechefUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3):
-            return True
-        else:
-            False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=3)
 
     def __str__(self):
         return f"{self.username} ({self.rating})"
@@ -129,10 +117,7 @@ class LeetcodeUser(models.Model):
 
     @property
     def is_outdated(self):
-        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
-            return True
-        else:
-            return False
+        return datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1)
 
     def __str__(self):
         return f"{self.username}"
@@ -181,3 +166,23 @@ class ReplyPost(models.Model):
     parent = models.ForeignKey(
         DiscussionPost, on_delete=models.CASCADE, null=True, blank=True
     )
+
+class AtcoderUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    rating = models.PositiveIntegerField(default=0)  # Algorithm Rating
+    highest_rating = models.PositiveIntegerField(default=0)
+    rank = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"{self.username} ({self.rating})"
+
+    class Meta:
+        ordering = ["-rating"]

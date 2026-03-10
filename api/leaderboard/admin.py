@@ -8,11 +8,13 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 
 admin.site.register(codeforcesUser)
 admin.site.register(githubUser)
 admin.site.register(codechefUser)
+admin.site.register(AtcoderUser)
 admin.site.register(openlakeContributor)
 admin.site.register(UserNames)
 admin.site.register(LeetcodeUser)

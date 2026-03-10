@@ -8,6 +8,9 @@ Thumbs.db
 *.tmp
 *.swp
 *.swo
+__pycache__/
+*.pyc
+db.sqlite3
 *.cpython-312.pyc
 coverage/
 
@@ -30,6 +33,8 @@ app/.env.development
 app/.env.production
 app/.env.test
 app/.idea/
+
+node_modules/
 
 # -----------------------------
 # Django Backend (/api)
@@ -58,4 +63,3 @@ api/leaderboard/api/service-account.json
 
 # Don't ignore __init__.py in migrations
 !api/**/migrations/__init__.py
-node_modules

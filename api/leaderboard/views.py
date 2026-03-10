@@ -8,7 +8,7 @@ from datetime import datetime
 import requests
 from django.http import JsonResponse
 from knox.models import AuthToken
-from rest_framework import generics, mixins, status
+from rest_framework import generics, mixins, status, response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -26,6 +26,7 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     githubUser,
     openlakeContributor,
+    AtcoderUser
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -36,6 +37,7 @@ from leaderboard.serializers import (
     OL_Serializer,
     ReplyPost_Serializer,
     Task_Serializer,
+    AtcoderUserSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -656,6 +658,19 @@ class DiscussionPostManage(APIView):
             {"message": "Post deleted successfully"}, status=status.HTTP_200_OK
         )
 
+
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+class AtcoderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = AtcoderUser.objects.all().order_by('-rating')
+    serializer_class = AtcoderUserSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
 
 class DiscussionReplyManage(APIView):
     def get(self, request):

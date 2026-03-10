@@ -262,3 +262,58 @@ def openlake_contributor__update(self):
         ol_contributor.username = i
         ol_contributor.contributions = updated_list[i]
         ol_contributor.save()
+
+
+@app.task(bind=True)
+def atcoder_user_update(self):
+    import re
+    from bs4 import BeautifulSoup
+    from leaderboard.models import AtcoderUser
+    from leaderboard.serializers import AC_Update_Serializer
+
+    ac_users = AtcoderUser.objects.all()
+    updates = []
+    for i, ac_user in enumerate(ac_users):
+        url = "https://atcoder.jp/users/{}".format(ac_user.username)
+        try:
+            page = requests.get(url, timeout=10)
+            data_ac = BeautifulSoup(page.text, "html.parser")
+            instance = {}
+            
+            # Scrape Rating
+            rating_tag = data_ac.find("table", class_="dl-table")
+            if rating_tag:
+                 rows = rating_tag.find_all("tr")
+                 for row in rows:
+                     th = row.find("th")
+                     if th and th.text.strip() == "Rating":
+                         instance["rating"] = int(row.find("span").text)
+                     if th and th.text.strip() == "Highest Rating":
+                         instance["highest_rating"] = int(row.find("span").text)
+                     if th and th.text.strip() == "Rank":
+                          # Actually AtCoder rank is just number like 1234th.
+                          # Let's clean it.
+                          rank_text = row.find("td").text
+                          match = re.search(r'\d+', rank_text)
+                          if match:
+                              instance["rank"] = int(match.group())
+
+            instance["username"] = ac_user.username
+            updates.append(instance)
+
+        except Exception as e:
+            print(f"Error updating {ac_user.username}: {e}")
+            # Keep old data if fail, ensuring we have a valid entry for the serializer
+            instance = {
+                "username": ac_user.username,
+                "rating": ac_user.rating,
+                "highest_rating": ac_user.highest_rating,
+                "rank": ac_user.rank
+            }
+            updates.append(instance)
+
+    serializer = AC_Update_Serializer(ac_users, data=updates, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
