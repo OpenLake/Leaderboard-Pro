@@ -247,15 +247,7 @@ export function GHTable({ githubUsers }) {
     }
   }, [searchfield, todisplayusers]);
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full px-1.5 py-1">
       <div className="mb-2 flex flex-row justify-between">
         <Input
           placeholder="Search Github contributors..."

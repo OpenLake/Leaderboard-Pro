@@ -20,7 +20,7 @@ import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import Dashboard from "./components/discussion-forum/dashboard.jsx";
-import { SidebarProvider } from "./components/ui/sidebar.jsx";
+import { SidebarProvider, SidebarInset } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 import PublicRoute from "./Context/PublicRoute";
@@ -71,11 +71,12 @@ function App() {
     <ThemeProvider defaultTheme="dark">
       <Router>
         <AuthProvider>
-          <SidebarProvider>
+          <SidebarProvider defaultOpen={false}>
             <Navbar />
-            <div className="App bg-background w-full">
-              <NavMenu />
-              <Routes>
+            <SidebarInset>
+              <div className="App bg-background">
+                <NavMenu />
+                <Routes>
 
                 <Route exact path="/register" element={<PublicRoute><Register /></PublicRoute>} />
                 <Route exact path="/login" element={<PublicRoute><Login /></PublicRoute>} />
@@ -162,20 +163,12 @@ function App() {
                 <Route
                   exact
                   path="/contests"
-                  element={
-                    <PrivateRoute>
-                      <ContestCalendar />
-                    </PrivateRoute>
-                  }
+                  element={<ContestCalendar />}
                 />
                 <Route
                   exact
                   path="/blogs"
-                  element={
-                    <PrivateRoute>
-                      <Blogs />
-                    </PrivateRoute>
-                  }
+                  element={<Blogs />}
                 />
                 <Route
                   exact
@@ -191,6 +184,7 @@ function App() {
               <GoToTop />
               <Footer />
             </div>
+            </SidebarInset>
           </SidebarProvider>
         </AuthProvider>
       </Router>

@@ -224,14 +224,19 @@ const Heatmap = ({ platform, username }) => {
       if (level > 0) {
         streak++;
         newStreakCells.add(i);
+        // console.log(`Streak incremented at index ${i}, level: ${level}, streak: ${streak}`);
       } else {
         if (i === flatData.length - 1) {
+             // Skip today if no activity yet
+             // console.log(`Today (index ${i}) has no activity, continuing streak check...`);
              continue;
         } else {
+           // console.log(`Streak broken at index ${i} (yesterday or older), level: ${level}`);
            break;
         }
       }
     }
+    // console.log(`Final calculated streak for ${platform}: ${streak}`);
     setCurrentStreak(streak);
     setStreakCells(newStreakCells);
     if (updateStreak && platform) {
