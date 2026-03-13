@@ -40,29 +40,28 @@ export function PlatformStreakFetcher({ platform, username }) {
           for (let i = 0; i < keys.length; i++) {
             const timestamp = parseInt(keys[i], 10) * 1000;
             const subdate = new Date(timestamp);
+            const dayDiff = Math.floor((now - subdate) / (1000 * 60 * 60 * 24));
             
-            // Just simple daily streak counting logic
-            // In a real scenario, you'd accurately calculate contiguous days from today or yesterday
             if (streak === 0) {
-               const dayDiff = Math.floor((now - subdate) / (1000 * 60 * 60 * 24));
-               if (dayDiff <= 1) { // 0 or 1 day ago
-                   streak = 1;
-               } else {
-                   break;
-               }
+                if (dayDiff <= 1) { // Today or Yesterday
+                    streak = 1;
+                } else {
+                    break;
+                }
             } else {
-                // difference from previous key
                 const prevTimestamp = parseInt(keys[i-1], 10) * 1000;
                 const expectedDiff = (prevTimestamp - timestamp) / (1000 * 60 * 60 * 24);
-                // Due to DST / timezone shifts, it might be roughly 1. 0.9 to 1.1
-                if (expectedDiff <= 1.5) {
+                const roundedDiff = Math.round(expectedDiff);
+                
+                if (roundedDiff === 1) {
                     streak++;
+                } else if (roundedDiff === 0) {
+                    continue; // Same day skip
                 } else {
                     break;
                 }
             }
           }
-          
           updateStreak(platform, streak);
         } else {
           updateStreak(platform, 0);
@@ -100,25 +99,28 @@ export function PlatformStreakFetcher({ platform, username }) {
 
           for (let i = 0; i < sortedDays.length; i++) {
             const dayTime = sortedDays[i];
+            const dayDiff = Math.floor((now.getTime() - dayTime) / (1000 * 60 * 60 * 24));
             
             if (streak === 0) {
-               const dayDiff = Math.floor((now.getTime() - dayTime) / (1000 * 60 * 60 * 24));
-               if (dayDiff <= 1) { 
-                   streak = 1;
-               } else {
-                   break;
-               }
+                if (dayDiff <= 1) { // Today or Yesterday
+                    streak = 1;
+                } else {
+                    break;
+                }
             } else {
                 const prevTime = sortedDays[i-1];
                 const expectedDiff = (prevTime - dayTime) / (1000 * 60 * 60 * 24);
-                if (expectedDiff <= 1.5) {
+                const roundedDiff = Math.round(expectedDiff);
+                
+                if (roundedDiff === 1) {
                     streak++;
+                } else if (roundedDiff === 0) {
+                    continue; // Same day skip
                 } else {
                     break;
                 }
             }
           }
-          
           updateStreak(platform, streak);
         } else {
           updateStreak(platform, 0);
@@ -129,10 +131,70 @@ export function PlatformStreakFetcher({ platform, username }) {
       }
     };
 
+    const fetchCodechefStreak = async () => {
+      try {
+        const response = await fetch(`https://codechef-api.vercel.app/handle/${username}`);
+        const data = await response.json();
+        
+        if (data && data.heatMap) {
+          // heatMap is an array of { date: "YYYY-MM-DD", value: number }
+          const sortedEntries = data.heatMap
+            .filter(entry => entry.value > 0)
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+          
+          if (sortedEntries.length === 0) {
+            updateStreak(platform, 0);
+            return;
+          }
+
+          let streak = 0;
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+
+          for (let i = 0; i < sortedEntries.length; i++) {
+            const entryDate = new Date(sortedEntries[i].date);
+            entryDate.setHours(0, 0, 0, 0);
+            
+            if (streak === 0) {
+              const diffTime = now.getTime() - entryDate.getTime();
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+              
+              if (diffDays <= 1) { // Today or Yesterday
+                streak = 1;
+              } else {
+                break;
+              }
+            } else {
+              const prevDate = new Date(sortedEntries[i-1].date);
+              prevDate.setHours(0, 0, 0, 0);
+              const diffTime = prevDate.getTime() - entryDate.getTime();
+              const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+              
+              if (diffDays === 1) {
+                streak++;
+              } else if (diffDays === 0) {
+                 continue; // Same day, skip
+              } else {
+                break;
+              }
+            }
+          }
+          updateStreak(platform, streak);
+        } else {
+          updateStreak(platform, 0);
+        }
+      } catch (error) {
+        console.error("Error fetching CodeChef streak:", error);
+        updateStreak(platform, 0);
+      }
+    };
+
     if (platform === "leetcode") {
       fetchLeetcodeStreak();
     } else if (platform === "atcoder") {
       fetchAtcoderStreak();
+    } else if (platform === "codechef") {
+      fetchCodechefStreak();
     }
   }, [platform, username, updateStreak]);
 

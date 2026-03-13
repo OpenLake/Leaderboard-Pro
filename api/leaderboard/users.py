@@ -26,8 +26,21 @@ def getUserDetails(request):
     user = request.user
     username = user.username
     email = user.email
-    userDetails = UserNames.objects.get(user=user)
-    userDetails = UserNamesSerializer(userDetails).data
+    try:
+        userDetails = UserNames.objects.get(user=user)
+        userDetails = UserNamesSerializer(userDetails).data
+    except UserNames.DoesNotExist:
+        return Response(
+            {
+                "username": username,
+                "email": email,
+                "codechef": {},
+                "codeforces": {},
+                "github": {},
+                "leetcode": {},
+                "openlake": {},
+            }
+        )
     try:
         codechefDetails = codechefUser.objects.get(username=userDetails["cc_uname"])
         codechefDetails = CC_Serializer(codechefDetails).data

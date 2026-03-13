@@ -95,20 +95,22 @@ class GithubUserAPI(
 
     def get(self, request):
         gh_users = githubUser.objects.all()
-        if not gh_users.exists():
-            return Response(
-                {"message": "No users found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
+        
+        # Consistent with other leaderboards, we attempt to refresh data on GET.
+        # This is inefficient for large numbers of users and should ideally 
+        # be handled solely by background tasks.
         for user in gh_users:
-            github_data = self.fetch_github_data(user.username)
-            if github_data:
-                user.avatar = github_data["avatar"]
-                user.repositories = github_data["repositories"]
-                user.stars = github_data["stars"]
-                user.contributions = github_data["contributions"]
-                user.last_updated = github_data["last_updated"]
-                user.save()
+            try:
+                github_data = self.fetch_github_data(user.username)
+                if github_data:
+                    user.avatar = github_data["avatar"]
+                    user.repositories = github_data["repositories"]
+                    user.stars = github_data["stars"]
+                    user.contributions = github_data["contributions"]
+                    user.last_updated = github_data["last_updated"]
+                    user.save()
+            except Exception as e:
+                logger.error(f"Failed to fetch GitHub data for {user.username}: {e}")
 
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
@@ -118,6 +120,12 @@ class GithubUserAPI(
         if not username:
             return Response(
                 {"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # check if user already exists
+        if githubUser.objects.filter(username=username).exists():
+             return Response(
+                {"message": "User already exists"}, status=status.HTTP_200_OK
             )
 
         # Create user and fetch GitHub data

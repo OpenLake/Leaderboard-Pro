@@ -548,15 +548,7 @@ useEffect(() => {
   }
   
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full px-1.5 py-1">
       {/* Logged in User Info Card - Always at top */}
       {loggedInUser && (
         <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">

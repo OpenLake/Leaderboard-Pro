@@ -41,11 +41,14 @@ class openlakeContributor(models.Model):
         ordering = ["-contributions"]
 
 
+def get_default_cf_last_activity():
+    return int(now().timestamp())
+
 class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.BigIntegerField(default=lambda: int(now().timestamp()))
+    last_activity = models.BigIntegerField(default=get_default_cf_last_activity)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
