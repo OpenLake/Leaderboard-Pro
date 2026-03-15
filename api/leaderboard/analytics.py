@@ -1,6 +1,6 @@
 import pandas as pd
 
-from models import (
+from .models import (
     githubUser,
     codeforcesUser,
     codechefUser,
@@ -49,7 +49,7 @@ def leetcode_score(df):
     df = df.fillna(0)
 
     # Ranking: lower is better → invert
-    if "ranking" in df:
+    if "ranking" in df.columns:
         df["ranking_inv"] = df["ranking"].max() - df["ranking"]
         df["ranking_norm"] = safe_normalize(df["ranking_inv"])
     else:
@@ -85,7 +85,7 @@ def codeforces_score(df):
 
     # Submission efficiency
     df["efficiency"] = df.get("total_solved", 0) / (
-        df.get("total_submissions", 1)
+        df.get("total_submissions", 1).replace(0, 1)
     )
     df["efficiency_norm"] = safe_normalize(df["efficiency"])
 
@@ -108,7 +108,7 @@ def codechef_score(df):
     df["max_rating_norm"] = safe_normalize(df.get("max_rating", 0))
 
     # Global rank inversion (lower better)
-    if "Global_rank" in df:
+    if "Global_rank" in df.columns:
         df["Global_rank"] = pd.to_numeric(df["Global_rank"], errors="coerce").fillna(0)
         df["rank_inv"] = df["Global_rank"].max() - df["Global_rank"]
         df["rank_norm"] = safe_normalize(df["rank_inv"])
