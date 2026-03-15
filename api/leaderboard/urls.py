@@ -24,7 +24,7 @@ from leaderboard import friends, root, users, views
 
 from .models import User
 
-from analytics_views import UnifiedAnalyticsView
+from .analytics_views import UnifiedAnalyticsView
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

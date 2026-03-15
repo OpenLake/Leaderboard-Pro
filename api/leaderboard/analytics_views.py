@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from leaderboard.analytics import build_unified_ranking
+from .analytics import build_unified_ranking
 
 class UnifiedAnalyticsView(APIView):
     def get(self, request):
