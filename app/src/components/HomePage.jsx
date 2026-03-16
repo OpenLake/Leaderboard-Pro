@@ -25,12 +25,29 @@ import {
 import { useAuth } from "@/Context/AuthContext";
 import { cn } from "@/lib/utils";
 import Heatmap from "@/components/Heatmap"; // Import the Heatmap component
+import { PlatformStreakFetcher } from "@/components/PlatformStreakFetcher"; // Import the hidden streak fetcher
 import { useState } from "react";
 
 var rank = 0;
 
 function Cards(usernames) {
   usernames = usernames?.usernames;
+  if (!usernames) {
+    return (
+      <div className="col-span-full grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Card className="w-[100%] col-span-full lg:col-span-2">
+          <CardHeader>Sign in to View Your Stats</CardHeader>
+          <CardContent>
+            <CardTitle>Guest User</CardTitle>
+            <CardDescription className="mt-2">
+              Please log in to see your personalized statistics and track
+              your progress across different platforms.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   var CardInfo = [
     {
       title: "Overall Rank",
@@ -58,6 +75,8 @@ function Cards(usernames) {
       change: -100,
       suffix: "This month",
       hasHeatmap: false,
+      platform: 'leetcode',
+      username: usernames?.leetcode?.username || "",
     },
     {
       title: "Github Contributions",
@@ -102,6 +121,11 @@ function Cards(usernames) {
                 />
               </>
             )}
+            
+            {/* Hidden streak fetcher for platforms without heatmaps */}
+            {!info.hasHeatmap && info.platform && info.username && (
+              <PlatformStreakFetcher platform={info.platform} username={info.username} />
+            )}
           </CardContent>
           <CardFooter className="pt-2">
             <CardDescription>
@@ -128,6 +152,14 @@ function Cards(usernames) {
           </CardFooter>
         </Card>
       ))}
+
+      {/* Explicit streak fetchers for platforms without Cards */}
+      {usernames?.atcoder?.username && (
+        <PlatformStreakFetcher platform="atcoder" username={usernames.atcoder.username} />
+      )}
+      {usernames?.codechef?.username && (
+        <PlatformStreakFetcher platform="codechef" username={usernames.codechef.username} />
+      )}
     </div>
   );
 }
@@ -204,7 +236,9 @@ function TabsView() {
 const HomePage = () => {
   const { open, isMobile } = useSidebar();
   const { userNames } = useAuth();
-  
+  const greeting = userNames?.username
+    ? `Welcome back, ${userNames.username}`
+    : "Welcome to Leaderboard Pro";
   return (
     <div
       className="text-foreground flex h-[100%] flex-col gap-5 px-10"
@@ -215,9 +249,7 @@ const HomePage = () => {
             : "100vw",
       }}
     >
-      <div className="text-3xl font-semibold">
-        Welcome back, {userNames?.username}
-      </div>
+      <div className="text-3xl font-semibold">{greeting}</div>
       <Cards usernames={userNames} />
       <TabsView />
     </div>

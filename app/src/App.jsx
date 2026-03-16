@@ -25,8 +25,29 @@ import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 import PublicRoute from "./Context/PublicRoute";
 import ContestCalendar from "./components/ContestCalendar";
+import Blogs from "./components/Blogs.jsx";
+import Achievements from "./components/Achievements.jsx";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
+
+const fetchListSafely = async (endpoint, setData) => {
+  if (!BACKEND) {
+    setData([]);
+    return;
+  }
+  try {
+    const res = await fetch(BACKEND + endpoint);
+    const contentType = res.headers.get("content-type") || "";
+    if (!res.ok || !contentType.toLowerCase().includes("application/json")) {
+      setData([]);
+      return;
+    }
+    const data = await res.json();
+    setData(Array.isArray(data) ? data : []);
+  } catch {
+    setData([]);
+  }
+};
 
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
@@ -38,53 +59,12 @@ function App() {
   const [atcoderUsers, setAtcoderUsers] = useState([]);
 
   useEffect(() => {
-    fetch(BACKEND + "/codeforces/")
-      .then((res) => res.json())
-      .then((res) => {
-        setCodeforcesUsers(res);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(BACKEND + "/codechef/")
-      .then((res) => res.json())
-      .then((res) => {
-        setCodechefUsers(res);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(BACKEND + "/leetcode/")
-      .then((res) => res.json())
-      .then((res) => {
-        setLeetcodeUsers(res);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(BACKEND + "/openlake/")
-      .then((res) => res.json())
-      .then((res) => {
-        setOpenlakeContributor(res);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(BACKEND + "/github/")
-      .then((res) => res.json())
-      .then((res) => {
-        setGithubUser(res);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Add check to ensure BACKEND is defined if needed. 
-    // Assuming it is fine as per other calls.
-    fetch(BACKEND + "/atcoder/")
-      .then((res) => res.json())
-      .then((res) => {
-        setAtcoderUsers(res);
-      });
+    fetchListSafely("/codeforces/", setCodeforcesUsers);
+    fetchListSafely("/codechef/", setCodechefUsers);
+    fetchListSafely("/leetcode/", setLeetcodeUsers);
+    fetchListSafely("/openlake/", setOpenlakeContributor);
+    fetchListSafely("/github/", setGithubUser);
+    fetchListSafely("/atcoder/", setAtcoderUsers);
   }, []);
 
   return (
@@ -107,47 +87,27 @@ function App() {
                 <Route
                   exact
                   path="/"
-                  element={
-                    <PrivateRoute>
-                      <HomePage />
-                    </PrivateRoute>
-                  }
+                  element={<HomePage />}
                 />
                 <Route
                   exact
                   path="/codeforces"
-                  element={
-                    <PrivateRoute>
-                      <CFTable codeforcesUsers={codeforcesUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<CFTable codeforcesUsers={codeforcesUsers} />}
                 />
                 <Route
                   exact
                   path="/codechef"
-                  element={
-                    <PrivateRoute>
-                      <CCTable codechefUsers={codechefUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<CCTable codechefUsers={codechefUsers} />}
                 />
                 <Route
                   exact
                   path="/openlake"
-                  element={
-                    <PrivateRoute>
-                      <OpenLakeTable OLUsers={openlakeContributor} />
-                    </PrivateRoute>
-                  }
+                  element={<OpenLakeTable OLUsers={openlakeContributor} />}
                 />
                 <Route
                   exact
                   path="/github"
-                  element={
-                    <PrivateRoute>
-                      <GHTable githubUsers={githubUser} />
-                    </PrivateRoute>
-                  }
+                  element={<GHTable githubUsers={githubUser} />}
                 />
                 <Route
                   exact
@@ -161,11 +121,7 @@ function App() {
                 <Route
                   exact
                   path="/leetcode"
-                  element={
-                    <PrivateRoute>
-                      <LCTable leetcodeUsers={leetcodeUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<LCTable leetcodeUsers={leetcodeUsers} />}
                 />
                 <Route
                   exact
@@ -209,6 +165,24 @@ function App() {
                   element={
                     <PrivateRoute>
                       <ContestCalendar />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/blogs"
+                  element={
+                    <PrivateRoute>
+                      <Blogs />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/achievements"
+                  element={
+                    <PrivateRoute>
+                      <Achievements />
                     </PrivateRoute>
                   }
                 />

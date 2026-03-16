@@ -38,6 +38,15 @@ const readJsonSafely = async (response) => {
   }
 };
 
+const safeJwtDecode = (token) => {
+  if (!token) return null;
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
+  }
+};
+
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
@@ -45,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     parseStoredJSON("authTokens"),
   );
   let [user, setUser] = useState(
-    authTokens ? jwtDecode(authTokens.access) : null,
+    authTokens ? safeJwtDecode(authTokens.access) : null,
   );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -56,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   );
   useEffect(() => {
     if (authTokens) {
-      setUser(jwtDecode(authTokens.access));
+      setUser(safeJwtDecode(authTokens.access));
     } else {
       setUser(null);
     }
@@ -87,25 +96,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
   let loginUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: form_data.username,
-        password: form_data.password,
-      }),
-    });
-    let data = await readJsonSafely(response);
-    if (response.status === 200 && data?.access) {
-      setAuthTokens(data);
-      setUser(jwtDecode(data.access));
-      localStorage.setItem("authTokens", JSON.stringify(data));
-      let usernames_data = await getUsernamesData(data);
-      setUserNames(usernames_data);
-      navigate("/");
-    } else {
+    try {
+      let response = await fetch(BACKEND + "/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form_data.username,
+          password: form_data.password,
+        }),
+      });
+      let data = await readJsonSafely(response);
+      if (response.status === 200 && data?.access) {
+        setAuthTokens(data);
+        setUser(safeJwtDecode(data.access));
+        localStorage.setItem("authTokens", JSON.stringify(data));
+        let usernames_data = await getUsernamesData(data);
+        setUserNames(usernames_data);
+        navigate("/");
+      } else {
+        alert("ERROR!!!!");
+      }
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -120,46 +133,50 @@ export const AuthProvider = ({ children }) => {
     if (auth.currentUser) return signOut(auth);
   };
   let registerUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        first_name: form_data.first_name,
-        email: form_data.email,
-        username: form_data.username,
-        password: form_data.password,
-        last_name: form_data.last_name,
-        cc_uname: form_data.cc_uname,
-        cf_uname: form_data.cf_uname,
-        gh_uname: form_data.gh_uname,
-        lt_uname: form_data.lt_uname,
-      }),
-    });
-    if (response.status === 200) {
-      let response = await fetch(BACKEND + "/api/token/", {
+    try {
+      let response = await fetch(BACKEND + "/api/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          first_name: form_data.first_name,
+          email: form_data.email,
           username: form_data.username,
           password: form_data.password,
+          last_name: form_data.last_name,
+          cc_uname: form_data.cc_uname,
+          cf_uname: form_data.cf_uname,
+          gh_uname: form_data.gh_uname,
+          lt_uname: form_data.lt_uname,
         }),
       });
-      let data = await readJsonSafely(response);
-      if (response.status === 200 && data?.access) {
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        localStorage.setItem("authTokens", JSON.stringify(data));
-        navigate("/");
-        let usernames_data = await getUsernamesData(data);
-        setUserNames(usernames_data);
+      if (response.status === 200) {
+        let tokenResponse = await fetch(BACKEND + "/api/token/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: form_data.username,
+            password: form_data.password,
+          }),
+        });
+        let data = await readJsonSafely(tokenResponse);
+        if (tokenResponse.status === 200 && data?.access) {
+          setAuthTokens(data);
+          setUser(safeJwtDecode(data.access));
+          localStorage.setItem("authTokens", JSON.stringify(data));
+          navigate("/");
+          let usernames_data = await getUsernamesData(data);
+          setUserNames(usernames_data);
+        } else {
+          alert("ERROR!!!!");
+        }
       } else {
         alert("ERROR!!!!");
       }
-    } else {
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -221,7 +238,7 @@ export const AuthProvider = ({ children }) => {
         if (logresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
@@ -269,7 +286,7 @@ export const AuthProvider = ({ children }) => {
         if (regresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);

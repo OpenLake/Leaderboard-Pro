@@ -6,13 +6,45 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "./ui/switch";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
+
+const readJsonIfAvailable = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const fallbackText = await response.text();
+    return {
+      isJson: false,
+      data: null,
+      message: fallbackText || `Unexpected response (${response.status})`,
+    };
+  }
+
+  try {
+    const data = await response.json();
+    return { isJson: true, data, message: null };
+  } catch {
+    return { isJson: false, data: null, message: "Invalid JSON response" };
+  }
+};
+
 export function OpenLakeTable({ OLUsers }) {
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
+  const [prKeyInput, setPrKeyInput] = useState("");
+  const [appliedPrKey, setAppliedPrKey] = useState("");
+  const [keyFilteredUsers, setKeyFilteredUsers] = useState([]);
+  const [isFetchingPrKeyData, setIsFetchingPrKeyData] = useState(false);
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
   const [OLFriends, setOLFriends] = useState([]);
   const [showOLFriends, setShowOLFriends] = useState(false);
   const { open, isMobile } = useSidebar();
+  const sourceUsers = appliedPrKey ? keyFilteredUsers : OLUsers;
   const columns = [
     {
       accessorKey: "username",
@@ -36,96 +68,174 @@ export function OpenLakeTable({ OLUsers }) {
       accessorKey: "contributions",
       header: "Contributions",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        return (
-          <div className="flex justify-end">
-            {OLFriends.includes(username) ? (
-              <Button
-                variant="secondary"
-                onClick={() => dropfriend(username)}
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              return (
+                <div className="flex justify-end">
+                  {OLFriends.includes(username) ? (
+                    <Button
+                      variant="secondary"
+                      onClick={() => dropfriend(username)}
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   const getccfriends = async () => {
-    const response = await fetch(BACKEND + "/openlakeFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-    });
-
-    const newData = await response.json();
-    setOLFriends(newData);
+    if (!accessToken) {
+      setOLFriends([]);
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/openlakeFL/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok || !parsed.isJson) {
+        console.error("Failed to fetch OpenLake friends:", parsed.message);
+        setOLFriends([]);
+        return;
+      }
+      const newData = parsed.data;
+      setOLFriends(Array.isArray(newData) ? newData : []);
+    } catch (error) {
+      console.error("Failed to fetch OpenLake friends:", error);
+      setOLFriends([]);
+    }
   };
 
   async function addfriend(e) {
-    const response = await fetch(BACKEND + "/openlakeFA/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    if (!accessToken) {
+      alert("Please login to add friends.");
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/openlakeFA/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to add OpenLake friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setOLFriends((current) => [...current, e]);
+    } catch (error) {
+      console.error("Failed to add OpenLake friend:", error);
+      alert("ERROR!!!!");
     }
   }
   async function dropfriend(e) {
-    const response = await fetch(BACKEND + "/openlakeFD/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    if (!accessToken) {
+      alert("Please login to remove friends.");
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/openlakeFD/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to remove OpenLake friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setOLFriends((current) => current.filter((fruit) => fruit !== e));
+    } catch (error) {
+      console.error("Failed to remove OpenLake friend:", error);
+      alert("ERROR!!!!");
     }
   }
   useEffect(() => {
-    getccfriends();
-  }, []);
+    if (isAuthenticated) {
+      getccfriends();
+    } else {
+      setOLFriends([]);
+      setShowOLFriends(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!appliedPrKey) {
+      setKeyFilteredUsers([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const getPrKeyFilteredUsers = async () => {
+      setIsFetchingPrKeyData(true);
+      try {
+        const response = await fetch(
+          BACKEND + `/openlake/?pr_key=${encodeURIComponent(appliedPrKey)}`,
+          { signal },
+        );
+        if (!response.ok) {
+          setKeyFilteredUsers([]);
+          return;
+        }
+        const data = await response.json();
+        setKeyFilteredUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (error.name === "AbortError") {
+          return;
+        }
+        setKeyFilteredUsers([]);
+      } finally {
+        setIsFetchingPrKeyData(false);
+      }
+    };
+
+    getPrKeyFilteredUsers();
+
+    return () => {
+      controller.abort();
+    };
+  }, [appliedPrKey]);
 
   useEffect(() => {
     if (showOLFriends) {
       setTodisplayusers(
-        OLUsers.filter((OLUser) => OLFriends.includes(OLUser.username)),
+        sourceUsers.filter((OLUser) => OLFriends.includes(OLUser.username)),
       );
     } else {
-      setTodisplayusers(OLUsers);
+      setTodisplayusers(sourceUsers);
     }
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -138,7 +248,7 @@ export function OpenLakeTable({ OLUsers }) {
         }),
       );
     }
-  }, [showOLFriends, OLFriends, searchfield, OLUsers]);
+  }, [showOLFriends, OLFriends, searchfield, sourceUsers]);
   useEffect(() => {
     if (searchfield === "") {
       setFilteredusers(todisplayusers);
@@ -163,12 +273,40 @@ export function OpenLakeTable({ OLUsers }) {
       }}
     >
       <div className="mb-2 flex flex-row justify-between">
-        <Input
-          placeholder="Search OpenLake contributors..."
-          className="w-[40%]"
-          onChange={(val) => setSearchfield(val.target.value)}
-          type="search"
-        />
+        <div className="flex w-[65%] flex-row gap-2">
+          <Input
+            placeholder="Search OpenLake contributors..."
+            className="w-[55%]"
+            onChange={(val) => setSearchfield(val.target.value)}
+            type="search"
+          />
+          <Input
+            placeholder="Filter by PR key (e.g. FOSSOVERFLOW-2025)"
+            className="w-[45%]"
+            value={prKeyInput}
+            onChange={(e) => setPrKeyInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setAppliedPrKey(prKeyInput.trim());
+              }
+            }}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setAppliedPrKey(prKeyInput.trim())}
+          >
+            Apply Key
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setPrKeyInput("");
+              setAppliedPrKey("");
+            }}
+          >
+            Clear
+          </Button>
+        </div>
         <div>
           Friends Only
           <Switch
@@ -177,6 +315,16 @@ export function OpenLakeTable({ OLUsers }) {
           />
         </div>
       </div>
+      {isFetchingPrKeyData ? (
+        <div className="mb-2 text-sm text-muted-foreground">
+          Loading key-based contributions...
+        </div>
+      ) : null}
+      {appliedPrKey ? (
+        <div className="mb-2 text-sm text-muted-foreground">
+          Showing contributions for PR title key: [{appliedPrKey}]
+        </div>
+      ) : null}
       <DataTable data={filteredusers} columns={columns} />
     </div>
   );
