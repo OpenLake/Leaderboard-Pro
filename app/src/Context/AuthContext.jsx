@@ -218,11 +218,9 @@ export const AuthProvider = ({ children }) => {
       }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
-        const credential = GoogleAuthProvider.credentialFromResult(response);
-        const accessToken =
-          credential?.accessToken || response?.user?.accessToken;
-        if (!accessToken) {
-          alert("Google login failed: missing access token.");
+        const idToken = await response.user.getIdToken();
+        if (!idToken) {
+          alert("Google login failed: missing ID token.");
           return false;
         }
         let logresponse = await fetch(BACKEND + "/api/token/google/", {
@@ -231,7 +229,7 @@ export const AuthProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            token: accessToken,
+            token: idToken,
           }),
         });
         let data = await readJsonSafely(logresponse);
@@ -265,11 +263,9 @@ export const AuthProvider = ({ children }) => {
       }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
-        const credential = GoogleAuthProvider.credentialFromResult(response);
-        const accessToken =
-          credential?.accessToken || response?.user?.accessToken;
-        if (!accessToken) {
-          alert("Google registration failed: missing access token.");
+        const idToken = await response.user.getIdToken();
+        if (!idToken) {
+          alert("Google registration failed: missing ID token.");
           return false;
         }
         let regresponse = await fetch(BACKEND + "/api/register/google/", {
@@ -278,7 +274,7 @@ export const AuthProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            token: accessToken,
+            token: idToken,
             username: response.user.email.split("@")[0],
           }),
         });
