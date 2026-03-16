@@ -280,23 +280,28 @@ def atcoder_user_update(self):
             data_ac = BeautifulSoup(page.text, "html.parser")
             instance = {}
             
-            # Scrape Rating
-            rating_tag = data_ac.find("table", class_="dl-table")
-            if rating_tag:
-                 rows = rating_tag.find_all("tr")
-                 for row in rows:
-                     th = row.find("th")
-                     if th and th.text.strip() == "Rating":
-                         instance["rating"] = int(row.find("span").text)
-                     if th and th.text.strip() == "Highest Rating":
-                         instance["highest_rating"] = int(row.find("span").text)
-                     if th and th.text.strip() == "Rank":
-                          # Actually AtCoder rank is just number like 1234th.
-                          # Let's clean it.
-                          rank_text = row.find("td").text
-                          match = re.search(r'\d+', rank_text)
-                          if match:
-                              instance["rank"] = int(match.group())
+            # Scrape Rating and Rank from multiple potential tables
+            tables = data_ac.find_all("table", class_="dl-table")
+            for table in tables:
+                rows = table.find_all("tr")
+                for row in rows:
+                    th = row.find("th")
+                    td = row.find("td")
+                    if th and td:
+                        th_text = th.text.strip()
+                        if th_text == "Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["rating"] = int(span.text)
+                        elif th_text == "Highest Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["highest_rating"] = int(span.text)
+                        elif th_text == "Rank":
+                            rank_text = td.text.strip()
+                            match = re.search(r'\d+', rank_text)
+                            if match:
+                                instance["rank"] = int(match.group())
 
             instance["username"] = ac_user.username
             updates.append(instance)

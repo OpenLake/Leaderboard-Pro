@@ -233,6 +233,7 @@ GH_INTV = 10
 OL_INTV = 10
 LT_INTV = 5
 CF_INTV = 5
+AC_INTV = 5
 
 RABBITMQ_DEFAULT_USER = str(os.getenv("RABBITMQ_DEFAULT_USER"))
 RABBITMQ_DEFAULT_PASSWORD = str(os.getenv("RABBITMQ_DEFAULT_PASSWORD"))
@@ -267,6 +268,10 @@ CELERY_BEAT_SCHEDULE = {
     "cf_update_db_task": {
         "task": "leaderboard.celery.codeforces_user_update",
         "schedule": crontab(minute=f"*/{CF_INTV}"),
+    },
+    "ac_update_db_task": {
+        "task": "leaderboard.celery.atcoder_user_update",
+        "schedule": crontab(minute=f"*/{AC_INTV}"),
     },
 }
 

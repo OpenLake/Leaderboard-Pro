@@ -593,11 +593,57 @@ class DiscussionPostManage(APIView):
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class AtcoderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = AtcoderUser.objects.all().order_by('-rating')
+    def get_atcoder_data(self, username):
+        import re
+        from bs4 import BeautifulSoup
+        url = f"https://atcoder.jp/users/{username}"
+        try:
+            page = requests.get(url, timeout=10)
+            data_ac = BeautifulSoup(page.text, "html.parser")
+            instance = {}
+            
+            # Scrape Rating and Rank from multiple potential tables
+            tables = data_ac.find_all("table", class_="dl-table")
+            for table in tables:
+                rows = table.find_all("tr")
+                for row in rows:
+                    th = row.find("th")
+                    td = row.find("td")
+                    if th and td:
+                        th_text = th.text.strip()
+                        if th_text == "Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["rating"] = int(span.text)
+                        elif th_text == "Highest Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["highest_rating"] = int(span.text)
+                        elif th_text == "Rank":
+                            rank_text = td.text.strip()
+                            match = re.search(r'\d+', rank_text)
+                            if match:
+                                instance["rank"] = int(match.group())
+            return instance
+        except Exception as e:
+            logger.error(f"Error fetching AtCoder data for {username}: {e}")
+            return None
+
+    queryset = AtcoderUser.objects.all().order_by("-rating")
     serializer_class = AtcoderUserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
+        active_users = AtcoderUser.objects.all()
+        for user in active_users:
+            if user.is_outdated:
+                user_data = self.get_atcoder_data(user.username)
+                if user_data:
+                    user.rating = user_data.get("rating", user.rating)
+                    user.highest_rating = user_data.get("highest_rating", user.highest_rating)
+                    user.rank = user_data.get("rank", user.rank)
+                    user.save()
+        
         return self.list(request)
 
     def post(self, request):
