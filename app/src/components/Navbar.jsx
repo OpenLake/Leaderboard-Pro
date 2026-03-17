@@ -52,7 +52,7 @@ const items = [
   },
   {
     title: "Friends",
-    url: "/",
+    url: "/friends",
     icon: Users,
   },
   {
@@ -186,7 +186,7 @@ export const Navbar = () => {
                       tooltip={link.title}
                       className="relative"
                     >
-                      <Link to={linkLower} className="flex items-center w-full">
+                      <Link to={`/${linkLower}`} className="flex items-center w-full">
                         <link.icon className="h-5 w-5 fill-black dark:fill-white shrink-0" />
                         <span className={cn(
                           "ml-2 transition-all duration-300 ease-in-out truncate",

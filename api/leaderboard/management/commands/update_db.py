@@ -8,12 +8,13 @@ from django.core.management.base import BaseCommand, CommandError
 
 from leaderboard.models import (
     LeetcodeUser,
-    codechefUser,
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 from leaderboard.serializers import (
+    AC_Update_Serializer,
     CC_Update_Serializer,
     CF_Update_Serializer,
     GH_Update_Serializer,
@@ -55,13 +56,20 @@ class Command(BaseCommand):
         self.openlake_contributor_update()
         self.stdout.write(self.style.SUCCESS("OpenLake DB updated."))
 
+        self.atcoder_user_update()
+        self.stdout.write(self.style.SUCCESS("AtCoder DB updated."))
+
     def codechef_user_update(self):
         cc_users = codechefUser.objects.all()
         updates = []
         for i, cc_user in enumerate(cc_users):
 
             url = "https://www.codechef.com/users/{}".format(cc_user.username)
-            page = requests.get(url)
+            try:
+                page = requests.get(url, timeout=10)
+            except Exception as e:
+                self.stderr.write(f"Error fetching CodeChef data for {cc_user.username}: {e}")
+                continue
             data_cc = BeautifulSoup(page.text, "html.parser")
             instance = {}
 
@@ -115,7 +123,7 @@ class Command(BaseCommand):
             url = (
                 f"https://codeforces.com/api/user.info?handles={';'.join(cf_usernames)}"
             )
-            response = requests.get(url).json()["result"]
+            response = requests.get(url, timeout=10).json()["result"]
             for i in range(len(response)):
                 user_data = response[i]
                 instance = {}
@@ -146,7 +154,11 @@ class Command(BaseCommand):
                 "Accept": "application/vnd.github.v3+json",  # Recommended for GitHub API
             }
             url = "https://github.com/{}".format(gh_user.username)
-            page = requests.get(url, headers=headers)
+            try:
+                page = requests.get(url, headers=headers, timeout=10)
+            except Exception as e:
+                self.stderr.write(f"Error fetching GitHub data for {gh_user.username}: {e}")
+                continue
             data_gh = BeautifulSoup(page.text, "html.parser")
             instance = {}
 
@@ -193,7 +205,11 @@ class Command(BaseCommand):
         for i, lt_user in enumerate(lt_users):
 
             url = "https://leetcode.com/{}".format(lt_user.username)
-            page = requests.get(url)
+            try:
+                page = requests.get(url, timeout=10)
+            except Exception as e:
+                self.stderr.write(f"Error fetching LeetCode data for {lt_user.username}: {e}")
+                continue
             data_cc = BeautifulSoup(page.text, "html.parser")
             instance = {}
 
@@ -279,3 +295,56 @@ class Command(BaseCommand):
             ol_contributor.username = i
             ol_contributor.contributions = updated_list[i]
             ol_contributor.save()
+
+    def atcoder_user_update(self):
+        import re
+        ac_users = AtcoderUser.objects.all()
+        updates = []
+        for i, ac_user in enumerate(ac_users):
+            url = "https://atcoder.jp/users/{}".format(ac_user.username)
+            try:
+                page = requests.get(url, timeout=10)
+                data_ac = BeautifulSoup(page.text, "html.parser")
+                instance = {}
+                
+                # Scrape Rating and Rank from multiple potential tables
+                tables = data_ac.find_all("table", class_="dl-table")
+                for table in tables:
+                    rows = table.find_all("tr")
+                    for row in rows:
+                        th = row.find("th")
+                        td = row.find("td")
+                        if th and td:
+                            th_text = th.text.strip()
+                            if th_text == "Rating":
+                                span = td.find("span")
+                                if span:
+                                    instance["rating"] = int(span.text)
+                            elif th_text == "Highest Rating":
+                                span = td.find("span")
+                                if span:
+                                    instance["highest_rating"] = int(span.text)
+                            elif th_text == "Rank":
+                                rank_text = td.text.strip()
+                                match = re.search(r'\d+', rank_text)
+                                if match:
+                                    instance["rank"] = int(match.group())
+
+                instance["username"] = ac_user.username
+                updates.append(instance)
+
+            except Exception as e:
+                self.stderr.write(f"Error updating {ac_user.username}: {e}")
+                instance = {
+                    "username": ac_user.username,
+                    "rating": ac_user.rating,
+                    "highest_rating": ac_user.highest_rating,
+                    "rank": ac_user.rank
+                }
+                updates.append(instance)
+
+        serializer = AC_Update_Serializer(ac_users, data=updates, many=True)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            self.stderr.write(serializer.errors)

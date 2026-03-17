@@ -189,3 +189,16 @@ class AtcoderUser(models.Model):
 
     class Meta:
         ordering = ["-rating"]
+
+
+class Achievement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    slug = models.CharField(max_length=64)
+    tier = models.CharField(max_length=64)
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "slug", "tier")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.slug} ({self.tier})"

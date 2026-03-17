@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { ThumbsUp, ThumbsDown, Plus } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,6 +89,7 @@ export default function Blogs() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          username: post.username, // Send the author's username for lookup
           title: post.title,
           likes: updatedLikes,
           dislikes: updatedDislikes,
@@ -102,6 +103,30 @@ export default function Blogs() {
     } catch (error) {
       console.error("Error updating interaction:", error);
       fetchBlogs();
+    }
+  };
+  const handleDeleteBlog = async (post) => {
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+
+    try {
+      const response = await fetch(`${BACKEND}/discussionpost/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: post.username,
+          title: post.title,
+        }),
+      });
+
+      if (response.ok) {
+        fetchBlogs();
+      } else {
+        console.error("Failed to delete blog");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
     }
   };
 
@@ -192,6 +217,16 @@ export default function Blogs() {
                     <span>{blog.dislikes}</span>
                   </Button>
                 </div>
+                {currentUsername === blog.username && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => handleDeleteBlog(blog)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))

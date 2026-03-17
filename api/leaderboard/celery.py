@@ -167,6 +167,52 @@ def github_user_update(self):
 
 
 @app.task(bind=True)
+def refresh_github_user_data(self, username):
+    from leaderboard.models import githubUser
+    from leaderboard.serializers import GH_Update_Serializer
+
+    try:
+        gh_user = githubUser.objects.get(username=username)
+        # We can reuse the scraping logic from the view by making it a utility or just copying it here.
+        # Given the request to move it to a background worker, let's implement the fetching here.
+        
+        def fetch_github_contributions(username):
+            url = f"https://github-contributions-api.deno.dev/{username}.json"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("totalContributions", 0)
+            return 0
+
+        def fetch_starred_repos(username):
+            url = f"https://api.github.com/users/{username}/starred"
+            response = requests.get(url)
+            if response.status_code == 200:
+                return len(response.json())
+            return 0
+
+        url = f"https://api.github.com/users/{username}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            gh_user.avatar = data.get("avatar_url", gh_user.avatar)
+            gh_user.repositories = data.get("public_repos", gh_user.repositories)
+            gh_user.stars = fetch_starred_repos(username)
+            gh_user.contributions = fetch_github_contributions(username)
+            gh_user.last_updated = datetime.now().timestamp()
+            gh_user.save()
+            return f"Successfully updated GitHub data for {username}"
+        else:
+            return f"Failed to fetch GitHub data for {username}: {response.status_code}"
+    except githubUser.DoesNotExist:
+        return f"User {username} not found in database"
+    except Exception as e:
+        logger.error(f"Error refreshing GitHub data for {username}: {e}")
+        return f"Error: {str(e)}"
+
+
+@app.task(bind=True)
 def leetcode_user_update(self):
     from bs4 import BeautifulSoup
 
@@ -304,6 +350,13 @@ def atcoder_user_update(self):
                                 instance["rank"] = int(match.group())
 
             instance["username"] = ac_user.username
+
+            # Validation: Ensure all required fields are present
+            required_fields = ["rating", "highest_rating", "rank"]
+            if not all(field in instance for field in required_fields):
+                missing = [f for f in required_fields if f not in instance]
+                raise ValueError(f"Missing required fields for {ac_user.username}: {missing}")
+
             updates.append(instance)
 
         except Exception as e:

@@ -100,6 +100,21 @@ urlpatterns = [
         name="openlake-leaderboard",
     ),
     path(
+        "achievements/",
+        views.AchievementManage.as_view(),
+        name="achievements",
+    ),
+    path(
+        "achievements/unlock/",
+        views.AchievementUnlock.as_view(),
+        name="achievement-unlock",
+    ),
+    path(
+        "usernames/",
+        views.UserNamesList.as_view(),
+        name="usernames-list",
+    ),
+    path(
         "codeforcesFA/",
         friends.codeforcesFriendAddition,
         name="codeforcesFA",
@@ -173,6 +188,21 @@ urlpatterns = [
         "openlakeFL/",
         friends.openlakeFriendList,
         name="openlakeFL",
+    ),
+    path(
+        "atcoderFA/",
+        friends.atcoderFriendAddition,
+        name="atcoderFA",
+    ),
+    path(
+        "atcoderFD/",
+        friends.atcoderFriendDeletion,
+        name="atcoderFD",
+    ),
+    path(
+        "atcoderFL/",
+        friends.atcoderFriendList,
+        name="atcoderFL",
     ),
     path(
         "userDetails/",

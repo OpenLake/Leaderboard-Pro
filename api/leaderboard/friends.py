@@ -20,6 +20,7 @@ codeforcesFriends = myDB["Codeforces"]
 leetcodeFriends = myDB["Leetcode"]
 githubFriends = myDB["Github"]
 openlakeFriends = myDB["Openlake"]
+atcoderFriends = myDB["Atcoder"]
 
 import logging
 
@@ -472,6 +473,96 @@ def openlakeFriendList(request):
     try:
         user = request.user.username
         friendEntry = openlakeFriends.find_one({"_id": user})
+        friendList = []
+        if friendEntry:
+            for i in friendEntry["Friends"]:
+                friendList.append(i)
+        return Response(friendList)
+    except Exception as e:
+        return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def atcoderFriendAddition(request):
+    try:
+        user = request.user.username
+        serializer = Name_Serializer(data=request.data)
+        if serializer.is_valid():
+            friendEntry = atcoderFriends.find_one({"_id": user})
+            friendName = serializer.validated_data["friendName"]
+            if friendEntry is not None:
+                friendsList = friendEntry["Friends"]
+                if friendName not in friendsList:
+                    friendsList.append(friendName)
+                filter_criteria = {"_id": user}
+                update_operation = {"$set": {"Friends": friendsList}}
+                atcoderFriends.update_one(filter_criteria, update_operation)
+            else:
+                friendsList = []
+                friendsList.append(friendName)
+                atcoderFriends.insert_one({"_id": user, "Friends": friendsList})
+            return Response(
+                {
+                    "status": 200,
+                    "message": "Success",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response({serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def atcoderFriendDeletion(request):
+    try:
+        user = request.user.username
+        serializer = Name_Serializer(data=request.data)
+        if serializer.is_valid():
+            friendEntry = atcoderFriends.find_one({"_id": user})
+            friendName = serializer.validated_data["friendName"]
+            if friendEntry is not None:
+                friendsList = friendEntry["Friends"]
+                if friendName in friendsList:
+                    friendsList.remove(friendName)
+                filter_criteria = {"_id": user}
+                update_operation = {"$set": {"Friends": friendsList}}
+                atcoderFriends.update_one(filter_criteria, update_operation)
+            else:
+                return Response(
+                    {"status": 400, "message": "Wrong"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {
+                    "status": 200,
+                    "message": "Success",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response({serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def atcoderFriendList(request):
+    try:
+        user = request.user.username
+        friendEntry = atcoderFriends.find_one({"_id": user})
         friendList = []
         if friendEntry:
             for i in friendEntry["Friends"]:

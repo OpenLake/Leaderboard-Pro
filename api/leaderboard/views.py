@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from knox.models import AuthToken
 from rest_framework import generics, mixins, status, response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -24,7 +24,9 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     githubUser,
     openlakeContributor,
-    AtcoderUser
+    AtcoderUser,
+    Achievement,
+    UserNames
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -35,7 +37,9 @@ from leaderboard.serializers import (
     OL_Serializer,
     ReplyPost_Serializer,
     Task_Serializer,
-    AtcoderUserSerializer
+    AtcoderUserSerializer,
+    AchievementSerializer,
+    UserNamesSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -95,23 +99,6 @@ class GithubUserAPI(
 
     def get(self, request):
         gh_users = githubUser.objects.all()
-        
-        # Consistent with other leaderboards, we attempt to refresh data on GET.
-        # This is inefficient for large numbers of users and should ideally 
-        # be handled solely by background tasks.
-        for user in gh_users:
-            try:
-                github_data = self.fetch_github_data(user.username)
-                if github_data:
-                    user.avatar = github_data["avatar"]
-                    user.repositories = github_data["repositories"]
-                    user.stars = github_data["stars"]
-                    user.contributions = github_data["contributions"]
-                    user.last_updated = github_data["last_updated"]
-                    user.save()
-            except Exception as e:
-                logger.error(f"Failed to fetch GitHub data for {user.username}: {e}")
-
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
 
@@ -281,8 +268,9 @@ class CodechefLeaderboard(
 
     def get(self, request):
         cc_users = codechefUser.objects.all()
-
-        for user in cc_users:
+        # We rely on background tasks (update_db or Celery) for bulk updates.
+        # However, we can update a few outdated users per request to keep it fresh.
+        for user in cc_users.filter(last_updated__lt=datetime.now() - timedelta(minutes=15))[:5]:
             user_data = self.get_codechef_data(user.username)
             if user_data:
                 user.rating = user_data["rating"]
@@ -556,13 +544,13 @@ class DiscussionPostManage(APIView):
             )
 
         try:
-            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(username=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
                 {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        for field in ["title", "description", "likes", "dislikes", "comments"]:
+        for field in ["title", "discription", "likes", "dislikes", "comments"]:
             if field in request.data:
                 setattr(post, field, request.data[field])
 
@@ -578,7 +566,7 @@ class DiscussionPostManage(APIView):
             )
 
         try:
-            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(username=user, title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
                 {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
@@ -593,58 +581,14 @@ class DiscussionPostManage(APIView):
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class AtcoderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    def get_atcoder_data(self, username):
-        import re
-        from bs4 import BeautifulSoup
-        url = f"https://atcoder.jp/users/{username}"
-        try:
-            page = requests.get(url, timeout=10)
-            data_ac = BeautifulSoup(page.text, "html.parser")
-            instance = {}
-            
-            # Scrape Rating and Rank from multiple potential tables
-            tables = data_ac.find_all("table", class_="dl-table")
-            for table in tables:
-                rows = table.find_all("tr")
-                for row in rows:
-                    th = row.find("th")
-                    td = row.find("td")
-                    if th and td:
-                        th_text = th.text.strip()
-                        if th_text == "Rating":
-                            span = td.find("span")
-                            if span:
-                                instance["rating"] = int(span.text)
-                        elif th_text == "Highest Rating":
-                            span = td.find("span")
-                            if span:
-                                instance["highest_rating"] = int(span.text)
-                        elif th_text == "Rank":
-                            rank_text = td.text.strip()
-                            match = re.search(r'\d+', rank_text)
-                            if match:
-                                instance["rank"] = int(match.group())
-            return instance
-        except Exception as e:
-            logger.error(f"Error fetching AtCoder data for {username}: {e}")
-            return None
-
     queryset = AtcoderUser.objects.all().order_by("-rating")
     serializer_class = AtcoderUserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        active_users = AtcoderUser.objects.all()
-        for user in active_users:
-            if user.is_outdated:
-                user_data = self.get_atcoder_data(user.username)
-                if user_data:
-                    user.rating = user_data.get("rating", user.rating)
-                    user.highest_rating = user_data.get("highest_rating", user.highest_rating)
-                    user.rank = user_data.get("rank", user.rank)
-                    user.save()
-        
-        return self.list(request)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         return self.create(request)
@@ -752,3 +696,45 @@ class DiscussionReplyManage(APIView):
         return Response(
             {"message": "Reply deleted successfully"}, status=status.HTTP_200_OK
         )
+
+
+class AchievementManage(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        achievements = Achievement.objects.filter(user=request.user)
+        serializer = AchievementSerializer(achievements, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AchievementUnlock(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        slug = request.data.get("slug")
+        tier = request.data.get("tier")
+
+        if not slug or not tier:
+            return Response(
+                {"error": "Slug and tier are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        achievement, created = Achievement.objects.get_or_create(
+            user=request.user, slug=slug, tier=tier
+        )
+
+        if created:
+            serializer = AchievementSerializer(achievement)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(
+                {"message": "Already unlocked"}, status=status.HTTP_200_OK
+            )
+
+
+class UserNamesList(APIView):
+    def get(self, request):
+        usernames = UserNames.objects.all()
+        serializer = UserNamesSerializer(usernames, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

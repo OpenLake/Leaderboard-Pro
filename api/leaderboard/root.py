@@ -59,6 +59,15 @@ def api_root(request, format=None):
             "openlake-friend-list": reverse(
                 "openlakeFL", request=request, format=format
             ),
+            "atcoder-friend-addition": reverse(
+                "atcoderFA", request=request, format=format
+            ),
+            "atcoder-friend-deletion": reverse(
+                "atcoderFD", request=request, format=format
+            ),
+            "atcoder-friend-list": reverse(
+                "atcoderFL", request=request, format=format
+            ),
             "user-details": reverse("userDetails", request=request, format=format),
             # urls from from router:
             "users": reverse("user-list", request=request, format=format),

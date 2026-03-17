@@ -27,6 +27,7 @@ import PublicRoute from "./Context/PublicRoute";
 import ContestCalendar from "./components/ContestCalendar";
 import Blogs from "./components/Blogs.jsx";
 import Achievements from "./components/Achievements.jsx";
+import Friends from "./components/Friends.jsx";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -176,6 +177,15 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Achievements />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/friends"
+                  element={
+                    <PrivateRoute>
+                      <Friends />
                     </PrivateRoute>
                   }
                 />
