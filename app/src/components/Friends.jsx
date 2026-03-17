@@ -5,16 +5,17 @@ import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Users, UserPlus, UserMinus, Search, Loader2, Github, Code2, Sword, Flame, Target } from "lucide-react";
+import { Users, UserPlus, UserMinus, Search, Loader2, Github, Code2, Sword, Flame, Target, Trophy } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const PLATFORMS = [
-  { id: "codeforces", name: "Codeforces", icon: Sword, color: "text-red-500", suffix: "CF" },
-  { id: "codechef", name: "Codechef", icon: Target, color: "text-amber-600", suffix: "CC" },
-  { id: "leetcode", name: "LeetCode", icon: Code2, color: "text-orange-500", suffix: "LC" },
-  { id: "github", name: "GitHub", icon: Github, color: "text-blue-500", suffix: "GH" },
-  { id: "openlake", name: "OpenLake", icon: Flame, color: "text-fuchsia-500", suffix: "OL" },
+  { id: "codeforces", name: "Codeforces", icon: Sword, color: "text-red-500", suffix: "F" },
+  { id: "codechef", name: "Codechef", icon: Target, color: "text-amber-600", suffix: "F" },
+  { id: "leetcode", name: "LeetCode", icon: Code2, color: "text-orange-500", suffix: "F" },
+  { id: "github", name: "GitHub", icon: Github, color: "text-blue-500", suffix: "F" },
+  { id: "openlake", name: "OpenLake", icon: Flame, color: "text-fuchsia-500", suffix: "F" },
+  { id: "atcoder", name: "Atcoder", icon: Trophy, color: "text-zinc-800", suffix: "F" },
 ];
 
 export default function Friends() {

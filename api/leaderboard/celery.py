@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 import requests
+import re
 from celery import Celery
 
 logger = logging.getLogger(__name__)
@@ -178,27 +179,43 @@ def refresh_github_user_data(self, username):
         
         def fetch_github_contributions(username):
             url = f"https://github-contributions-api.deno.dev/{username}.json"
-            response = requests.get(url)
+            response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 return data.get("totalContributions", 0)
             return 0
 
-        def fetch_starred_repos(username):
-            url = f"https://api.github.com/users/{username}/starred"
-            response = requests.get(url)
-            if response.status_code == 200:
-                return len(response.json())
-            return 0
+        def fetch_repo_stars(username):
+            # Fetch user repositories and sum stargazers_count
+            # Using per_page=100 to minimize pagination needs, though for very large accounts
+            # we might need to handle actual pagination.
+            url = f"https://api.github.com/users/{username}/repos?per_page=100"
+            total_stars = 0
+            while url:
+                response = requests.get(url, timeout=5)
+                if response.status_code != 200:
+                    break
+                
+                repos = response.json()
+                total_stars += sum(repo.get("stargazers_count", 0) for repo in repos)
+                
+                # Check for next page in Link header
+                if "Link" in response.headers:
+                    links = response.headers["Link"]
+                    match = re.search(r'<([^>]+)>; rel="next"', links)
+                    url = match.group(1) if match else None
+                else:
+                    url = None
+            return total_stars
 
         url = f"https://api.github.com/users/{username}"
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
 
         if response.status_code == 200:
             data = response.json()
             gh_user.avatar = data.get("avatar_url", gh_user.avatar)
             gh_user.repositories = data.get("public_repos", gh_user.repositories)
-            gh_user.stars = fetch_starred_repos(username)
+            gh_user.stars = fetch_repo_stars(username)
             gh_user.contributions = fetch_github_contributions(username)
             gh_user.last_updated = datetime.now().timestamp()
             gh_user.save()

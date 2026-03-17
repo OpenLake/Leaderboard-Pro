@@ -17,12 +17,16 @@ export default function Blogs() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  const { userNames } = useAuth();
+  const { userNames, authTokens } = useAuth();
   const currentUsername = userNames?.username;
 
   const fetchBlogs = async () => {
     try {
-      const response = await fetch(`${BACKEND}/discussionpost/`);
+      const headers = {};
+      if (authTokens?.access) {
+        headers["Authorization"] = `Bearer ${authTokens.access}`;
+      }
+      const response = await fetch(`${BACKEND}/discussionpost/`, { headers });
       const data = await response.json();
       // Sort newest to oldest
       data.sort((a, b) => new Date(b.posted) - new Date(a.posted));
@@ -45,9 +49,9 @@ export default function Blogs() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${authTokens.access}`,
         },
         body: JSON.stringify({
-          username: currentUsername || "anonymous",
           title: title,
           discription: description, // Matches backend spelling
         }),
@@ -87,9 +91,9 @@ export default function Blogs() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${authTokens.access}`,
         },
         body: JSON.stringify({
-          username: post.username, // Send the author's username for lookup
           title: post.title,
           likes: updatedLikes,
           dislikes: updatedDislikes,
@@ -113,9 +117,9 @@ export default function Blogs() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${authTokens.access}`,
         },
         body: JSON.stringify({
-          username: post.username,
           title: post.title,
         }),
       });

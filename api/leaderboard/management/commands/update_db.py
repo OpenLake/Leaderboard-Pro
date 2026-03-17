@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from leaderboard.models import (
     LeetcodeUser,
+    codechefUser,
     codeforcesUser,
     githubUser,
     openlakeContributor,
@@ -331,6 +332,13 @@ class Command(BaseCommand):
                                     instance["rank"] = int(match.group())
 
                 instance["username"] = ac_user.username
+
+                # Validation: Ensure all required fields are present
+                required_fields = ["rating", "highest_rating", "rank"]
+                if not all(field in instance for field in required_fields):
+                    # If any required field is missing, trigger the except block to use old data
+                    raise ValueError(f"Missing required fields for {ac_user.username}")
+
                 updates.append(instance)
 
             except Exception as e:
