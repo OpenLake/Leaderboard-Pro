@@ -19,8 +19,6 @@ import {
   Code2,
   Target,
   GitBranch,
-  ArrowDownRight,
-  ArrowUpRight,
   Layout,
   Calendar as CalendarIcon,
   MessageSquare,
@@ -116,7 +114,6 @@ function Cards({ usernames }) {
       title: "Overall Rank",
       icon: Trophy,
       info: `#${rank ?? "N/A"}`,
-      change: 100,
       suffix: "Among all users",
       hasHeatmap: false,
     },
@@ -124,8 +121,7 @@ function Cards({ usernames }) {
       title: "Codeforces Rating",
       icon: Code2,
       info: `${usernames?.codeforces?.rating ?? "N/A"}`,
-      change: 100,
-      suffix: "Title",
+      suffix: usernames?.codeforces?.username || "",
       hasHeatmap: true,
       platform: 'codeforces',
       heatmapLabel: "Contest Activity",
@@ -135,8 +131,7 @@ function Cards({ usernames }) {
       title: "LeetCode Problems",
       icon: Target,
       info: `${usernames?.leetcode?.total_solved ?? "N/A"}`,
-      change: -100,
-      suffix: "This month",
+      suffix: "Total solved",
       hasHeatmap: false,
       platform: 'leetcode',
       username: usernames?.leetcode?.username || "",
@@ -145,7 +140,6 @@ function Cards({ usernames }) {
       title: "Github Contributions",
       icon: GitBranch,
       info: `${usernames?.github?.contributions ?? "N/A"}`,
-      change: 100,
       suffix: "This year",
       hasHeatmap: true,
       platform: 'github',
@@ -190,29 +184,11 @@ function Cards({ usernames }) {
               <PlatformStreakFetcher platform={info.platform} username={info.username} />
             )}
           </CardContent>
-          <CardFooter className="pt-2">
-            <CardDescription>
-              <span
-                className={
-                  info.change > 0
-                    ? cn("text-green-600 font-medium")
-                    : cn("text-red-600 font-medium")
-                }
-              >
-                {info.change > 0 ? (
-                  <>
-                    <ArrowUpRight className="inline-flex w-4" /> +
-                  </>
-                ) : (
-                  <>
-                    <ArrowDownRight className="inline-flex w-4" />{" "}
-                  </>
-                )}
-                {info.change}
-              </span>{" "}
-              {info.suffix}
-            </CardDescription>
-          </CardFooter>
+          {info.suffix && (
+            <CardFooter className="pt-0 pb-3">
+              <CardDescription className="text-xs">{info.suffix}</CardDescription>
+            </CardFooter>
+          )}
         </Card>
       ))}
 

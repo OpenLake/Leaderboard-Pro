@@ -73,39 +73,43 @@ export default function Blogs() {
   };
 
   const handleInteract = async (post, action) => {
-    let updatedLikes = post.likes;
-    let updatedDislikes = post.dislikes;
-    
-    if (action === "like") updatedLikes += 1;
-    if (action === "dislike") updatedDislikes += 1;
+    if (!authTokens?.access) {
+      alert("Please log in to like or dislike posts.");
+      return;
+    }
+
+    // Optimistic update
+    setBlogs(prevBlogs => prevBlogs.map(b => {
+      if (b.id !== post.id) return b;
+      const alreadyVoted = b.user_vote === action;
+      const swapping = b.user_vote && b.user_vote !== action;
+      return {
+        ...b,
+        likes: action === "like"
+          ? alreadyVoted ? b.likes - 1 : b.likes + 1
+          : swapping ? Math.max(0, b.likes - 1) : b.likes,
+        dislikes: action === "dislike"
+          ? alreadyVoted ? b.dislikes - 1 : b.dislikes + 1
+          : swapping ? Math.max(0, b.dislikes - 1) : b.dislikes,
+        user_vote: alreadyVoted ? null : action,
+      };
+    }));
 
     try {
-      // Optimistic update for speedy UI
-      setBlogs(prevBlogs => prevBlogs.map(b => 
-        b.id === post.id 
-          ? { ...b, likes: updatedLikes, dislikes: updatedDislikes }
-          : b
-      ));
-
       const response = await fetch(`${BACKEND}/discussionpost/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${authTokens.access}`,
         },
-        body: JSON.stringify({
-          title: post.title,
-          likes: updatedLikes,
-          dislikes: updatedDislikes,
-        }),
+        body: JSON.stringify({ title: post.title, action }),
       });
-      
-      if (!response.ok) {
-        // Revert on failure
-        fetchBlogs(); 
+      if (!response.ok) fetchBlogs();
+      else {
+        const updated = await response.json();
+        setBlogs(prev => prev.map(b => b.id === post.id ? { ...b, ...updated } : b));
       }
-    } catch (error) {
-      console.error("Error updating interaction:", error);
+    } catch {
       fetchBlogs();
     }
   };
@@ -203,19 +207,23 @@ export default function Blogs() {
               <CardFooter className="pt-2 pb-4 flex justify-between">
                 <div className="flex gap-2">
                   <Button 
-                    variant="outline" 
+                    variant={blog.user_vote === "like" ? "default" : "outline"}
                     size="sm" 
-                    className="gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-950/30"
+                    className={`gap-2 transition-colors ${blog.user_vote === "like" ? "bg-green-600 hover:bg-green-700 text-white border-green-600" : "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-950/30"}`}
                     onClick={() => handleInteract(blog, "like")}
+                    disabled={!authTokens?.access}
+                    title={!authTokens?.access ? "Login to vote" : blog.user_vote === "like" ? "Remove like" : "Like"}
                   >
                     <ThumbsUp className="h-4 w-4" />
                     <span>{blog.likes}</span>
                   </Button>
                   <Button 
-                    variant="outline" 
+                    variant={blog.user_vote === "dislike" ? "default" : "outline"}
                     size="sm" 
-                    className="gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950/30"
+                    className={`gap-2 transition-colors ${blog.user_vote === "dislike" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950/30"}`}
                     onClick={() => handleInteract(blog, "dislike")}
+                    disabled={!authTokens?.access}
+                    title={!authTokens?.access ? "Login to vote" : blog.user_vote === "dislike" ? "Remove dislike" : "Dislike"}
                   >
                     <ThumbsDown className="h-4 w-4" />
                     <span>{blog.dislikes}</span>

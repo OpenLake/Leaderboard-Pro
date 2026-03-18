@@ -135,6 +135,7 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64, default="")
+    ac_uname = models.CharField(max_length=64, default="")
 
 
 class UserTasks(models.Model):
@@ -158,6 +159,16 @@ class DiscussionPost(models.Model):
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
     comments = models.PositiveIntegerField(default=0)
+
+
+class PostVote(models.Model):
+    VOTE_CHOICES = [("like", "Like"), ("dislike", "Dislike")]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(DiscussionPost, on_delete=models.CASCADE, related_name="votes")
+    vote_type = models.CharField(max_length=7, choices=VOTE_CHOICES)
+
+    class Meta:
+        unique_together = ("user", "post")
 
 
 class ReplyPost(models.Model):

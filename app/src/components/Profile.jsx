@@ -21,6 +21,7 @@ const FormSchema = z.object({
   codeforces: z.string(),
   github: z.string(),
   leetcode: z.string(),
+  atcoder: z.string(),
 });
 
 let fields = [
@@ -28,6 +29,7 @@ let fields = [
   { label: "Codeforces Username", tag: "codeforces" },
   { label: "LeetCode Username", tag: "leetcode" },
   { label: "Github Username", tag: "github" },
+  { label: "AtCoder Username", tag: "atcoder" },
 ];
 
 export default function Profile() {
@@ -40,6 +42,7 @@ export default function Profile() {
       codeforces: "",
       github: "",
       leetcode: "",
+      atcoder: "",
     },
   });
   if (userNames) {

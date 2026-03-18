@@ -9,6 +9,7 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -68,6 +69,12 @@ def getUserDetails(request):
         openlakeDetails = OL_Serializer(openlakeDetails).data
     except:
         openlakeDetails = {}
+    try:
+        atcoderDetails = AtcoderUser.objects.get(username=userDetails["ac_uname"])
+        from leaderboard.serializers import AtcoderUserSerializer
+        atcoderDetails = AtcoderUserSerializer(atcoderDetails).data
+    except:
+        atcoderDetails = {}
     return Response(
         {
             "username": username,
@@ -77,5 +84,6 @@ def getUserDetails(request):
             "github": githubDetails,
             "leetcode": leetcodeDetails,
             "openlake": openlakeDetails,
+            "atcoder": atcoderDetails,
         }
     )

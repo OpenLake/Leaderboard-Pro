@@ -21,6 +21,7 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 
 from .firebase import default_app
@@ -70,6 +71,7 @@ def post_UserNames(request):
         username_cf = request.data.get("cf_uname", "")
         username_gh = request.data.get("gh_uname", "")
         username_lt = request.data.get("lt_uname", "")
+        username_ac = request.data.get("ac_uname", "")
         user = request.user
 
         with transaction.atomic():
@@ -98,6 +100,11 @@ def post_UserNames(request):
                     t.lt_uname = username_lt
                     LeetcodeUser.objects.get_or_create(username=username_lt)
 
+                if username_ac and t.ac_uname != username_ac:
+                    AtcoderUser.objects.filter(username=t.ac_uname).delete()
+                    t.ac_uname = username_ac
+                    AtcoderUser.objects.get_or_create(username=username_ac)
+
                 t.save()
 
             else:
@@ -108,6 +115,7 @@ def post_UserNames(request):
                     cf_uname=username_cf,
                     gh_uname=username_gh,
                     lt_uname=username_lt,
+                    ac_uname=username_ac,
                 )
                 userName.save()
 
@@ -120,6 +128,8 @@ def post_UserNames(request):
                     githubUser.objects.get_or_create(username=username_gh)
                 if username_lt:
                     LeetcodeUser.objects.get_or_create(username=username_lt)
+                if username_ac:
+                    AtcoderUser.objects.get_or_create(username=username_ac)
 
         return Response(
             {

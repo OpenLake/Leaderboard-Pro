@@ -5,7 +5,7 @@ import { useAuth } from "@/Context/AuthContext";
 import { useStreak } from "@/Context/StreakContext";
 
 export default function Achievements() {
-  const { user } = useAuth();
+  const { user, authTokens } = useAuth();
   const { globalStreak } = useStreak();
   const [stats, setStats] = useState(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
@@ -15,75 +15,44 @@ export default function Achievements() {
   // 1. Fetch user platform stats to evaluate current progress
   useEffect(() => {
     if (!user) return;
-    
-    // We can fetch from the endpoints we already have to build a combined `stats` object
-    // For simplicity, we fetch all 5 endpoints for this user specifically.
-    // In a real optimized app, we'd have a single /api/user/all_stats/ endpoint.
-    const fetchPlatformData = async (platform) => {
+
+    const fetchAllStats = async () => {
       try {
-        const res = await fetch(`${BACKEND}/${platform}/`);
-        const data = await res.json();
-        // The API returns all users. We need to find this user.
-        // Usually, the app has a `UserNames` mapping or similar.
-        // Assuming the auth context has `username` or we can find it:
-        return data; 
-      } catch (e) {
-        console.warn(`Failed fetching ${platform} stats`);
-        return [];
+        setIsLoading(true);
+        const res = await fetch(`${BACKEND}/userDetails/`, {
+          headers: { Authorization: `Bearer ${authTokens.access}` },
+        });
+        if (!res.ok) { setIsLoading(false); return; }
+        const details = await res.json();
+
+        // details = { username, email, codechef: {...}, codeforces: {...}, github: {...}, leetcode: {...}, atcoder: {...}, openlake: {...} }
+        setStats({
+          github: details.github || null,
+          codeforces: details.codeforces || null,
+          leetcode: details.leetcode || null,
+          codechef: details.codechef || null,
+          atcoder: details.atcoder || null,
+          openlake: details.openlake || null,
+        });
+      } catch (error) {
+        console.error("Error fetching stats for achievements", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const fetchAllStats = async () => {
-       try {
-           setIsLoading(true);
-           // We need to fetch the UserNames mapping first to know the platform usernames
-           const mappingRes = await fetch(`${BACKEND}/usernames/`);
-           const mappings = await mappingRes.json();
-           const userMapping = mappings.find(m => m.user === user.user_id);
-           
-           if (!userMapping) {
-               setIsLoading(false);
-               return;
-           }
-           
-           const [gh, cf, lc, cc, ac, ol] = await Promise.all([
-               fetchPlatformData('github'),
-               fetchPlatformData('codeforces'),
-               fetchPlatformData('leetcode'),
-               fetchPlatformData('codechef'),
-               fetchPlatformData('atcoder'),
-               fetchPlatformData('openlake')
-           ]);
-           
-           const combinedStats = {
-               github: gh.find(u => u.username === userMapping.github),
-               codeforces: cf.find(u => u.username === userMapping.codeforces),
-               leetcode: lc.find(u => u.username === userMapping.leetcode),
-               codechef: cc.find(u => u.username === userMapping.codechef),
-               atcoder: ac.find(u => u.username === userMapping.atcoder),
-               openlake: ol.find(u => u.username === userMapping.openlake)
-           };
-           
-           setStats(combinedStats);
-       } catch (error) {
-           console.error("Error fetching stats for achievements", error);
-       } finally {
-           setIsLoading(false);
-       }
-    };
-    
     // 2. Fetch already unlocked achievements from DB
     const fetchUnlocked = async () => {
       try {
         const res = await fetch(`${BACKEND}/achievements/`, {
-            headers: { 'Authorization': `Bearer ${user.access}` }
+          headers: { Authorization: `Bearer ${authTokens.access}` },
         });
         if (res.ok) {
-            const data = await res.json();
-            setUnlockedAchievements(data);
+          const data = await res.json();
+          setUnlockedAchievements(data);
         }
       } catch (e) {
-         console.warn("Failed to fetch unlocked achievements", e);
+        console.warn("Failed to fetch unlocked achievements", e);
       }
     };
 
@@ -101,7 +70,7 @@ export default function Achievements() {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json',
-                     'Authorization': `Bearer ${user.access}`
+                     'Authorization': `Bearer ${authTokens.access}`
                  },
                  body: JSON.stringify({ slug, tier })
              });

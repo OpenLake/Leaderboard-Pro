@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 
 from leaderboard.models import (
     DiscussionPost,
+    PostVote,
     LeetcodeUser,
     ReplyPost,
     User,
@@ -587,12 +588,24 @@ class UserTasksManage(APIView):  # Inherit from APIView
 
 
 class DiscussionPostManage(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
         posts = DiscussionPost.objects.all()
-        serialized_posts = DiscussionPost_Serializer(posts, many=True)
-        return Response(serialized_posts.data, status=status.HTTP_200_OK)
+        data = []
+        for post in posts:
+            post_data = DiscussionPost_Serializer(post).data
+            # Annotate with the authenticated user's current vote
+            if request.user.is_authenticated:
+                try:
+                    vote = PostVote.objects.get(user=request.user, post=post)
+                    post_data["user_vote"] = vote.vote_type
+                except PostVote.DoesNotExist:
+                    post_data["user_vote"] = None
+            else:
+                post_data["user_vote"] = None
+            data.append(post_data)
+        return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request):
         post = DiscussionPost.objects.create(
@@ -603,29 +616,62 @@ class DiscussionPostManage(APIView):
             dislikes=0,
             comments=0,
         )
-
         serialized_post = DiscussionPost_Serializer(post)
         return Response(serialized_post.data, status=status.HTTP_201_CREATED)
 
     def put(self, request):
+        """Toggle like/dislike for the authenticated user.
+        Body: { "title": "...", "action": "like" | "dislike" }
+        """
+        if not request.user.is_authenticated:
+            return Response({"error": "Login required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        action = request.data.get("action")
+        if action not in ("like", "dislike"):
+            return Response({"error": "action must be 'like' or 'dislike'"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response(
-                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Allow anyone to like/dislike, but only author can edit content?
-        # For now, following instructions to simplify and use request.user if needed.
-        # However, PUT is often used for likes, which shouldn't necessarily be restricted to author.
-        # Given the task is about author assignment and deletion, I'll focus on those.
-
-        for field in ["title", "discription", "likes", "dislikes", "comments"]:
-            if field in request.data:
-                setattr(post, field, request.data[field])
+        try:
+            existing_vote = PostVote.objects.get(user=request.user, post=post)
+            if existing_vote.vote_type == action:
+                # Same vote clicked again → remove vote (toggle off)
+                if action == "like":
+                    post.likes = max(0, post.likes - 1)
+                else:
+                    post.dislikes = max(0, post.dislikes - 1)
+                existing_vote.delete()
+            else:
+                # Opposite vote → swap
+                if action == "like":
+                    post.likes += 1
+                    post.dislikes = max(0, post.dislikes - 1)
+                else:
+                    post.dislikes += 1
+                    post.likes = max(0, post.likes - 1)
+                existing_vote.vote_type = action
+                existing_vote.save()
+        except PostVote.DoesNotExist:
+            # No existing vote → add new one
+            PostVote.objects.create(user=request.user, post=post, vote_type=action)
+            if action == "like":
+                post.likes += 1
+            else:
+                post.dislikes += 1
 
         post.save()
-        return Response(DiscussionPost_Serializer(post).data, status=status.HTTP_200_OK)
+
+        post_data = DiscussionPost_Serializer(post).data
+        try:
+            vote = PostVote.objects.get(user=request.user, post=post)
+            post_data["user_vote"] = vote.vote_type
+        except PostVote.DoesNotExist:
+            post_data["user_vote"] = None
+        return Response(post_data, status=status.HTTP_200_OK)
 
     def delete(self, request):
         try:
