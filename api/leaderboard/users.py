@@ -40,6 +40,7 @@ def getUserDetails(request):
                 "github": {},
                 "leetcode": {},
                 "openlake": {},
+                "atcoder":{},
             }
         )
     try:

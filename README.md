@@ -15,7 +15,7 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Leaderboard type 6 : Leetcode contest ranking
 - Leaderboard type 7 : Atcoder rankings
 - Students can also view the rankings of the latest LeetCode contests, their institute rank and visualise contest performance through graph.
-- Students can also login and view there achievements on the basis of previous accomplishments
+- Students can also login and view their achievements based on previous accomplishments
 - Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
 - Our metrics will promote consistent work instead of bulk work at once.
 - Tech Stack : React, Django, PostgreSQL, MongoDB (for Friend's Table)

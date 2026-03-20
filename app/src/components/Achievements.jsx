@@ -45,7 +45,7 @@ export default function Achievements() {
     const fetchUnlocked = async () => {
       try {
         const res = await fetch(`${BACKEND}/achievements/`, {
-          headers: { Authorization: `Bearer ${authTokens.access}` },
+          headers: { Authorization: `Bearer ${authTokens?.access}` },
         });
         if (res.ok) {
           const data = await res.json();

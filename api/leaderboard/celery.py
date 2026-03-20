@@ -179,11 +179,14 @@ def refresh_github_user_data(self, username):
         
         def fetch_github_contributions(username):
             url = f"https://github-contributions-api.deno.dev/{username}.json"
-            response = requests.get(url, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                return data.get("totalContributions", 0)
-            return 0
+            try:
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("totalContributions", 0)
+            except Exception:
+                pass
+            return None
 
         def fetch_repo_stars(username):
             # Fetch user repositories and sum stargazers_count
@@ -192,20 +195,25 @@ def refresh_github_user_data(self, username):
             url = f"https://api.github.com/users/{username}/repos?per_page=100"
             total_stars = 0
             while url:
-                response = requests.get(url, timeout=5)
-                if response.status_code != 200:
-                    break
-                
-                repos = response.json()
-                total_stars += sum(repo.get("stargazers_count", 0) for repo in repos)
-                
-                # Check for next page in Link header
-                if "Link" in response.headers:
-                    links = response.headers["Link"]
-                    match = re.search(r'<([^>]+)>; rel="next"', links)
-                    url = match.group(1) if match else None
-                else:
-                    url = None
+                try:
+                    response = requests.get(url, timeout=5)
+                    if response.status_code != 200:
+                        return None
+                    
+                    repos = response.json()
+                    total_stars += sum(repo.get("stargazers_count", 0) for repo in repos)
+                    
+                    # Check for next page in Link header
+                    if "Link" in response.headers:
+                        links = response.headers["Link"]
+                        match = re.search(r'<([^>]+)>; rel="next"', links)
+                        if "rel=\"next\"" in links and not match:
+                             return None # Abort if parsing fails when a next link is expected
+                        url = match.group(1) if match else None
+                    else:
+                        url = None
+                except Exception:
+                    return None
             return total_stars
 
         url = f"https://api.github.com/users/{username}"
@@ -213,13 +221,20 @@ def refresh_github_user_data(self, username):
 
         if response.status_code == 200:
             data = response.json()
-            gh_user.avatar = data.get("avatar_url", gh_user.avatar)
-            gh_user.repositories = data.get("public_repos", gh_user.repositories)
-            gh_user.stars = fetch_repo_stars(username)
-            gh_user.contributions = fetch_github_contributions(username)
-            gh_user.last_updated = datetime.now().timestamp()
-            gh_user.save()
-            return f"Successfully updated GitHub data for {username}"
+            
+            stars = fetch_repo_stars(username)
+            contributions = fetch_github_contributions(username)
+            
+            if stars is not None and contributions is not None:
+                gh_user.avatar = data.get("avatar_url", gh_user.avatar)
+                gh_user.repositories = data.get("public_repos", gh_user.repositories)
+                gh_user.stars = stars
+                gh_user.contributions = contributions
+                gh_user.last_updated = datetime.now().timestamp()
+                gh_user.save()
+                return f"Successfully updated GitHub data for {username}"
+            else:
+                return f"Skipped persistence for {username} due to failed metrics fetch (stars: {stars}, contributions: {contributions})"
         else:
             return f"Failed to fetch GitHub data for {username}: {response.status_code}"
     except githubUser.DoesNotExist:

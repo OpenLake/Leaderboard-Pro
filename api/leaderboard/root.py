@@ -16,6 +16,7 @@ def api_root(request, format=None):
             "github": reverse("github-leaderboard", request=request, format=format),
             "openlake": reverse("openlake-leaderboard", request=request, format=format),
             "leetcode": reverse("leetcode-leaderboard", request=request, format=format),
+            "atcoder": reverse("atcoder-leaderboard", request=request, format=format),
             "codeforces-friend-addition": reverse(
                 "codeforcesFA", request=request, format=format
             ),

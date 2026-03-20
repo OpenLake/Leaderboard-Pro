@@ -11,7 +11,7 @@ export function PlatformStreakFetcher({ platform, username }) {
 
     const fetchLeetcodeStreak = async () => {
       try {
-        const response = await fetch(`https://alfa-leetcode-api.onrender.com/userProfileCalendar/${username}`);
+        const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}/calendar`);
         const data = await response.json();
         if (data && data.submissionCalendar) {
           const calendarString = data.submissionCalendar;

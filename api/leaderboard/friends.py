@@ -56,8 +56,9 @@ def codeforcesFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -94,8 +95,9 @@ def codeforcesFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -150,8 +152,9 @@ def codechefFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -187,8 +190,9 @@ def codechefFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -240,8 +244,9 @@ def leetcodeFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -277,8 +282,9 @@ def leetcodeFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -331,8 +337,9 @@ def githubFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -368,8 +375,9 @@ def githubFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -422,8 +430,9 @@ def openlakeFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -459,8 +468,9 @@ def openlakeFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -505,8 +515,9 @@ def atcoderFriendAddition(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
@@ -533,8 +544,9 @@ def atcoderFriendDeletion(request):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+            {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return Response(
             {"status": 400, "message": "Wrong"}, status=status.HTTP_400_BAD_REQUEST

@@ -1,10 +1,8 @@
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -19,18 +17,17 @@ import {
   Code2,
   Target,
   GitBranch,
-  Layout,
   Calendar as CalendarIcon,
-  MessageSquare,
   Zap,
 } from "lucide-react";
 import { useAuth } from "@/Context/AuthContext";
 import { cn } from "@/lib/utils";
 import Heatmap from "@/components/Heatmap"; // Import the Heatmap component
 import { PlatformStreakFetcher } from "@/components/PlatformStreakFetcher"; // Import the hidden streak fetcher
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+
+import Chart from "react-apexcharts";
 
 var rank = 0;
 
@@ -132,9 +129,13 @@ function Cards({ usernames }) {
       icon: Target,
       info: `${usernames?.leetcode?.total_solved ?? "N/A"}`,
       suffix: "Total solved",
-      hasHeatmap: false,
+      hasHeatmap: true,
       platform: 'leetcode',
+      heatmapLabel: "Submission History",
       username: usernames?.leetcode?.username || "",
+      easy_solved: usernames?.leetcode?.easy_solved || 0,
+      medium_solved: usernames?.leetcode?.medium_solved || 0,
+      hard_solved: usernames?.leetcode?.hard_solved || 0,
     },
     {
       title: "Github Contributions",
@@ -147,6 +148,44 @@ function Cards({ usernames }) {
       username: usernames?.github?.username || "",
     },
   ];
+
+  const donutOptions = {
+    chart: {
+      type: "donut",
+      sparkline: {
+        enabled: true,
+      },
+    },
+    labels: ["Easy", "Medium", "Hard"],
+    colors: ["#22c55e", "#eab308", "#ef4444"], // Green-500, Yellow-500, Red-500
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "75%",
+          labels: {
+            show: false,
+          },
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (val) => `${val} solved`,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    stroke: {
+      show: true,
+      width: 1,
+      colors: ["transparent"],
+    },
+  };
   
   return (
     <div className="col-span-full grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -159,24 +198,41 @@ function Cards({ usernames }) {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="text-sm font-medium">{info.title}</div>
-              <CardAction>
-                <info.icon className="h-5 w-5" />
-              </CardAction>
+              <info.icon className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <CardTitle className="text-2xl font-bold mb-1">{info.info}</CardTitle>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-bold mb-1">{info.info}</CardTitle>
+                {info.suffix && (
+                  <CardDescription className="text-xs">{info.suffix}</CardDescription>
+                )}
+              </div>
+              
+              {info.platform === 'leetcode' && (info.easy_solved > 0 || info.medium_solved > 0 || info.hard_solved > 0) && (
+                <div className="h-16 w-16">
+                  <Chart
+                    options={donutOptions}
+                    series={[info.easy_solved, info.medium_solved, info.hard_solved]}
+                    type="donut"
+                    width="100%"
+                    height="100%"
+                  />
+                </div>
+              )}
+            </div>
             
             {/* Heatmap for Codeforces and GitHub */}
             {info.hasHeatmap && (
-              <>
+              <div className="mt-3">
                 <div className="text-xs text-gray-500 mb-1">{info.heatmapLabel}</div>
                 <Heatmap 
                   platform={info.platform} 
                   contributions={info.platform === 'github' ? (usernames?.github?.contributions || 0) : 0}
                   username={info.username}
                 />
-              </>
+              </div>
             )}
             
             {/* Hidden streak fetcher for platforms without heatmaps */}
@@ -184,11 +240,6 @@ function Cards({ usernames }) {
               <PlatformStreakFetcher platform={info.platform} username={info.username} />
             )}
           </CardContent>
-          {info.suffix && (
-            <CardFooter className="pt-0 pb-3">
-              <CardDescription className="text-xs">{info.suffix}</CardDescription>
-            </CardFooter>
-          )}
         </Card>
       ))}
 
@@ -273,7 +324,6 @@ function TabsView() {
 }
 
 const HomePage = () => {
-  const { open, isMobile } = useSidebar();
   const { userNames } = useAuth();
   const greeting = userNames?.username
     ? `Welcome back, ${userNames.username}`

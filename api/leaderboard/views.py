@@ -831,7 +831,9 @@ class AchievementUnlock(APIView):
 
 
 class UserNamesList(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        usernames = UserNames.objects.all()
+        usernames = UserNames.objects.filter(user=request.user)
         serializer = UserNamesSerializer(usernames, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
