@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const Heatmap = ({ platform, username }) => {
+const Heatmap = ({ platform, username, contributions, calendarData }) => {
   const [heatmapData, setHeatmapData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,14 +25,18 @@ const Heatmap = ({ platform, username }) => {
       } else if (platform === 'codeforces' && username) {
         await fetchCodeforcesData();
       } else if (platform === 'leetcode' && username) {
-        await fetchLeetcodeData();
+        if (calendarData) {
+          processLeetcodeData(calendarData);
+        } else {
+          await fetchLeetcodeData();
+        }
       } else {
         generateMockData();
       }
     };
     
     fetchData();
-  }, [platform, username]);
+  }, [platform, username, calendarData]);
 
   const fetchGitHubContributions = async () => {
     setLoading(true);

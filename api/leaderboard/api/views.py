@@ -72,6 +72,10 @@ def post_UserNames(request):
         username_gh = request.data.get("gh_uname", "")
         username_lt = request.data.get("lt_uname", "")
         username_ac = request.data.get("ac_uname", "")
+        bio = request.data.get("bio", "")
+        organization = request.data.get("organization", "")
+        occupation = request.data.get("occupation", "")
+        location = request.data.get("location", "")
         user = request.user
 
         with transaction.atomic():
@@ -105,6 +109,10 @@ def post_UserNames(request):
                     t.ac_uname = username_ac
                     AtcoderUser.objects.get_or_create(username=username_ac)
 
+                t.bio = bio
+                t.organization = organization
+                t.occupation = occupation
+                t.location = location
                 t.save()
 
             else:
@@ -116,6 +124,10 @@ def post_UserNames(request):
                     gh_uname=username_gh,
                     lt_uname=username_lt,
                     ac_uname=username_ac,
+                    bio=bio,
+                    organization=organization,
+                    occupation=occupation,
+                    location=location,
                 )
                 userName.save()
 
@@ -174,6 +186,10 @@ def registerUser(request):
         cf_uname = request.data.get("cf_uname", "")
         gh_uname = request.data.get("gh_uname", "")
         lt_uname = request.data.get("lt_uname", "")
+        bio = request.data.get("bio", "")
+        organization = request.data.get("organization", "")
+        occupation = request.data.get("occupation", "")
+        location = request.data.get("location", "")
 
         if not all([first_name, email, username]):
             logger.error("Missing required fields: first_name, email, username")
@@ -200,6 +216,10 @@ def registerUser(request):
             cf_uname=cf_uname,
             gh_uname=gh_uname,
             lt_uname=lt_uname,
+            bio=bio,
+            organization=organization,
+            occupation=occupation,
+            location=location,
         )
         userName.save()
         logger.info(f"Usernames for {username} saved successfully")

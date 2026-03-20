@@ -277,6 +277,20 @@ def leetcode_user_update(self):
             instance["hard_solved"] = int(listToString(lt_questions[2].text.split(",")))
             instance["avatar"] = ttg[-1]["src"]
             instance["username"] = lt_user.username
+            
+            # Fetch calendar data from alfa-leetcode-api
+            try:
+                calendar_url = f"https://alfa-leetcode-api.onrender.com/{lt_user.username}/calendar"
+                calendar_res = requests.get(calendar_url, timeout=10)
+                if calendar_res.status_code == 200:
+                    calendar_json = calendar_res.json()
+                    instance["calendar_data"] = calendar_json.get("submissionCalendar", "{}")
+                else:
+                    instance["calendar_data"] = lt_user.calendar_data # Keep old data if fetch fails
+            except Exception as ce:
+                logger.error(f"Error fetching LeetCode calendar for {lt_user.username}: {ce}")
+                instance["calendar_data"] = lt_user.calendar_data
+
             updates.append(instance)
 
         except Exception as e:
@@ -290,6 +304,7 @@ def leetcode_user_update(self):
                 "medium_solved": lt_user.medium_solved,
                 "hard_solved": lt_user.hard_solved,
                 "avatar": value,
+                "calendar_data": lt_user.calendar_data,
             }
             updates.append(instance)
 

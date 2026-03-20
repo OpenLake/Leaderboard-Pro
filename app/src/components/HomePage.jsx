@@ -136,6 +136,7 @@ function Cards({ usernames }) {
       easy_solved: usernames?.leetcode?.easy_solved || 0,
       medium_solved: usernames?.leetcode?.medium_solved || 0,
       hard_solved: usernames?.leetcode?.hard_solved || 0,
+      calendarData: usernames?.leetcode?.calendar_data,
     },
     {
       title: "Github Contributions",
@@ -231,6 +232,7 @@ function Cards({ usernames }) {
                   platform={info.platform} 
                   contributions={info.platform === 'github' ? (usernames?.github?.contributions || 0) : 0}
                   username={info.username}
+                  calendarData={info.calendarData}
                 />
               </div>
             )}

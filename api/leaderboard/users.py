@@ -80,11 +80,17 @@ def getUserDetails(request):
         {
             "username": username,
             "email": email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "codechef": codechefDetails,
             "codeforces": codeforcesDetails,
             "github": githubDetails,
             "leetcode": leetcodeDetails,
             "openlake": openlakeDetails,
             "atcoder": atcoderDetails,
+            "bio": userDetails.get("bio", ""),
+            "organization": userDetails.get("organization", ""),
+            "occupation": userDetails.get("occupation", ""),
+            "location": userDetails.get("location", ""),
         }
     )

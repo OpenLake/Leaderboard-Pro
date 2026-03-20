@@ -117,6 +117,7 @@ class LeetcodeUser(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
+    calendar_data = models.TextField(default="{}", blank=True)
 
     @property
     def is_outdated(self):
@@ -136,6 +137,10 @@ class UserNames(models.Model):
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64, default="")
     ac_uname = models.CharField(max_length=64, default="")
+    bio = models.TextField(max_length=500, default="", blank=True)
+    organization = models.CharField(max_length=128, default="", blank=True)
+    occupation = models.CharField(max_length=128, default="", blank=True)
+    location = models.CharField(max_length=128, default="", blank=True)
 
 
 class UserTasks(models.Model):
