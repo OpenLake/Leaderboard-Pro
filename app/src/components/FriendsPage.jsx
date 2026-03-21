@@ -176,29 +176,30 @@ export default function FriendsPage({
         }),
       );
 
-      const nextState = {
-        codeforces: [],
-        codechef: [],
-        leetcode: [],
-        github: [],
-        openlake: [],
-      };
+      let hadFailure = false;
+      setFriendsByPlatform((previous) => {
+        const nextState = { ...previous };
 
-      PLATFORM_CONFIG.forEach((platform, idx) => {
-        const responseResult = responses[idx];
-        const result = parsed[idx];
-        if (responseResult.status !== "fulfilled" || !result) {
-          nextState[platform.key] = [];
-          return;
-        }
-        const response = responseResult.value;
-        nextState[platform.key] =
-          response.ok && result.isJson && Array.isArray(result.data)
-            ? result.data
-            : [];
+        PLATFORM_CONFIG.forEach((platform, idx) => {
+          const responseResult = responses[idx];
+          const result = parsed[idx];
+          if (responseResult.status !== "fulfilled" || !result) {
+            hadFailure = true;
+            return;
+          }
+          const response = responseResult.value;
+          if (!response.ok || !result.isJson || !Array.isArray(result.data)) {
+            hadFailure = true;
+            return;
+          }
+          nextState[platform.key] = result.data;
+        });
+
+        return nextState;
       });
-
-      setFriendsByPlatform(nextState);
+      if (hadFailure) {
+        setError("Some friends lists could not be loaded. Showing last successful data.");
+      }
     } catch {
       setError("Unable to load friends right now. Please try again.");
     } finally {

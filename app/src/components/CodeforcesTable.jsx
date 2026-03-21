@@ -52,6 +52,7 @@ export function CFTable({ codeforcesUsers }) {
   const [contestName, setContestName] = useState("");
   const [contestLoaded, setContestLoaded] = useState(false);
   const [showFriendsInContest, setShowFriendsInContest] = useState(false);
+  const [friendsError, setFriendsError] = useState("");
   
   // New states for logged in user
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -238,10 +239,21 @@ useEffect(() => {
     }
   };
 
+  const syncContestFriendFlags = (nextFriends) => {
+    setContestStandings((current) =>
+      current.map((standing) => ({
+        ...standing,
+        isFriend: nextFriends.includes(standing.username),
+      })),
+    );
+  };
+
   // Get friends list from backend
   const getcffriends = async () => {
     if (!accessToken) {
+      setFriendsError("");
       setCodeforcesfriends([]);
+      syncContestFriendFlags([]);
       return;
     }
 
@@ -256,14 +268,17 @@ useEffect(() => {
       const parsed = await readJsonIfAvailable(response);
       if (!response.ok || !parsed.isJson) {
         console.error("Failed to fetch Codeforces friends:", parsed.message);
-        setCodeforcesfriends([]);
+        setFriendsError(parsed.message || "Could not refresh friends right now.");
         return;
       }
       const newData = parsed.data;
-      setCodeforcesfriends(Array.isArray(newData) ? newData : []);
+      const nextFriends = Array.isArray(newData) ? newData : [];
+      setFriendsError("");
+      setCodeforcesfriends(nextFriends);
+      syncContestFriendFlags(nextFriends);
     } catch (error) {
       console.error("Failed to fetch Codeforces friends:", error);
-      setCodeforcesfriends([]);
+      setFriendsError("Could not refresh friends right now. Showing last known data.");
     }
   };
 
@@ -295,7 +310,14 @@ useEffect(() => {
         alert(parsed.message || "Failed to add friend. Please try again.");
         return;
       }
-      setCodeforcesfriends((current) => [...current, username]);
+      setFriendsError("");
+      setCodeforcesfriends((current) => {
+        const nextFriends = current.includes(username)
+          ? current
+          : [...current, username];
+        syncContestFriendFlags(nextFriends);
+        return nextFriends;
+      });
     } catch (error) {
       console.error("Failed to add Codeforces friend:", error);
       alert("Failed to add friend. Please check your connection and try again.");
@@ -325,9 +347,12 @@ useEffect(() => {
         alert(parsed.message || "Failed to remove friend. Please try again.");
         return;
       }
-      setCodeforcesfriends((current) =>
-        current.filter((friendName) => friendName !== username),
-      );
+      setFriendsError("");
+      setCodeforcesfriends((current) => {
+        const nextFriends = current.filter((friendName) => friendName !== username);
+        syncContestFriendFlags(nextFriends);
+        return nextFriends;
+      });
     } catch (error) {
       console.error("Failed to remove Codeforces friend:", error);
       alert("Failed to remove friend. Please check your connection and try again.");
@@ -338,7 +363,9 @@ useEffect(() => {
     if (isAuthenticated) {
       getcffriends();
     } else {
+      setFriendsError("");
       setCodeforcesfriends([]);
+      syncContestFriendFlags([]);
       setShowFriendsInContest(false);
     }
   }, [isAuthenticated]);
@@ -745,6 +772,11 @@ useEffect(() => {
             </div>
           ) : filteredusers.length > 0 ? (
             <>
+              {friendsError ? (
+                <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+                  {friendsError}
+                </div>
+              ) : null}
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
