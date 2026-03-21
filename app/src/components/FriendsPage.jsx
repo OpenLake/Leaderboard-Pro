@@ -74,6 +74,11 @@ const PLATFORM_CONFIG = [
   },
 ];
 
+const PLATFORM_CONFIG_BY_KEY = PLATFORM_CONFIG.reduce((acc, platform) => {
+  acc[platform.key] = platform;
+  return acc;
+}, {});
+
 const readJsonIfAvailable = async (response) => {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("application/json")) {
@@ -210,27 +215,27 @@ export default function FriendsPage({
       codeforces: findPlatformFriends(
         friendsByPlatform.codeforces,
         codeforcesUsers,
-        PLATFORM_CONFIG[0].sortUsers,
+        PLATFORM_CONFIG_BY_KEY.codeforces.sortUsers,
       ),
       codechef: findPlatformFriends(
         friendsByPlatform.codechef,
         codechefUsers,
-        PLATFORM_CONFIG[1].sortUsers,
+        PLATFORM_CONFIG_BY_KEY.codechef.sortUsers,
       ),
       leetcode: findPlatformFriends(
         friendsByPlatform.leetcode,
         leetcodeUsers,
-        PLATFORM_CONFIG[2].sortUsers,
+        PLATFORM_CONFIG_BY_KEY.leetcode.sortUsers,
       ),
       github: findPlatformFriends(
         friendsByPlatform.github,
         githubUsers,
-        PLATFORM_CONFIG[3].sortUsers,
+        PLATFORM_CONFIG_BY_KEY.github.sortUsers,
       ),
       openlake: findPlatformFriends(
         friendsByPlatform.openlake,
         openlakeUsers,
-        PLATFORM_CONFIG[4].sortUsers,
+        PLATFORM_CONFIG_BY_KEY.openlake.sortUsers,
       ),
     }),
     [friendsByPlatform, codeforcesUsers, codechefUsers, leetcodeUsers, githubUsers, openlakeUsers],
@@ -245,23 +250,28 @@ export default function FriendsPage({
       return;
     }
 
-    const response = await fetch(BACKEND + platform.removeEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-      body: JSON.stringify({ friendName: username }),
-    });
-    if (!response.ok) {
-      alert("Could not remove friend. Please try again.");
-      return;
-    }
+    setError("");
+    try {
+      const response = await fetch(BACKEND + platform.removeEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({ friendName: username }),
+      });
+      if (!response.ok) {
+        setError("Could not remove friend. Please try again.");
+        return;
+      }
 
-    setFriendsByPlatform((current) => ({
-      ...current,
-      [platformKey]: current[platformKey].filter((friend) => friend !== username),
-    }));
+      setFriendsByPlatform((current) => ({
+        ...current,
+        [platformKey]: current[platformKey].filter((friend) => friend !== username),
+      }));
+    } catch {
+      setError("Could not remove friend. Please check your connection and try again.");
+    }
   };
 
   return (
