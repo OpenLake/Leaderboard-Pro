@@ -13,6 +13,25 @@ import { User, Trophy, Users, Loader2, Search,Crown } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
+const readJsonIfAvailable = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const fallbackText = await response.text();
+    return {
+      isJson: false,
+      data: null,
+      message: fallbackText || `Unexpected response (${response.status})`,
+    };
+  }
+
+  try {
+    const data = await response.json();
+    return { isJson: true, data, message: null };
+  } catch {
+    return { isJson: false, data: null, message: "Invalid JSON response" };
+  }
+};
+
 export function CFTable({ codeforcesUsers }) {
   let accessToken = null;
   try {
@@ -33,6 +52,7 @@ export function CFTable({ codeforcesUsers }) {
   const [contestName, setContestName] = useState("");
   const [contestLoaded, setContestLoaded] = useState(false);
   const [showFriendsInContest, setShowFriendsInContest] = useState(false);
+  const [friendsError, setFriendsError] = useState("");
   
   // New states for logged in user
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -219,51 +239,136 @@ useEffect(() => {
     }
   };
 
-  // Get friends list (TODO: Implement backend integration)
+  const syncContestFriendFlags = (nextFriends) => {
+    setContestStandings((current) =>
+      current.map((standing) => ({
+        ...standing,
+        isFriend: nextFriends.includes(standing.username),
+      })),
+    );
+  };
+
+  // Get friends list from backend
   const getcffriends = async () => {
-    try {
-      // TODO: Implement actual friends list from backend
-      // For now, using local storage
-      const savedFriends = localStorage.getItem('codeforces_friends');
-      if (savedFriends) {
-        setCodeforcesfriends(JSON.parse(savedFriends));
-      } else {
-        setCodeforcesfriends([]);
-      }
-    } catch (error) {
-      console.error("Error fetching friends:", error);
+    if (!accessToken) {
+      setFriendsError("");
       setCodeforcesfriends([]);
+      syncContestFriendFlags([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(BACKEND + "/codeforcesFL/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok || !parsed.isJson) {
+        console.error("Failed to fetch Codeforces friends:", parsed.message);
+        setFriendsError(parsed.message || "Could not refresh friends right now.");
+        return;
+      }
+      const newData = parsed.data;
+      const nextFriends = Array.isArray(newData) ? newData : [];
+      setFriendsError("");
+      setCodeforcesfriends(nextFriends);
+      syncContestFriendFlags(nextFriends);
+    } catch (error) {
+      console.error("Failed to fetch Codeforces friends:", error);
+      setFriendsError("Could not refresh friends right now. Showing last known data.");
     }
   };
 
   // Friend functions
   async function addfriend(username) {
-    if (!isAuthenticated) {
+    if (!accessToken) {
       alert("Please login to add friends.");
       return;
     }
-    const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
-    if (!currentFriends.includes(username)) {
-      const updatedFriends = [...currentFriends, username];
-      setCodeforcesfriends(updatedFriends);
-      localStorage.setItem('codeforces_friends', JSON.stringify(updatedFriends));
+
+    if (codeforcesfriends.includes(username)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(BACKEND + "/codeforcesFA/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: username,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to add Codeforces friend:", parsed.message);
+        alert(parsed.message || "Failed to add friend. Please try again.");
+        return;
+      }
+      setFriendsError("");
+      setCodeforcesfriends((current) => {
+        const nextFriends = current.includes(username)
+          ? current
+          : [...current, username];
+        syncContestFriendFlags(nextFriends);
+        return nextFriends;
+      });
+    } catch (error) {
+      console.error("Failed to add Codeforces friend:", error);
+      alert("Failed to add friend. Please check your connection and try again.");
     }
   } 
   
   async function dropfriend(username) {
-    if (!isAuthenticated) {
+    if (!accessToken) {
       alert("Please login to remove friends.");
       return;
     }
-    const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
-    const updatedFriends = currentFriends.filter((friend) => friend !== username);
-    setCodeforcesfriends(updatedFriends);
-    localStorage.setItem('codeforces_friends', JSON.stringify(updatedFriends));
+
+    try {
+      const response = await fetch(BACKEND + "/codeforcesFD/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: username,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to remove Codeforces friend:", parsed.message);
+        alert(parsed.message || "Failed to remove friend. Please try again.");
+        return;
+      }
+      setFriendsError("");
+      setCodeforcesfriends((current) => {
+        const nextFriends = current.filter((friendName) => friendName !== username);
+        syncContestFriendFlags(nextFriends);
+        return nextFriends;
+      });
+    } catch (error) {
+      console.error("Failed to remove Codeforces friend:", error);
+      alert("Failed to remove friend. Please check your connection and try again.");
+    }
   }
   
   useEffect(() => {
-    getcffriends();
-  }, []);
+    if (isAuthenticated) {
+      getcffriends();
+    } else {
+      setFriendsError("");
+      setCodeforcesfriends([]);
+      syncContestFriendFlags([]);
+      setShowFriendsInContest(false);
+    }
+  }, [isAuthenticated]);
 
   // Filter logic for friends tab
   useEffect(() => {
@@ -289,7 +394,6 @@ useEffect(() => {
       }
     }
     
-    // TODO: Sort by rating (implement when backend is ready)
     usersToDisplay.sort((a, b) => b.rating - a.rating);
     
     setFilteredusers(usersToDisplay);
@@ -646,7 +750,6 @@ useEffect(() => {
               <Users className="h-5 w-5" />
               <h3 className="text-lg font-semibold">Friends Leaderboard</h3>
               <span className="text-sm text-gray-500">
-                {/* TODO: Sort by rating when backend is implemented */}
                 Sorted by rating
               </span>
             </div>
@@ -669,6 +772,11 @@ useEffect(() => {
             </div>
           ) : filteredusers.length > 0 ? (
             <>
+              {friendsError ? (
+                <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+                  {friendsError}
+                </div>
+              ) : null}
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -678,9 +786,7 @@ useEffect(() => {
                       {loggedInUser && " (including you)"}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    TODO: Implement rating-based sorting from backend
-                  </div>
+                  <div className="text-xs text-gray-500">Sorted by rating</div>
                 </div>
               </div>
               <DataTable

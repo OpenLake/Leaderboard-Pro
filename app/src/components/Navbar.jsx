@@ -49,7 +49,7 @@ const items = [
   },
   {
     title: "Friends",
-    url: "/",
+    url: "/friends",
     icon: Users,
   },
   {

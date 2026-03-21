@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import LeetcodeRankings from "./components/LeetcodeRankings";
 import LeetcodeRankingsCCPS from "./components/LeetcodeRankingsCCPS";
 import LeetcodeGraphs from "./components/LeetcodeGraphs";
+import FriendsPage from "./components/FriendsPage.jsx";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import Dashboard from "./components/discussion-forum/dashboard.jsx";
 import { SidebarProvider } from "./components/ui/sidebar.jsx";
@@ -186,6 +187,22 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+                <Route
+                  exact
+                  path="/friends"
+                  element={
+                    <PrivateRoute>
+                      <FriendsPage
+                        codeforcesUsers={codeforcesUsers}
+                        codechefUsers={codechefUsers}
+                        leetcodeUsers={leetcodeUsers}
+                        githubUsers={githubUser}
+                        openlakeUsers={openlakeContributor}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
                 <Route exact path="/*" element={<HomePage />} />
               </Routes>
               <GoToTop />
