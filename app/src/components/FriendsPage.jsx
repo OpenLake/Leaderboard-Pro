@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/Context/AuthContext";
-import { Users } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -94,14 +93,6 @@ const readJsonIfAvailable = async (response) => {
   }
 };
 
-const getAccessToken = () => {
-  try {
-    return JSON.parse(localStorage.getItem("authTokens"))?.access || null;
-  } catch {
-    return null;
-  }
-};
-
 const mapFromUsers = (users) =>
   new Map((Array.isArray(users) ? users : []).map((user) => [user.username, user]));
 
@@ -118,7 +109,7 @@ const findPlatformFriends = (friendNames, users, sortUsers) => {
     .filter(Boolean)
     .map((user) => ({
       ...user,
-      computedRank: rankingMap.get(user.username) ?? null,
+      rank: rankingMap.get(user.username) ?? null,
     }));
 };
 
@@ -130,7 +121,7 @@ export default function FriendsPage({
   openlakeUsers,
 }) {
   const { open, isMobile } = useSidebar();
-  const { userNames } = useAuth();
+  const { userNames, authTokens } = useAuth();
   const [friendsByPlatform, setFriendsByPlatform] = useState({
     codeforces: [],
     codechef: [],
@@ -141,7 +132,7 @@ export default function FriendsPage({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const accessToken = getAccessToken();
+  const accessToken = authTokens?.access || null;
   const isAuthenticated = Boolean(accessToken);
 
   const refreshFriends = async () => {
@@ -159,7 +150,7 @@ export default function FriendsPage({
     setLoading(true);
     setError("");
     try {
-      const responses = await Promise.all(
+      const responses = await Promise.allSettled(
         PLATFORM_CONFIG.map((platform) =>
           fetch(BACKEND + platform.endpoint, {
             method: "GET",
@@ -172,7 +163,12 @@ export default function FriendsPage({
       );
 
       const parsed = await Promise.all(
-        responses.map((response) => readJsonIfAvailable(response)),
+        responses.map(async (responseResult) => {
+          if (responseResult.status !== "fulfilled") {
+            return null;
+          }
+          return readJsonIfAvailable(responseResult.value);
+        }),
       );
 
       const nextState = {
@@ -184,8 +180,13 @@ export default function FriendsPage({
       };
 
       PLATFORM_CONFIG.forEach((platform, idx) => {
-        const response = responses[idx];
+        const responseResult = responses[idx];
         const result = parsed[idx];
+        if (responseResult.status !== "fulfilled" || !result) {
+          nextState[platform.key] = [];
+          return;
+        }
+        const response = responseResult.value;
         nextState[platform.key] =
           response.ok && result.isJson && Array.isArray(result.data)
             ? result.data
@@ -263,29 +264,6 @@ export default function FriendsPage({
     }));
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div
-        className="text-foreground flex h-[100%] flex-col gap-5 px-10"
-        style={{
-          width:
-            open && !isMobile
-              ? "calc(100vw - var(--sidebar-width))"
-              : "100vw",
-        }}
-      >
-        <div className="text-3xl font-semibold">Friends</div>
-        <div className="rounded-lg border bg-card p-8 text-center">
-          <Users className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-          <p className="text-lg font-medium">Login required</p>
-          <p className="mt-2 text-muted-foreground">
-            Please sign in to view and manage your friends across leaderboards.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className="text-foreground flex h-[100%] flex-col gap-5 px-10"
@@ -346,7 +324,7 @@ export default function FriendsPage({
                   <tbody>
                     {rows.map((user) => (
                       <tr key={`${platform.key}-${user.username}`} className="border-b last:border-0">
-                        <td className="py-2 pr-3">#{user.computedRank ?? "N/A"}</td>
+                        <td className="py-2 pr-3">#{user.rank ?? "N/A"}</td>
                         <td className="py-2 pr-3">
                           <a
                             className="font-medium hover:underline"

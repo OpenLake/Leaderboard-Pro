@@ -292,13 +292,13 @@ useEffect(() => {
       const parsed = await readJsonIfAvailable(response);
       if (!response.ok) {
         console.error("Failed to add Codeforces friend:", parsed.message);
-        alert("ERROR!!!!");
+        alert(parsed.message || "Failed to add friend. Please try again.");
         return;
       }
       setCodeforcesfriends((current) => [...current, username]);
     } catch (error) {
       console.error("Failed to add Codeforces friend:", error);
-      alert("ERROR!!!!");
+      alert("Failed to add friend. Please check your connection and try again.");
     }
   } 
   
@@ -322,7 +322,7 @@ useEffect(() => {
       const parsed = await readJsonIfAvailable(response);
       if (!response.ok) {
         console.error("Failed to remove Codeforces friend:", parsed.message);
-        alert("ERROR!!!!");
+        alert(parsed.message || "Failed to remove friend. Please try again.");
         return;
       }
       setCodeforcesfriends((current) =>
@@ -330,7 +330,7 @@ useEffect(() => {
       );
     } catch (error) {
       console.error("Failed to remove Codeforces friend:", error);
-      alert("ERROR!!!!");
+      alert("Failed to remove friend. Please check your connection and try again.");
     }
   }
   
