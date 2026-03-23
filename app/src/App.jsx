@@ -23,6 +23,10 @@ import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
+import PublicRoute from "./Context/PublicRoute";
+import ContestCalendar from "./components/ContestCalendar";
+import Blogs from "./components/Blogs.jsx";
+import Achievements from "./components/Achievements.jsx";
 const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
