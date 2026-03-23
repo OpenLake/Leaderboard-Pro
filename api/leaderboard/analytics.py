@@ -26,7 +26,7 @@ def safe_normalize(series):
 
 def github_score(df):
     if df.empty:
-        return df
+        return pd.DataFrame(columns=["username", "github_score"])
 
     df = df.fillna(0)
 
@@ -44,14 +44,15 @@ def github_score(df):
 
 def leetcode_score(df):
     if df.empty:
-        return df
+        return pd.DataFrame(columns=["username", "lt_score"])
 
     df = df.fillna(0)
 
     # Ranking: lower is better → invert
     if "ranking" in df.columns:
-        df["ranking_inv"] = df["ranking"].max() - df["ranking"]
-        df["ranking_norm"] = safe_normalize(df["ranking_inv"])
+        ranking = df["ranking"].replace(0, pd.NA).astype("float")
+        df["ranking_inv"] = ranking.max() - ranking
+        df["ranking_norm"] = safe_normalize(df["ranking_inv"].fillna(0))
     else:
         df["ranking_norm"] = 0
 
@@ -75,7 +76,7 @@ def leetcode_score(df):
 
 def codeforces_score(df):
     if df.empty:
-        return df
+        return pd.DataFrame(columns=["username", "cf_score"])
 
     df = df.fillna(0)
 
@@ -100,7 +101,7 @@ def codeforces_score(df):
 
 def codechef_score(df):
     if df.empty:
-        return df
+        return pd.DataFrame(columns=["username", "cc_score"])
 
     df = df.fillna(0)
 
@@ -109,9 +110,10 @@ def codechef_score(df):
 
     # Global rank inversion (lower better)
     if "Global_rank" in df.columns:
-        df["Global_rank"] = pd.to_numeric(df["Global_rank"], errors="coerce").fillna(0)
-        df["rank_inv"] = df["Global_rank"].max() - df["Global_rank"]
-        df["rank_norm"] = safe_normalize(df["rank_inv"])
+        global_rank = pd.to_numeric(df["Global_rank"], errors="coerce")
+        global_rank = global_rank.replace(0, pd.NA).astype("float")
+        df["rank_inv"] = global_rank.max() - global_rank
+        df["rank_norm"] = safe_normalize(df["rank_inv"].fillna(0))
     else:
         df["rank_norm"] = 0
 
