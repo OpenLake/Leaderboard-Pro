@@ -43,20 +43,20 @@ function Cards({ usernames }) {
               Level Up Your Coding Journey
             </h2>
             <p className="mb-8 max-w-2xl text-lg text-slate-300 lg:text-xl">
-              Leaderboard Pro is the ultimate platform to track your ratings, 
+              Leaderboard Pro is the ultimate platform to track your ratings,
               analyze your performance, and compete with friends across all major platforms.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="h-12 px-8 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white border-none"
                 onClick={() => navigate("/register")}
               >
                 Join Now
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="h-12 border-slate-700 hover:border-slate-500 bg-transparent px-8 text-lg font-bold text-white hover:bg-slate-800"
                 onClick={() => navigate("/login")}
               >
@@ -187,7 +187,7 @@ function Cards({ usernames }) {
       colors: ["transparent"],
     },
   };
-  
+
   return (
     <div className="col-span-full grid grid-cols-2 gap-4 lg:grid-cols-4">
       {CardInfo.map((info) => (
@@ -210,7 +210,7 @@ function Cards({ usernames }) {
                   <CardDescription className="text-xs">{info.suffix}</CardDescription>
                 )}
               </div>
-              
+
               {info.platform === 'leetcode' && (info.easy_solved > 0 || info.medium_solved > 0 || info.hard_solved > 0) && (
                 <div className="h-16 w-16">
                   <Chart
@@ -223,20 +223,20 @@ function Cards({ usernames }) {
                 </div>
               )}
             </div>
-            
+
             {/* Heatmap for Codeforces and GitHub */}
             {info.hasHeatmap && (
               <div className="mt-3">
                 <div className="text-xs text-gray-500 mb-1">{info.heatmapLabel}</div>
-                <Heatmap 
-                  platform={info.platform} 
+                <Heatmap
+                  platform={info.platform}
                   contributions={info.platform === 'github' ? (usernames?.github?.contributions || 0) : 0}
                   username={info.username}
                   calendarData={info.calendarData}
                 />
               </div>
             )}
-            
+
             {/* Hidden streak fetcher for platforms without heatmaps */}
             {!info.hasHeatmap && info.platform && info.username && (
               <PlatformStreakFetcher platform={info.platform} username={info.username} />
@@ -273,8 +273,8 @@ function Analytics() {
 
 function Leaderboards() {
   return (
-    <div className="flex justify-center">
-      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
+    <div className="flex size-full justify-center">
+      <p className="content-center text-4xl font-bold"><UnifiedLeaderboard /></p>
     </div>
   );
 }
@@ -294,7 +294,7 @@ function TabsView() {
     { title: "Leaderboards", comp: Leaderboards },
     { title: "Friends", comp: Friends },
   ];
-  
+
   return (
     <div className="grow">
       <Tabs

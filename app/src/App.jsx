@@ -31,6 +31,7 @@ import Friends from "./components/Friends.jsx";
 import Organizations from "./components/Organizations";
 import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
+import UnifiedLeaderboard from "./components/UnifiedLeaderboard";
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const fetchListSafely = async (endpoint, setData) => {
@@ -81,131 +82,148 @@ function App() {
                 <NavMenu />
                 <Routes>
 
-                <Route exact path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-                <Route exact path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                <Route
-                  exact
-                  path="/leetcoderankingsccps"
-                  element={<LeetcodeRankingsCCPS />}
-                />
-                <Route
-                  exact
-                  path="/"
-                  element={<HomePage />}
-                />
-                <Route
-                  exact
-                  path="/codeforces"
-                  element={<CFTable codeforcesUsers={codeforcesUsers} />}
-                />
-                <Route
-                  exact
-                  path="/codechef"
-                  element={<CCTable codechefUsers={codechefUsers} />}
-                />
-                <Route
-                  exact
-                  path="/openlake"
-                  element={<OpenLakeTable OLUsers={openlakeContributor} />}
-                />
-                <Route
-                  exact
-                  path="/github"
-                  element={<GHTable githubUsers={githubUser} />}
-                />
-                <Route
-                  exact
-                  path="/atcoder"
-                  element={<AtcoderTable atcoderUsers={atcoderUsers} />}
-                />
-                <Route
-                  exact
-                  path="/leetcode"
-                  element={<LCTable leetcodeUsers={leetcodeUsers} />}
-                />
-                <Route
-                  exact
-                  path="/profile"
-                  element={
-                    <PrivateRoute>
-                      <Profile />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/leetcoderankings"
-                  element={
-                    <PrivateRoute>
-                      <LeetcodeRankings darkmode={darkmode} />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/leetcoderanking/:username"
-                  element={
-                    <PrivateRoute>
-                      <LeetcodeGraphs darkmode={darkmode} />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/contests"
-                  element={<ContestCalendar />}
-                />
-                <Route
-                  exact
-                  path="/blogs"
-                  element={<Blogs />}
-                />
-                <Route
-                  exact
-                  path="/achievements"
-                  element={
-                    <PrivateRoute>
-                      <Achievements />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/friends"
-                  element={
-                    <PrivateRoute>
-                      <Friends />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  exact
-                  path="/organizations"
-                  element={<Organizations />}
-                />
-                <Route
-                  exact
-                  path="/organizations/:id"
-                  element={
-                    <PrivateRoute>
-                      <OrganizationLeaderboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route exact path="/*" element={<HomePage />} />
-              </Routes>
-              <GoToTop />
-              <Footer />
-            </div>
+                  <Route exact path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+                  <Route exact path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                  <Route
+                    exact
+                    path="/leetcoderankingsccps"
+                    element={<LeetcodeRankingsCCPS />}
+                  />
+                  <Route
+                    exact
+                    path="/"
+                    element={<HomePage />}
+                  />
+                  <Route
+                    exact
+                    path="/codeforces"
+                    element={<CFTable codeforcesUsers={codeforcesUsers} />}
+                  />
+                  <Route
+                    exact
+                    path="/codechef"
+                    element={<CCTable codechefUsers={codechefUsers} />}
+                  />
+                  <Route
+                    exact
+                    path="/openlake"
+                    element={<OpenLakeTable OLUsers={openlakeContributor} />}
+                  />
+                  <Route
+                    exact
+                    path="/github"
+                    element={<GHTable githubUsers={githubUser} />}
+                  />
+                  <Route
+                    exact
+                    path="/atcoder"
+                    element={<AtcoderTable atcoderUsers={atcoderUsers} />}
+                  />
+                  <Route
+                    exact
+                    path="/leetcode"
+                    element={<LCTable leetcodeUsers={leetcodeUsers} />}
+                  />
+                  <Route
+                    exact
+                    path="/profile"
+                    element={
+                      <PrivateRoute>
+                        <Profile />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/leetcoderankings"
+                    element={
+                      <PrivateRoute>
+                        <LeetcodeRankings darkmode={darkmode} />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/leetcoderanking/:username"
+                    element={
+                      <PrivateRoute>
+                        <LeetcodeGraphs darkmode={darkmode} />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/dashboard"
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/contests"
+                    element={<ContestCalendar />}
+                  />
+                  <Route
+                    exact
+                    path="/blogs"
+                    element={<Blogs />}
+                  />
+                  <Route
+                    exact
+                    path="/achievements"
+                    element={
+                      <PrivateRoute>
+                        <Achievements />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/friends"
+                    element={
+                      <PrivateRoute>
+                        <Friends />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    exact
+                    path="/organizations"
+                    element={<Organizations />}
+                  />
+                  <Route
+                    exact
+                    path="/organizations/:id"
+                    element={
+                      <PrivateRoute>
+                        <OrganizationLeaderboard />
+                      </PrivateRoute>
+                    }
+                  />
+                  {/* ADD YOUR NEW ROUTE HERE */}
+                  <Route
+                    exact
+                    path="/leaderboards"
+                    element={
+                      <PrivateRoute>
+                        <UnifiedLeaderboard
+                          codeforcesUsers={codeforcesUsers}
+                          codechefUsers={codechefUsers}
+                          leetcodeUsers={leetcodeUsers}
+                          githubUsers={githubUser}
+                          openlakeUsers={openlakeContributor}
+                        />
+                      </PrivateRoute>
+                    }
+                  />
+                  {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
+                  <Route exact path="/*" element={<HomePage />} />
+                </Routes>
+                <GoToTop />
+                <Footer />
+              </div>
             </SidebarInset>
           </SidebarProvider>
         </AuthProvider>

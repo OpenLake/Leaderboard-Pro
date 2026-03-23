@@ -43,7 +43,7 @@ const items = [
   },
   {
     title: "Leaderboards",
-    url: "/",
+    url: "/leaderboards",
     icon: Trophy,
   },
   {
