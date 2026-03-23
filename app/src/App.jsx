@@ -32,6 +32,10 @@ import Organizations from "./components/Organizations";
 import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
+import PublicRoute from "./Context/PublicRoute";
+import ContestCalendar from "./components/ContestCalendar";
+import Blogs from "./components/Blogs.jsx";
+import Achievements from "./components/Achievements.jsx";
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const fetchListSafely = async (endpoint, setData) => {
