@@ -27,7 +27,6 @@ const getToken = () => {
     return "";
   }
 };
-
 // ── tiny horizontal progress bar ─────────────────────────────────────────────
 function ScoreBar({ value = 0, color }) {
   const pct = Math.min(100, Math.max(0, value * 100));
