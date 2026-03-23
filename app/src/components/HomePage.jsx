@@ -1,3 +1,4 @@
+import { UnifiedLeaderboard } from "@/components/UnifiedLeaderboard";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Card,
@@ -273,9 +274,7 @@ function Analytics() {
 
 function Leaderboards() {
   return (
-    <div className="flex size-full justify-center">
-      <p className="content-center text-4xl font-bold"><UnifiedLeaderboard /></p>
-    </div>
+    <UnifiedLeaderboard />
   );
 }
 

@@ -31,7 +31,7 @@ import Friends from "./components/Friends.jsx";
 import Organizations from "./components/Organizations";
 import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
-import UnifiedLeaderboard from "./components/UnifiedLeaderboard";
+import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const fetchListSafely = async (endpoint, setData) => {

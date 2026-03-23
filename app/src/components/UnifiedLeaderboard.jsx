@@ -19,6 +19,15 @@ import { User, Trophy, Medal } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
+// safe token getter — won't crash if storage is cleared mid-session
+const getToken = () => {
+  try {
+    return JSON.parse(localStorage.getItem("authTokens"))?.access ?? "";
+  } catch {
+    return "";
+  }
+};
+
 // ── tiny horizontal progress bar ─────────────────────────────────────────────
 function ScoreBar({ value = 0, color }) {
   const pct = Math.min(100, Math.max(0, value * 100));
@@ -98,13 +107,12 @@ export function UnifiedLeaderboard() {
       setLoading(true);
       setError(null);
       try {
+        const token = getToken();
         const res = await fetch(BACKEND + "/analytics/unified/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("authTokens")).access,
+            Authorization: token ? `Bearer ${token}` : "",
           },
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -126,13 +134,12 @@ export function UnifiedLeaderboard() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
+        const token = getToken();
         const res = await fetch(BACKEND + "/githubFL/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("authTokens")).access,
+            Authorization: token ? `Bearer ${token}` : "",
           },
         });
         const data = await res.json();
