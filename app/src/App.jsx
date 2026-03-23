@@ -22,7 +22,7 @@ import Dashboard from "./components/discussion-forum/dashboard.jsx";
 import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
-import UnifiedLeaderboard from "./components/UnifiedLeaderboard";
+import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
 const BACKEND = import.meta.env.VITE_BACKEND;
 function App() {
   const [codechefUsers, setCodechefUsers] = useState([]);
