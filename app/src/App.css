@@ -3,6 +3,18 @@
   pointer-events: none;
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.App {
+  overflow-x: hidden;
+  max-width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

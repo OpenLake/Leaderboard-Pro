@@ -9,6 +9,7 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -26,8 +27,22 @@ def getUserDetails(request):
     user = request.user
     username = user.username
     email = user.email
-    userDetails = UserNames.objects.get(user=user)
-    userDetails = UserNamesSerializer(userDetails).data
+    try:
+        userDetails = UserNames.objects.get(user=user)
+        userDetails = UserNamesSerializer(userDetails).data
+    except UserNames.DoesNotExist:
+        return Response(
+            {
+                "username": username,
+                "email": email,
+                "codechef": {},
+                "codeforces": {},
+                "github": {},
+                "leetcode": {},
+                "openlake": {},
+                "atcoder":{},
+            }
+        )
     try:
         codechefDetails = codechefUser.objects.get(username=userDetails["cc_uname"])
         codechefDetails = CC_Serializer(codechefDetails).data
@@ -55,14 +70,27 @@ def getUserDetails(request):
         openlakeDetails = OL_Serializer(openlakeDetails).data
     except:
         openlakeDetails = {}
+    try:
+        atcoderDetails = AtcoderUser.objects.get(username=userDetails["ac_uname"])
+        from leaderboard.serializers import AtcoderUserSerializer
+        atcoderDetails = AtcoderUserSerializer(atcoderDetails).data
+    except:
+        atcoderDetails = {}
     return Response(
         {
             "username": username,
             "email": email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "codechef": codechefDetails,
             "codeforces": codeforcesDetails,
             "github": githubDetails,
             "leetcode": leetcodeDetails,
             "openlake": openlakeDetails,
+            "atcoder": atcoderDetails,
+            "bio": userDetails.get("bio", ""),
+            "organization": userDetails.get("organization", ""),
+            "occupation": userDetails.get("occupation", ""),
+            "location": userDetails.get("location", ""),
         }
     )
