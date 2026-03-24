@@ -47,9 +47,12 @@ const Login = () => {
   
   async function handleGoogleAuth(e) {
     e.preventDefault();
-    await SignInWithGoogle();
-    navigate("/");
-  } 
+    const success = await SignInWithGoogle();
+    if (success) {
+      navigate("/");
+    }
+  }
+
   if (loading) {
     return (
       <div
