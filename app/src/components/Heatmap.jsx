@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const Heatmap = ({ platform, username }) => {
+const Heatmap = ({ platform, username, contributions, calendarData }) => {
   const [heatmapData, setHeatmapData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,13 +24,19 @@ const Heatmap = ({ platform, username }) => {
         await fetchGitHubContributions();
       } else if (platform === 'codeforces' && username) {
         await fetchCodeforcesData();
+      } else if (platform === 'leetcode' && username) {
+        if (calendarData) {
+          processLeetcodeData(calendarData);
+        } else {
+          await fetchLeetcodeData();
+        }
       } else {
         generateMockData();
       }
     };
     
     fetchData();
-  }, [platform, username]);
+  }, [platform, username, calendarData]);
 
   const fetchGitHubContributions = async () => {
     setLoading(true);
@@ -78,6 +84,88 @@ const Heatmap = ({ platform, username }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchLeetcodeData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}/calendar`);
+      const data = await response.json();
+      
+      if (data && data.submissionCalendar) {
+        processLeetcodeData(data.submissionCalendar);
+      } else {
+        setError("No submission data found");
+        generateMockData();
+      }
+    } catch (error) {
+      console.error("Error fetching LeetCode data:", error);
+      setError("Failed to load submissions");
+      generateMockData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processLeetcodeData = (calendarString) => {
+    let parsedCalendar;
+    try {
+      parsedCalendar = JSON.parse(calendarString);
+    } catch (e) {
+      console.error("Failed parsing LeetCode calendar", e);
+      generateMockData();
+      return;
+    }
+
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - (now.getDay()) - (11 * 7));
+    startDate.setHours(0, 0, 0, 0);
+
+    // Create a map of normalized date strings to counts for easier lookup
+    const dailyCounts = {};
+    Object.keys(parsedCalendar).forEach(ts => {
+      const date = new Date(parseInt(ts) * 1000);
+      const dateStr = date.toISOString().split('T')[0];
+      dailyCounts[dateStr] = (dailyCounts[dateStr] || 0) + parsedCalendar[ts];
+    });
+
+    const heatmapArray = [];
+    let currentDate = new Date(startDate);
+
+    for (let week = 0; week < 12; week++) {
+      const weekData = [];
+      for (let day = 0; day < 7; day++) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const count = dailyCounts[dateStr] || 0;
+        
+        let level = 0;
+        if (count > 0) {
+          if (count >= 10) level = 4;
+          else if (count >= 5) level = 3;
+          else if (count >= 2) level = 2;
+          else level = 1;
+        }
+
+        weekData.push({ level, date: dateStr, count });
+        currentDate.setDate(currentDate.getDate() + 1);
+        
+        if (currentDate > now) {
+          while (weekData.length < 7) {
+            const extraDateStr = currentDate.toISOString().split('T')[0];
+            weekData.push({ level: 0, date: extraDateStr, count: 0 });
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+          break;
+        }
+      }
+      heatmapArray.push(weekData);
+      if (currentDate > now) break;
+    }
+
+    setHeatmapData(heatmapArray);
+    calculateStreak(heatmapArray);
   };
   
   const processCodeforcesData = (submissions) => {
@@ -224,14 +312,19 @@ const Heatmap = ({ platform, username }) => {
       if (level > 0) {
         streak++;
         newStreakCells.add(i);
+        // console.log(`Streak incremented at index ${i}, level: ${level}, streak: ${streak}`);
       } else {
         if (i === flatData.length - 1) {
+             // Skip today if no activity yet
+             // console.log(`Today (index ${i}) has no activity, continuing streak check...`);
              continue;
         } else {
+           // console.log(`Streak broken at index ${i} (yesterday or older), level: ${level}`);
            break;
         }
       }
     }
+    // console.log(`Final calculated streak for ${platform}: ${streak}`);
     setCurrentStreak(streak);
     setStreakCells(newStreakCells);
     if (updateStreak && platform) {
@@ -249,6 +342,15 @@ const Heatmap = ({ platform, username }) => {
         "bg-red-700 dark:bg-red-500",         
       ];
       return codeforcesColors[level] || codeforcesColors[0];
+    } else if (platform === 'leetcode') {
+      const leetcodeColors = [
+        "bg-gray-100 dark:bg-gray-800",        
+        "bg-orange-100 dark:bg-orange-900",       
+        "bg-orange-300 dark:bg-orange-700",       
+        "bg-orange-500 dark:bg-orange-600",       
+        "bg-orange-700 dark:bg-orange-500",       
+      ];
+      return leetcodeColors[level] || leetcodeColors[0];
     } else {
       const githubColors = [
         "bg-gray-100 dark:bg-gray-800",        
@@ -265,6 +367,8 @@ const Heatmap = ({ platform, username }) => {
     if (count !== undefined) {
       if (platform === 'codeforces') {
         return `${count} submission${count !== 1 ? 's' : ''}`;
+      } else if (platform === 'leetcode') {
+        return `${count} submission${count !== 1 ? 's' : ''}`;
       } else {
         return `${count} contribution${count !== 1 ? 's' : ''}`;
       }
@@ -274,6 +378,9 @@ const Heatmap = ({ platform, username }) => {
     if (platform === 'codeforces') {
       const activities = ["No activity", "1-2 problems", "3-5 problems", "Contest + problems", "Multiple contests"];
       return activities[level] || "No activity";
+    } else if (platform === 'leetcode') {
+      const submissions = ["No submissions", "1 submission", "2-4 submissions", "5-9 submissions", "10+ submissions"];
+      return submissions[level] || "No submissions";
     } else {
       const commits = ["No contributions", "1-4 commits", "5-9 commits", "10-19 commits", "20+ commits"];
       return commits[level] || "No contributions";
@@ -281,7 +388,9 @@ const Heatmap = ({ platform, username }) => {
   };
 
   const getPlatformLabel = () => {
-    return platform === 'codeforces' ? "Contest Activity" : "Commit History";
+    if (platform === 'codeforces') return "Contest Activity";
+    if (platform === 'leetcode') return "Submission History";
+    return "Commit History";
   };
 
   const getLegendColors = () => {
@@ -293,6 +402,16 @@ const Heatmap = ({ platform, username }) => {
           <div className="w-2 h-2 bg-red-300 dark:bg-red-700 rounded-sm"></div>
           <div className="w-2 h-2 bg-red-500 dark:bg-red-600 rounded-sm"></div>
           <div className="w-2 h-2 bg-red-700 dark:bg-red-500 rounded-sm"></div>
+        </div>
+      );
+    } else if (platform === 'leetcode') {
+      return (
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-gray-100 dark:bg-gray-800 rounded-sm"></div>
+          <div className="w-2 h-2 bg-orange-100 dark:bg-orange-900 rounded-sm"></div>
+          <div className="w-2 h-2 bg-orange-300 dark:bg-orange-700 rounded-sm"></div>
+          <div className="w-2 h-2 bg-orange-500 dark:bg-orange-600 rounded-sm"></div>
+          <div className="w-2 h-2 bg-orange-700 dark:bg-orange-500 rounded-sm"></div>
         </div>
       );
     } else {
@@ -361,7 +480,11 @@ const Heatmap = ({ platform, username }) => {
               const flatIndex = weekIndex * 7 + dayIndex;
               const isStreak = streakCells.has(flatIndex);
               const itemLevel = typeof day === 'object' ? (day.level || 0) : day;
-              const titleText = typeof day === 'object' && day.date ? `${day.date}: ${getTooltipText(itemLevel, platform, day.count)}` : `${platform === 'codeforces' ? 'Codeforces' : 'GitHub'}: ${getTooltipText(itemLevel, platform)}`;
+              let platformName = "GitHub";
+              if (platform === 'codeforces') platformName = "Codeforces";
+              if (platform === 'leetcode') platformName = "LeetCode";
+              
+              const titleText = typeof day === 'object' && day.date ? `${day.date}: ${getTooltipText(itemLevel, platform, day.count)}` : `${platformName}: ${getTooltipText(itemLevel, platform)}`;
               return (
               <TooltipProvider key={`${weekIndex}-${dayIndex}`} delayDuration={100}>
                 <Tooltip>

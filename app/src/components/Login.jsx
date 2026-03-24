@@ -55,15 +55,7 @@ const Login = () => {
 
   if (loading) {
     return (
-      <div
-        className="text-foreground flex h-full flex-col"
-        style={{
-          width:
-            open && !isMobile
-              ? "calc(100vw - var(--sidebar-width))"
-              : "100vw",
-        }}
-      >
+      <div className="text-foreground flex h-full flex-col">
         <div className="m-auto">Loading...</div>
       </div>
     );
@@ -75,15 +67,7 @@ const Login = () => {
   }
 
   return (
-    <div
-      className="text-foreground flex h-full flex-col"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="text-foreground flex h-full flex-col">
       <div className="m-auto w-[60%] space-y-2 md:w-[40%] lg:w-1/3">
         <div className="mb-5 flex justify-center text-2xl font-extrabold">
           Login

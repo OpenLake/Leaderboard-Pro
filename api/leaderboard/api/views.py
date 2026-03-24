@@ -21,6 +21,7 @@ from leaderboard.models import (
     codeforcesUser,
     githubUser,
     openlakeContributor,
+    AtcoderUser,
 )
 
 from .firebase import default_app
@@ -70,6 +71,11 @@ def post_UserNames(request):
         username_cf = request.data.get("cf_uname", "")
         username_gh = request.data.get("gh_uname", "")
         username_lt = request.data.get("lt_uname", "")
+        username_ac = request.data.get("ac_uname", "")
+        bio = request.data.get("bio", "")
+        organization = request.data.get("organization", "")
+        occupation = request.data.get("occupation", "")
+        location = request.data.get("location", "")
         user = request.user
 
         with transaction.atomic():
@@ -98,6 +104,15 @@ def post_UserNames(request):
                     t.lt_uname = username_lt
                     LeetcodeUser.objects.get_or_create(username=username_lt)
 
+                if username_ac and t.ac_uname != username_ac:
+                    AtcoderUser.objects.filter(username=t.ac_uname).delete()
+                    t.ac_uname = username_ac
+                    AtcoderUser.objects.get_or_create(username=username_ac)
+
+                t.bio = bio
+                t.organization = organization
+                t.occupation = occupation
+                t.location = location
                 t.save()
 
             else:
@@ -108,6 +123,11 @@ def post_UserNames(request):
                     cf_uname=username_cf,
                     gh_uname=username_gh,
                     lt_uname=username_lt,
+                    ac_uname=username_ac,
+                    bio=bio,
+                    organization=organization,
+                    occupation=occupation,
+                    location=location,
                 )
                 userName.save()
 
@@ -120,6 +140,8 @@ def post_UserNames(request):
                     githubUser.objects.get_or_create(username=username_gh)
                 if username_lt:
                     LeetcodeUser.objects.get_or_create(username=username_lt)
+                if username_ac:
+                    AtcoderUser.objects.get_or_create(username=username_ac)
 
         return Response(
             {
@@ -164,6 +186,10 @@ def registerUser(request):
         cf_uname = request.data.get("cf_uname", "")
         gh_uname = request.data.get("gh_uname", "")
         lt_uname = request.data.get("lt_uname", "")
+        bio = request.data.get("bio", "")
+        organization = request.data.get("organization", "")
+        occupation = request.data.get("occupation", "")
+        location = request.data.get("location", "")
 
         if not all([first_name, email, username]):
             logger.error("Missing required fields: first_name, email, username")
@@ -190,6 +216,10 @@ def registerUser(request):
             cf_uname=cf_uname,
             gh_uname=gh_uname,
             lt_uname=lt_uname,
+            bio=bio,
+            organization=organization,
+            occupation=occupation,
+            location=location,
         )
         userName.save()
         logger.info(f"Usernames for {username} saved successfully")

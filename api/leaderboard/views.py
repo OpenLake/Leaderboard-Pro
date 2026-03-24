@@ -3,20 +3,21 @@ import os
 import re
 import urllib.parse
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from django.http import JsonResponse
 from knox.models import AuthToken
 from rest_framework import generics, mixins, status, response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from leaderboard.models import (
     DiscussionPost,
+    PostVote,
     LeetcodeUser,
     ReplyPost,
     User,
@@ -26,7 +27,9 @@ from leaderboard.models import (
     codeforcesUserRatingUpdate,
     githubUser,
     openlakeContributor,
-    AtcoderUser
+    AtcoderUser,
+    Achievement,
+    UserNames
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -37,7 +40,9 @@ from leaderboard.serializers import (
     OL_Serializer,
     ReplyPost_Serializer,
     Task_Serializer,
-    AtcoderUserSerializer
+    AtcoderUserSerializer,
+    AchievementSerializer,
+    UserNamesSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -97,21 +102,6 @@ class GithubUserAPI(
 
     def get(self, request):
         gh_users = githubUser.objects.all()
-        if not gh_users.exists():
-            return Response(
-                {"message": "No users found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        for user in gh_users:
-            github_data = self.fetch_github_data(user.username)
-            if github_data:
-                user.avatar = github_data["avatar"]
-                user.repositories = github_data["repositories"]
-                user.stars = github_data["stars"]
-                user.contributions = github_data["contributions"]
-                user.last_updated = github_data["last_updated"]
-                user.save()
-
         serializer = GH_Serializer(gh_users, many=True)
         return Response(serializer.data)
 
@@ -120,6 +110,12 @@ class GithubUserAPI(
         if not username:
             return Response(
                 {"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # check if user already exists
+        if githubUser.objects.filter(username=username).exists():
+             return Response(
+                {"message": "User already exists"}, status=status.HTTP_200_OK
             )
 
         # Create user and fetch GitHub data
@@ -350,8 +346,9 @@ class CodechefLeaderboard(
 
     def get(self, request):
         cc_users = codechefUser.objects.all()
-
-        for user in cc_users:
+        # We rely on background tasks (update_db or Celery) for bulk updates.
+        # However, we can update a few outdated users per request to keep it fresh.
+        for user in cc_users.filter(last_updated__lt=datetime.now() - timedelta(minutes=15))[:5]:
             user_data = self.get_codechef_data(user.username)
             if user_data:
                 user.rating = user_data["rating"]
@@ -591,66 +588,103 @@ class UserTasksManage(APIView):  # Inherit from APIView
 
 
 class DiscussionPostManage(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         posts = DiscussionPost.objects.all()
-        serialized_posts = DiscussionPost_Serializer(posts, many=True)
-        return Response(serialized_posts.data, status=status.HTTP_200_OK)
+        data = []
+        for post in posts:
+            post_data = DiscussionPost_Serializer(post).data
+            # Annotate with the authenticated user's current vote
+            if request.user.is_authenticated:
+                try:
+                    vote = PostVote.objects.get(user=request.user, post=post)
+                    post_data["user_vote"] = vote.vote_type
+                except PostVote.DoesNotExist:
+                    post_data["user_vote"] = None
+            else:
+                post_data["user_vote"] = None
+            data.append(post_data)
+        return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
         post = DiscussionPost.objects.create(
-            username=user,
+            username=request.user,
             title=request.data["title"],
             discription=request.data["discription"],
             likes=0,
             dislikes=0,
             comments=0,
         )
-
         serialized_post = DiscussionPost_Serializer(post)
         return Response(serialized_post.data, status=status.HTTP_201_CREATED)
 
     def put(self, request):
-        try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+        """Toggle like/dislike for the authenticated user.
+        Body: { "title": "...", "action": "like" | "dislike" }
+        """
+        if not request.user.is_authenticated:
+            return Response({"error": "Login required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        action = request.data.get("action")
+        if action not in ("like", "dislike"):
+            return Response({"error": "action must be 'like' or 'dislike'"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
-            return Response(
-                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        for field in ["title", "description", "likes", "dislikes", "comments"]:
-            if field in request.data:
-                setattr(post, field, request.data[field])
+        try:
+            existing_vote = PostVote.objects.get(user=request.user, post=post)
+            if existing_vote.vote_type == action:
+                # Same vote clicked again → remove vote (toggle off)
+                if action == "like":
+                    post.likes = max(0, post.likes - 1)
+                else:
+                    post.dislikes = max(0, post.dislikes - 1)
+                existing_vote.delete()
+            else:
+                # Opposite vote → swap
+                if action == "like":
+                    post.likes += 1
+                    post.dislikes = max(0, post.dislikes - 1)
+                else:
+                    post.dislikes += 1
+                    post.likes = max(0, post.likes - 1)
+                existing_vote.vote_type = action
+                existing_vote.save()
+        except PostVote.DoesNotExist:
+            # No existing vote → add new one
+            PostVote.objects.create(user=request.user, post=post, vote_type=action)
+            if action == "like":
+                post.likes += 1
+            else:
+                post.dislikes += 1
 
         post.save()
-        return Response(DiscussionPost_Serializer(post).data, status=status.HTTP_200_OK)
+
+        post_data = DiscussionPost_Serializer(post).data
+        try:
+            vote = PostVote.objects.get(user=request.user, post=post)
+            post_data["user_vote"] = vote.vote_type
+        except PostVote.DoesNotExist:
+            post_data["user_vote"] = None
+        return Response(post_data, status=status.HTTP_200_OK)
 
     def delete(self, request):
         try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        try:
-            post = DiscussionPost.objects.get(user=user, title=request.data["title"])
+            post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
                 {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if post.username != request.user:
+            return Response(
+                {"error": "Unauthorized to delete this post"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         post.delete()
@@ -662,17 +696,21 @@ class DiscussionPostManage(APIView):
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class AtcoderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = AtcoderUser.objects.all().order_by('-rating')
+    queryset = AtcoderUser.objects.all().order_by("-rating")
     serializer_class = AtcoderUserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        return self.list(request)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         return self.create(request)
 
 class DiscussionReplyManage(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         # Retrieve discussion post using query parameters
         title = request.query_params.get("title")
@@ -695,13 +733,6 @@ class DiscussionReplyManage(APIView):
 
     def post(self, request):
         try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
@@ -710,7 +741,7 @@ class DiscussionReplyManage(APIView):
 
         # Create the reply using the correct field names
         reply = ReplyPost.objects.create(
-            username=user,
+            username=request.user,
             parent=post,
             discription=request.data["discription"],  # corrected field name
             likes=0,
@@ -721,13 +752,6 @@ class DiscussionReplyManage(APIView):
 
     def put(self, request):
         try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
@@ -735,7 +759,7 @@ class DiscussionReplyManage(APIView):
             )
 
         try:
-            reply = ReplyPost.objects.get(username=user, parent=post)
+            reply = ReplyPost.objects.get(username=request.user, parent=post)
         except ReplyPost.DoesNotExist:
             return Response(
                 {"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND
@@ -751,13 +775,6 @@ class DiscussionReplyManage(APIView):
 
     def delete(self, request):
         try:
-            user = User.objects.get(username=request.data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        try:
             post = DiscussionPost.objects.get(title=request.data["title"])
         except DiscussionPost.DoesNotExist:
             return Response(
@@ -765,7 +782,8 @@ class DiscussionReplyManage(APIView):
             )
 
         try:
-            reply = ReplyPost.objects.get(username=user, parent=post)
+            # Finding the reply by the current user and parent post
+            reply = ReplyPost.objects.get(username=request.user, parent=post)
         except ReplyPost.DoesNotExist:
             return Response(
                 {"error": "Reply not found"}, status=status.HTTP_404_NOT_FOUND
@@ -775,3 +793,47 @@ class DiscussionReplyManage(APIView):
         return Response(
             {"message": "Reply deleted successfully"}, status=status.HTTP_200_OK
         )
+
+
+class AchievementManage(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        achievements = Achievement.objects.filter(user=request.user)
+        serializer = AchievementSerializer(achievements, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AchievementUnlock(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        slug = request.data.get("slug")
+        tier = request.data.get("tier")
+
+        if not slug or not tier:
+            return Response(
+                {"error": "Slug and tier are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        achievement, created = Achievement.objects.get_or_create(
+            user=request.user, slug=slug, tier=tier
+        )
+
+        if created:
+            serializer = AchievementSerializer(achievement)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(
+                {"message": "Already unlocked"}, status=status.HTTP_200_OK
+            )
+
+
+class UserNamesList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        usernames = UserNames.objects.filter(user=request.user)
+        serializer = UserNamesSerializer(usernames, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

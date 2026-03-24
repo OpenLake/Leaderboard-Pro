@@ -110,15 +110,7 @@ export function AtcoderTable({ atcoderUsers }) {
   };
 
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full px-1.5 py-1">
       <div className="mb-2 flex flex-col gap-2 md:flex-row md:justify-between">
         <Input
           placeholder="Search AtCoder users..."

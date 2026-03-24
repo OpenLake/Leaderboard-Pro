@@ -26,7 +26,9 @@ const FormSchema = z.object({
   username: z.string().min(1, {
     message: "Please enter a username.",
   }),
-  email: z.email(),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
   password: z.string().min(1, {
     message: "Please enter a password",
   }),
@@ -63,15 +65,7 @@ const Register = () => {
     }
   };
   return (
-    <div
-      className="text-foreground flex h-full flex-col"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="text-foreground flex h-full flex-col">
       <div className="m-auto w-[60%] space-y-2.5 md:w-[40%] lg:w-1/3">
         <div className="mb-5 flex justify-center text-2xl font-extrabold">
           Register

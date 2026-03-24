@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 import requests
+import re
 from celery import Celery
 
 logger = logging.getLogger(__name__)
@@ -167,6 +168,83 @@ def github_user_update(self):
 
 
 @app.task(bind=True)
+def refresh_github_user_data(self, username):
+    from leaderboard.models import githubUser
+    from leaderboard.serializers import GH_Update_Serializer
+
+    try:
+        gh_user = githubUser.objects.get(username=username)
+        # We can reuse the scraping logic from the view by making it a utility or just copying it here.
+        # Given the request to move it to a background worker, let's implement the fetching here.
+        
+        def fetch_github_contributions(username):
+            url = f"https://github-contributions-api.deno.dev/{username}.json"
+            try:
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("totalContributions", 0)
+            except Exception:
+                pass
+            return None
+
+        def fetch_repo_stars(username):
+            # Fetch user repositories and sum stargazers_count
+            # Using per_page=100 to minimize pagination needs, though for very large accounts
+            # we might need to handle actual pagination.
+            url = f"https://api.github.com/users/{username}/repos?per_page=100"
+            total_stars = 0
+            while url:
+                try:
+                    response = requests.get(url, timeout=5)
+                    if response.status_code != 200:
+                        return None
+                    
+                    repos = response.json()
+                    total_stars += sum(repo.get("stargazers_count", 0) for repo in repos)
+                    
+                    # Check for next page in Link header
+                    if "Link" in response.headers:
+                        links = response.headers["Link"]
+                        match = re.search(r'<([^>]+)>; rel="next"', links)
+                        if "rel=\"next\"" in links and not match:
+                             return None # Abort if parsing fails when a next link is expected
+                        url = match.group(1) if match else None
+                    else:
+                        url = None
+                except Exception:
+                    return None
+            return total_stars
+
+        url = f"https://api.github.com/users/{username}"
+        response = requests.get(url, timeout=5)
+
+        if response.status_code == 200:
+            data = response.json()
+            
+            stars = fetch_repo_stars(username)
+            contributions = fetch_github_contributions(username)
+            
+            if stars is not None and contributions is not None:
+                gh_user.avatar = data.get("avatar_url", gh_user.avatar)
+                gh_user.repositories = data.get("public_repos", gh_user.repositories)
+                gh_user.stars = stars
+                gh_user.contributions = contributions
+                gh_user.last_updated = datetime.now().timestamp()
+                gh_user.save()
+                return f"Successfully updated GitHub data for {username}"
+            else:
+                return f"Skipped persistence for {username} due to failed metrics fetch (stars: {stars}, contributions: {contributions})"
+        else:
+            return f"Failed to fetch GitHub data for {username}: {response.status_code}"
+    except githubUser.DoesNotExist:
+        return f"User {username} not found in database"
+    except Exception as e:
+        logger.error(f"Error refreshing GitHub data for {username}: {e}")
+        return f"Error: {str(e)}"
+
+
+@app.task(bind=True)
 def leetcode_user_update(self):
     from bs4 import BeautifulSoup
 
@@ -199,6 +277,20 @@ def leetcode_user_update(self):
             instance["hard_solved"] = int(listToString(lt_questions[2].text.split(",")))
             instance["avatar"] = ttg[-1]["src"]
             instance["username"] = lt_user.username
+            
+            # Fetch calendar data from alfa-leetcode-api
+            try:
+                calendar_url = f"https://alfa-leetcode-api.onrender.com/{lt_user.username}/calendar"
+                calendar_res = requests.get(calendar_url, timeout=10)
+                if calendar_res.status_code == 200:
+                    calendar_json = calendar_res.json()
+                    instance["calendar_data"] = calendar_json.get("submissionCalendar", "{}")
+                else:
+                    instance["calendar_data"] = lt_user.calendar_data # Keep old data if fetch fails
+            except Exception as ce:
+                logger.error(f"Error fetching LeetCode calendar for {lt_user.username}: {ce}")
+                instance["calendar_data"] = lt_user.calendar_data
+
             updates.append(instance)
 
         except Exception as e:
@@ -212,6 +304,7 @@ def leetcode_user_update(self):
                 "medium_solved": lt_user.medium_solved,
                 "hard_solved": lt_user.hard_solved,
                 "avatar": value,
+                "calendar_data": lt_user.calendar_data,
             }
             updates.append(instance)
 
@@ -280,25 +373,37 @@ def atcoder_user_update(self):
             data_ac = BeautifulSoup(page.text, "html.parser")
             instance = {}
             
-            # Scrape Rating
-            rating_tag = data_ac.find("table", class_="dl-table")
-            if rating_tag:
-                 rows = rating_tag.find_all("tr")
-                 for row in rows:
-                     th = row.find("th")
-                     if th and th.text.strip() == "Rating":
-                         instance["rating"] = int(row.find("span").text)
-                     if th and th.text.strip() == "Highest Rating":
-                         instance["highest_rating"] = int(row.find("span").text)
-                     if th and th.text.strip() == "Rank":
-                          # Actually AtCoder rank is just number like 1234th.
-                          # Let's clean it.
-                          rank_text = row.find("td").text
-                          match = re.search(r'\d+', rank_text)
-                          if match:
-                              instance["rank"] = int(match.group())
+            # Scrape Rating and Rank from multiple potential tables
+            tables = data_ac.find_all("table", class_="dl-table")
+            for table in tables:
+                rows = table.find_all("tr")
+                for row in rows:
+                    th = row.find("th")
+                    td = row.find("td")
+                    if th and td:
+                        th_text = th.text.strip()
+                        if th_text == "Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["rating"] = int(span.text)
+                        elif th_text == "Highest Rating":
+                            span = td.find("span")
+                            if span:
+                                instance["highest_rating"] = int(span.text)
+                        elif th_text == "Rank":
+                            rank_text = td.text.strip()
+                            match = re.search(r'\d+', rank_text)
+                            if match:
+                                instance["rank"] = int(match.group())
 
             instance["username"] = ac_user.username
+
+            # Validation: Ensure all required fields are present
+            required_fields = ["rating", "highest_rating", "rank"]
+            if not all(field in instance for field in required_fields):
+                missing = [f for f in required_fields if f not in instance]
+                raise ValueError(f"Missing required fields for {ac_user.username}: {missing}")
+
             updates.append(instance)
 
         except Exception as e:

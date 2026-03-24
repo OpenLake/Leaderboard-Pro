@@ -219,16 +219,19 @@ useEffect(() => {
     }
   };
 
-  // Get friends list (TODO: Implement backend integration)
+  // Get friends list from backend
   const getcffriends = async () => {
+    if (!isAuthenticated) return;
     try {
-      // TODO: Implement actual friends list from backend
-      // For now, using local storage
-      const savedFriends = localStorage.getItem('codeforces_friends');
-      if (savedFriends) {
-        setCodeforcesfriends(JSON.parse(savedFriends));
-      } else {
-        setCodeforcesfriends([]);
+      const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+      const response = await fetch(`${BACKEND}/codeforcesFL/`, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCodeforcesfriends(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error("Error fetching friends:", error);
@@ -242,23 +245,45 @@ useEffect(() => {
       alert("Please login to add friends.");
       return;
     }
-    const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
-    if (!currentFriends.includes(username)) {
-      const updatedFriends = [...currentFriends, username];
-      setCodeforcesfriends(updatedFriends);
-      localStorage.setItem('codeforces_friends', JSON.stringify(updatedFriends));
+    try {
+      const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+      const response = await fetch(`${BACKEND}/codeforcesFA/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+        body: JSON.stringify({ friendName: username }),
+      });
+      if (response.ok) {
+        await getcffriends();
+      }
+    } catch (error) {
+      console.error("Error adding friend:", error);
     }
-  } 
-  
+  }
+
   async function dropfriend(username) {
     if (!isAuthenticated) {
       alert("Please login to remove friends.");
       return;
     }
-    const currentFriends = Array.isArray(codeforcesfriends) ? codeforcesfriends : [];
-    const updatedFriends = currentFriends.filter((friend) => friend !== username);
-    setCodeforcesfriends(updatedFriends);
-    localStorage.setItem('codeforces_friends', JSON.stringify(updatedFriends));
+    try {
+      const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+      const response = await fetch(`${BACKEND}/codeforcesFD/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+        body: JSON.stringify({ friendName: username }),
+      });
+      if (response.ok) {
+        await getcffriends();
+      }
+    } catch (error) {
+      console.error("Error removing friend:", error);
+    }
   }
   
   useEffect(() => {
@@ -548,15 +573,7 @@ useEffect(() => {
   }
   
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full px-1.5 py-1">
       {/* Logged in User Info Card - Always at top */}
       {loggedInUser && (
         <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">

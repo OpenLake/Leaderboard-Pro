@@ -6,7 +6,7 @@ const GoToTop = () => {
   };
 
   return (
-    <div>
+    <>
       <button
         className="bg-foreground text-background"
         style={{
@@ -25,7 +25,7 @@ const GoToTop = () => {
       >
         <ArrowUp />
       </button>
-    </div>
+    </>
   );
 };
 

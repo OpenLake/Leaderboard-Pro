@@ -193,6 +193,11 @@ export const AuthProvider = ({ children }) => {
         cf_uname: form_data.codeforces,
         gh_uname: form_data.github,
         lt_uname: form_data.leetcode,
+        ac_uname: form_data.atcoder,
+        bio: form_data.bio,
+        organization: form_data.organization,
+        occupation: form_data.occupation,
+        location: form_data.location,
       }),
     });
     if (response.status === 201) {
