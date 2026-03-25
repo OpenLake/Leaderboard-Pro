@@ -366,7 +366,7 @@ class CodechefLeaderboard(
                     return "TRANSIENT_ERROR"
                 
                 # Scrape Heatmap Data
-                heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', response.text)
+                heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', response.text, re.DOTALL)
                 if heatmap_match:
                     instance["calendar_data"] = heatmap_match.group(1)
                 else:
@@ -395,7 +395,7 @@ class CodechefLeaderboard(
                 user = codechefUser.objects.get(username=username)
                 if user.is_outdated:
                     user_data = self.get_codechef_data(user.username)
-                    if user_data:
+                    if isinstance(user_data, dict):
                         user.rating = user_data["rating"]
                         user.max_rating = user_data["highest_rating"]
                         user.Global_rank = user_data["global_rank"]
@@ -404,6 +404,10 @@ class CodechefLeaderboard(
                         user.calendar_data = user_data["calendar_data"]
                         user.last_updated = datetime.now()
                         user.save()
+                    elif user_data == "TRANSIENT_ERROR":
+                        # For an existing outdated user, we can either return the old data 
+                        # or provide a warning. Let's return the old data for now but log.
+                        logger.warning(f"Transient error while refreshing {user.username}, serving cached data.")
                 serializer = CC_Serializer(user)
                 return Response(serializer.data)
             except codechefUser.DoesNotExist:
@@ -431,7 +435,7 @@ class CodechefLeaderboard(
         # However, we can update a few outdated users per request to keep it fresh.
         for user in cc_users.filter(last_updated__lt=datetime.now() - timedelta(minutes=15))[:5]:
             user_data = self.get_codechef_data(user.username)
-            if user_data:
+            if isinstance(user_data, dict):
                 user.rating = user_data["rating"]
                 user.max_rating = user_data["highest_rating"]
                 user.Global_rank = user_data["global_rank"]
@@ -948,12 +952,14 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
         if organization_id:
             try:
-                organization = Organization.objects.get(id=organization_id)
+                organization = Organization.objects.get(id=int(organization_id))
                 if organization.is_private:
                     return Response(
                         {"error": "This is a private group. Join code is required."},
                         status=status.HTTP_400_BAD_REQUEST
                     )
+            except (ValueError, TypeError):
+                return Response({"error": "Invalid organization_id"}, status=status.HTTP_400_BAD_REQUEST)
             except Organization.DoesNotExist:
                 return Response(
                     {"error": "Organization not found"}, status=status.HTTP_404_NOT_FOUND
@@ -1067,7 +1073,12 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         if not user_id:
             return Response({"error": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-        if int(user_id) == request.user.id:
+        try:
+            user_id_int = int(user_id)
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid user_id"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if user_id_int == request.user.id:
             return Response({"error": "Admin cannot remove themselves. Use leave instead."}, status=status.HTTP_400_BAD_REQUEST)
 
         membership = OrganizationMember.objects.filter(organization=organization, user_id=user_id)
