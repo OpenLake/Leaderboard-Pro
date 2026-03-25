@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useStreak } from "@/Context/StreakContext";
+const BACKEND = import.meta.env.VITE_BACKEND;
 
 // Component to fetch streaks for platforms that don't have a heatmap rendered.
 // Rendered hidden inside App.jsx or HomePage.jsx
@@ -115,12 +116,17 @@ export function PlatformStreakFetcher({ platform, username, calendarData }) {
 
     const fetchCodechefStreak = async () => {
       try {
-        const response = await fetch(`https://codechef-api.vercel.app/handle/${username}`);
+        // Fetch from local backend which scrapes CodeChef profile
+        const response = await fetch(`${BACKEND}/codechef/?username=${username}`);
         const data = await response.json();
-        if (data && data.heatMap) {
-          const sortedEntries = data.heatMap
+        
+        // The backend returns calendar_data as a JSON string of the heatmap array (userDailySubmissionsStats)
+        if (data && data.calendar_data) {
+          const parsedCalendar = JSON.parse(data.calendar_data);
+          const sortedEntries = parsedCalendar
             .filter(entry => entry.value > 0)
             .sort((a, b) => new Date(b.date) - new Date(a.date));
+          
           if (sortedEntries.length === 0) {
             updateStreak(platform, 0);
             return;

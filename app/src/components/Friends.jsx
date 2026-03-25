@@ -31,7 +31,9 @@ export default function Friends() {
     if (!platform) return;
 
     try {
-      const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+      const stored = localStorage.getItem("authTokens");
+      if (!stored) return;
+      const authTokens = JSON.parse(stored);
       const response = await fetch(`${BACKEND}/${platformId}${platform.suffix}L/`, {
         headers: {
           Authorization: `Bearer ${authTokens.access}`,

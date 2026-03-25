@@ -118,14 +118,20 @@ export function AtcoderTable({ atcoderUsers }) {
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
         />
-         <div className="flex gap-2">
+        {localStorage.getItem("authTokens") ? (
+          <div className="flex gap-2">
             <Input 
                 placeholder="Add Username"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
             />
             <Button onClick={handleAddUser}>Add User</Button>
-         </div>
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground self-center">
+            Login to add new users to the leaderboard
+          </div>
+        )}
       </div>
       <DataTable
         data={[...filteredusers].sort((a, b) => (a.rating < b.rating ? 1 : -1))}

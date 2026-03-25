@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 
 import requests
@@ -91,6 +92,18 @@ class Command(BaseCommand):
                 instance["Global_rank"] = ranks[0].strong.text
                 instance["Country_rank"] = ranks[1].strong.text
                 instance["username"] = cc_user.username
+
+                # Scrape Heatmap Data
+                try:
+                    heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', page.text)
+                    if heatmap_match:
+                        instance["calendar_data"] = heatmap_match.group(1)
+                    else:
+                        instance["calendar_data"] = "[]"
+                except Exception as e:
+                    self.stderr.write(f"Error scraping heatmap for {cc_user.username}: {e}")
+                    instance["calendar_data"] = "[]"
+
                 updates.append(instance)
 
             except:
@@ -104,6 +117,7 @@ class Command(BaseCommand):
                     "max_rating": cc_user.max_rating,
                     "Global_rank": cc_user.Global_rank,
                     "Country_rank": cc_user.Country_rank,
+                    "calendar_data": cc_user.calendar_data,
                 }
                 updates.append(instance)
 
