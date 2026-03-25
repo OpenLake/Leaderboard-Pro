@@ -67,6 +67,11 @@ const items = [
     icon: Building2,
   },
   {
+    title: "Organizations",
+    url: "/organizations",
+    icon: Building2,
+  },
+  {
     title: "Achievements",
     url: "/achievements",
     icon: Award,
