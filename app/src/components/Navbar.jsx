@@ -42,7 +42,7 @@ const items = [
   },
   {
     title: "Analytics",
-    url: "/",
+    url: "/analytics",
     icon: ChartColumn,
   },
   {

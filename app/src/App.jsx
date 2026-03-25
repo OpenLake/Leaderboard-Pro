@@ -23,6 +23,7 @@ import { SidebarProvider } from "./components/ui/sidebar.jsx";
 import { ThemeProvider } from "@/Context/ThemeProvider.jsx";
 import { NavMenu } from "./components/NavMenu";
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
+import { TrendAnalysis } from "@/components/TrendAnalysis";
 import PublicRoute from "./Context/PublicRoute";
 import ContestCalendar from "./components/ContestCalendar";
 import Blogs from "./components/Blogs.jsx";
@@ -192,6 +193,15 @@ function App() {
                         githubUsers={githubUser}
                         openlakeUsers={openlakeContributor}
                       />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/analytics"
+                  element={
+                    <PrivateRoute>
+                      <TrendAnalysis />
                     </PrivateRoute>
                   }
                 />

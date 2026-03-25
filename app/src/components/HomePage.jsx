@@ -1,4 +1,5 @@
 import { UnifiedLeaderboard } from "@/components/UnifiedLeaderboard";
+import { TrendAnalysis } from "@/components/TrendAnalysis";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Card,
@@ -142,11 +143,7 @@ function Overview() {
 }
 
 function Analytics() {
-  return (
-    <div className="flex size-full justify-center">
-      <p className="content-center text-4xl font-bold">Upcoming Feature</p>
-    </div>
-  );
+  return <TrendAnalysis />;
 }
 
 function Leaderboards() {
