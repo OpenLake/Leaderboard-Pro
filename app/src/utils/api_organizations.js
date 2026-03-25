@@ -73,6 +73,7 @@ export const leaveOrganization = async (authTokens, orgId) => {
     const error = await response.json();
     throw new Error(error.error || "Failed to leave organization");
   }
+  if (response.status === 204) return null;
   return response.json();
 };
 

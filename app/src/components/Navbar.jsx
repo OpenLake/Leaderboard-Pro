@@ -123,7 +123,7 @@ export const Navbar = () => {
             <SidebarMenu>
               {items.map((item, index) => {
                 const isActive = pathname === item.url;
-                const isBlogs = index === 6;
+                const isBlogs = index === 7;
                 return (
                   <SidebarMenuItem 
                     key={item.title} 
