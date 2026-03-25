@@ -22,18 +22,27 @@ import { ChevronLeft, ChevronRight, TrendingUp, Activity, BarChart2 } from "luci
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
+// ── safe token getter — won't crash if storage is cleared mid-session
+const getToken = () => {
+  try {
+    return JSON.parse(localStorage.getItem("authTokens"))?.access ?? "";
+  } catch {
+    return "";
+  }
+};
+
 // ── fetch helper ──────────────────────────────────────────────────────────────
-const fetchTrend = async (url, token) => {
+const fetchTrend = async (url) => {
   if (!BACKEND) {
     throw new Error("Backend URL is not configured.");
   }
-  const headers = {
-    "Content-Type": "application/json",
-  };
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  const res = await fetch(BACKEND + url, { headers });
+  const token = getToken();
+  const res = await fetch(BACKEND + url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 };
@@ -274,7 +283,7 @@ function LeetCodeLineChart({ data, loading, error, onRetry, darkmode }) {
   if (error) return <ChartError message={error} onRetry={onRetry} />;
   if (!data) return null;
 
-const { easy = 0, medium = 0, hard = 0, total = 0 } = data.current_totals || {};
+  const { easy = 0, medium = 0, hard = 0, total = 0 } = data.current_totals || {};
 
   // Difficulty breakdown bar chart
   const difficultyOptions = {
@@ -314,7 +323,6 @@ const { easy = 0, medium = 0, hard = 0, total = 0 } = data.current_totals || {};
     },
     grid: { borderColor: darkmode ? "#374151" : "#e5e7eb" },
   };
-
   const difficultySeries = [{ name: "Solved", data: [easy, medium, hard] }];
 
   // Timeline line chart showing daily submissions
@@ -380,7 +388,6 @@ const escapeHtml = (str) => {
   div.textContent = str;
   return div.innerHTML;
 };
-
 // ── Codeforces line chart ─────────────────────────────────────────────────────
 function CodeforcesLineChart({ data, loading, error, onRetry, darkmode, range, onRangeChange }) {
   if (loading) return <ChartSkeleton />;
@@ -547,40 +554,31 @@ function UnifiedLineChart({ data, loading, error, onRetry, darkmode }) {
 
 // ── LeetCode tab ──────────────────────────────────────────────────────────────
 function LeetCodeTab({ darkmode }) {
-  const { authTokens } = useAuth();
-  const token = authTokens?.access;
-  const [heatmapData, setHeatmapData] = useState(null);
-  const [lineData, setLineData] = useState(null);
-  const [heatmapLoading, setHeatmapLoading] = useState(true);
-  const [lineLoading, setLineLoading] = useState(true);
-  const [heatmapError, setHeatmapError] = useState(null);
-  const [lineError, setLineError] = useState(null);
-
   const loadHeatmap = useCallback(async () => {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/leetcode/heatmap/", token);
+      const data = await fetchTrend("/trends/leetcode/heatmap/");
       setHeatmapData(data);
     } catch {
       setHeatmapError("Failed to load LeetCode heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const loadLine = useCallback(async () => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend("/trends/leetcode/linechart/", token);
+      const data = await fetchTrend("/trends/leetcode/linechart/");
       setLineData(data);
     } catch {
       setLineError("Failed to load LeetCode chart.");
     } finally {
       setLineLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => { loadHeatmap(); loadLine(); }, [loadHeatmap, loadLine]);
 
@@ -622,8 +620,6 @@ function LeetCodeTab({ darkmode }) {
 
 // ── Codeforces tab ────────────────────────────────────────────────────────────
 function CodeforcesTab({ darkmode }) {
-  const { authTokens } = useAuth();
-  const token = authTokens?.access;
   const [heatmapData, setHeatmapData] = useState(null);
   const [lineData, setLineData] = useState(null);
   const [heatmapLoading, setHeatmapLoading] = useState(true);
@@ -636,27 +632,27 @@ function CodeforcesTab({ darkmode }) {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/codeforces/heatmap/", token);
+      const data = await fetchTrend("/trends/codeforces/heatmap/");
       setHeatmapData(data);
     } catch {
       setHeatmapError("Failed to load Codeforces heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const loadLine = useCallback(async (r = range) => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend(`/trends/codeforces/linechart/?range=${r}`, token);
+      const data = await fetchTrend(`/trends/codeforces/linechart/?range=${r}`);
       setLineData(data);
     } catch {
       setLineError("Failed to load Codeforces rating history.");
     } finally {
       setLineLoading(false);
     }
-  }, [token]);
+  }, [range]);
 
   const handleRangeChange = (r) => {
     setRange(r);
@@ -705,8 +701,6 @@ function CodeforcesTab({ darkmode }) {
 
 // ── Unified tab ───────────────────────────────────────────────────────────────
 function UnifiedTab({ darkmode }) {
-  const { authTokens } = useAuth();
-  const token = authTokens?.access;
   const [heatmapData, setHeatmapData] = useState(null);
   const [lineData, setLineData] = useState(null);
   const [heatmapLoading, setHeatmapLoading] = useState(true);
@@ -718,27 +712,27 @@ function UnifiedTab({ darkmode }) {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/unified/heatmap/", token);
+      const data = await fetchTrend("/trends/unified/heatmap/");
       setHeatmapData(data);
     } catch {
       setHeatmapError("Failed to load unified heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const loadLine = useCallback(async () => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend("/trends/unified/linechart/", token);
+      const data = await fetchTrend("/trends/unified/linechart/");
       setLineData(data);
     } catch {
       setLineError("Failed to load unified score chart.");
     } finally {
       setLineLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => { loadHeatmap(); loadLine(); }, [loadHeatmap, loadLine]);
 

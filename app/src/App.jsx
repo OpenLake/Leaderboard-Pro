@@ -32,10 +32,7 @@ import Organizations from "./components/Organizations";
 import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
-<<<<<<< HEAD
 import { TrendAnalysis } from "@/components/TrendAnalysis";
-=======
->>>>>>> edcda3b (feat: add unified analytics leaderboard frontend UI)
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const fetchListSafely = async (endpoint, setData) => {
@@ -221,7 +218,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-<<<<<<< HEAD
                   <Route
                     exact
                     path="/analytics"
@@ -231,8 +227,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-=======
->>>>>>> edcda3b (feat: add unified analytics leaderboard frontend UI)
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>
               </main>
