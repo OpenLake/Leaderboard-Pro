@@ -32,6 +32,7 @@ import Organizations from "./components/Organizations";
 import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
+import { TrendAnalysis } from "@/components/TrendAnalysis";
 import PublicRoute from "./Context/PublicRoute";
 import ContestCalendar from "./components/ContestCalendar";
 import Blogs from "./components/Blogs.jsx";
@@ -222,6 +223,15 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                <Route
+                  exact
+                  path="/analytics"
+                  element={
+                    <PrivateRoute>
+                      <TrendAnalysis />
+                    </PrivateRoute>
+                  }
+                />
                   {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>
