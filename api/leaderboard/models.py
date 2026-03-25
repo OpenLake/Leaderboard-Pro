@@ -234,14 +234,16 @@ class Organization(models.Model):
         User, on_delete=models.CASCADE, related_name="administered_organizations"
     )
     is_private = models.BooleanField(default=True)
-    join_code = models.CharField(max_length=10, unique=True, blank=True)
+    join_code = models.CharField(max_length=10, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if not self.join_code and self.is_private:
+        if self.is_private and not self.join_code :
             self.join_code = uuid.uuid4().hex[:10].upper()
             while Organization.objects.filter(join_code=self.join_code).exists():
                 self.join_code = uuid.uuid4().hex[:10].upper()
+        elif not self.is_private:
+            self.join_code = None
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -341,21 +341,29 @@ class CodechefLeaderboard(
                 instance = {}
                 rating_div = soup.find("div", class_="rating-number")
                 if not rating_div:
-                    return None
+                    if "user not found" in response.text.lower():
+                        return "NOT_FOUND"
+                    logger.error(f"CodeChef parsing error for {username}: rating_div not found")
+                    return "TRANSIENT_ERROR"
                     
                 instance["rating"] = int(rating_div.text)
                 container_highest_rating = soup.find("div", class_="rating-header")
                 ttg = soup.findAll("img", class_="profileImage")
                 instance["avatar"] = ttg[-1]["src"] if ttg else ""
-                instance["highest_rating"] = (
-                    container_highest_rating.find_next("small")
-                    .text.split()[-1]
-                    .rstrip(")")
-                )
-                container_ranks = soup.find("div", class_="rating-ranks")
-                ranks = container_ranks.find_all("a")
-                instance["global_rank"] = ranks[0].strong.text
-                instance["country_rank"] = ranks[1].strong.text
+                
+                try:
+                    instance["highest_rating"] = (
+                        container_highest_rating.find_next("small")
+                        .text.split()[-1]
+                        .rstrip(")")
+                    )
+                    container_ranks = soup.find("div", class_="rating-ranks")
+                    ranks = container_ranks.find_all("a")
+                    instance["global_rank"] = ranks[0].strong.text
+                    instance["country_rank"] = ranks[1].strong.text
+                except Exception as e:
+                    logger.error(f"CodeChef parsing error for {username} (ranks/highest): {e}")
+                    return "TRANSIENT_ERROR"
                 
                 # Scrape Heatmap Data
                 heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', response.text)
@@ -365,9 +373,17 @@ class CodechefLeaderboard(
                     instance["calendar_data"] = "[]"
                     
                 return instance
+            elif response.status_code == 404:
+                return "NOT_FOUND"
+            else:
+                logger.error(f"CodeChef server error for {username}: Status {response.status_code}")
+                return "TRANSIENT_ERROR"
+        except requests.exceptions.Timeout:
+            logger.error(f"CodeChef timeout for {username}")
+            return "TRANSIENT_ERROR"
         except Exception as e:
             logger.error(f"Error fetching CodeChef data for {username}: {e}")
-            return None
+            return "TRANSIENT_ERROR"
 
     queryset = codechefUser.objects.all()
     serializer_class = CC_Serializer
@@ -393,7 +409,7 @@ class CodechefLeaderboard(
             except codechefUser.DoesNotExist:
                 # If user not in DB, try to fetch it once then save
                 user_data = self.get_codechef_data(username)
-                if user_data:
+                if isinstance(user_data, dict):
                     user = codechefUser.objects.create(
                         username=username,
                         rating=user_data["rating"],
@@ -406,6 +422,8 @@ class CodechefLeaderboard(
                     )
                     serializer = CC_Serializer(user)
                     return Response(serializer.data)
+                elif user_data == "TRANSIENT_ERROR":
+                    return Response({"error": "CodeChef service unavailable"}, status=status.HTTP_502_BAD_GATEWAY)
                 return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         cc_users = codechefUser.objects.all()
@@ -910,6 +928,8 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return Organization.objects.filter(admin=self.request.user)
         # User sees organizations they are members of
         return Organization.objects.filter(memberships__user=self.request.user)
 
@@ -951,15 +971,14 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Check if already a member
-        if OrganizationMember.objects.filter(
+        # Check if already a member and join
+        membership, created = OrganizationMember.objects.get_or_create(
             organization=organization, user=request.user
-        ).exists():
+        )
+        if not created:
             return Response(
                 {"message": "You are already a member"}, status=status.HTTP_200_OK
             )
-
-        OrganizationMember.objects.create(organization=organization, user=request.user)
         return Response(
             OrganizationSerializer(organization, context={'request': request}).data, 
             status=status.HTTP_201_CREATED
@@ -1030,7 +1049,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             else:
                 # No other members, delete group
                 organization.delete()
-                return Response({"message": "Group deleted as the last member (admin) left"}, status=status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
         
         membership = OrganizationMember.objects.filter(organization=organization, user=request.user)
         if membership.exists():

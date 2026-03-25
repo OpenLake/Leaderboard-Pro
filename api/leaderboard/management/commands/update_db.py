@@ -95,7 +95,7 @@ class Command(BaseCommand):
 
                 # Scrape Heatmap Data
                 try:
-                    heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', page.text)
+                    heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', page.text, re.DOTALL)
                     if heatmap_match:
                         instance["calendar_data"] = heatmap_match.group(1)
                     else:
