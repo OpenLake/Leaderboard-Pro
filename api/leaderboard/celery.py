@@ -262,3 +262,32 @@ def openlake_contributor__update(self):
         ol_contributor.username = i
         ol_contributor.contributions = updated_list[i]
         ol_contributor.save()
+
+@app.task(bind=True)
+def unified_score_snapshot(self):
+    from datetime import date
+    from leaderboard.models import UnifiedScoreHistory
+    from leaderboard.analytics import build_unified_ranking
+
+    today = date.today()
+    try:
+        df = build_unified_ranking()
+        if df.empty:
+            return
+        for _, row in df.iterrows():
+            username = row.get("username")
+            if not username:
+                continue
+            UnifiedScoreHistory.objects.update_or_create(
+                username=username,
+                date=today,
+                defaults={
+                    "total_score": float(row.get("total_score", 0)),
+                    "github_score": float(row.get("github_score", 0)),
+                    "cf_score": float(row.get("cf_score", 0)),
+                    "cc_score": float(row.get("cc_score", 0)),
+                    "lt_score": float(row.get("lt_score", 0)),
+                },
+            )
+    except Exception as e:
+        print(f"unified_score_snapshot error: {e}")

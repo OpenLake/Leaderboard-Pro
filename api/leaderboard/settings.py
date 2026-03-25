@@ -153,23 +153,35 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
-POSTGRES_ENGINE = "django.db.backends.postgresql"
-POSTGRES_NAME = "postgres"
-POSTGRES_USER = str(os.getenv("POSTGRES_USER", "leaderboardpro"))
-POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD", "leaderboardpro"))
-POSTGRES_HOST = str(os.getenv("POSTGRES_HOST", "127.0.0.1"))
-POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
+# POSTGRES_ENGINE = "django.db.backends.postgresql"
+# POSTGRES_NAME = "postgres"
+# POSTGRES_USER = str(os.getenv("POSTGRES_USER", "leaderboardpro"))
+# POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD", "leaderboardpro"))
+# # POSTGRES_HOST = str(os.getenv("POSTGRES_HOST", "127.0.0.1"))
+# POSTGRES_HOST = "127.0.0.1"
+# POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": POSTGRES_ENGINE,
+#         "NAME": POSTGRES_NAME,
+#         "USER": POSTGRES_USER,
+#         "PASSWORD": POSTGRES_PASSWORD,
+#         "HOST": POSTGRES_HOST,
+#         "PORT": POSTGRES_PORT,
+#     }
+# }
+
+# print("DB HOST:", POSTGRES_HOST)
 
 DATABASES = {
     "default": {
-        "ENGINE": POSTGRES_ENGINE,
-        "NAME": POSTGRES_NAME,
-        "USER": POSTGRES_USER,
-        "PASSWORD": POSTGRES_PASSWORD,
-        "HOST": POSTGRES_HOST,
-        "PORT": POSTGRES_PORT,
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -268,6 +280,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "leaderboard.celery.codeforces_user_update",
         "schedule": crontab(minute=f"*/{CF_INTV}"),
     },
+    "unified_score_snapshot_task": {
+        "task": "leaderboard.celery.unified_score_snapshot",
+        "schedule": crontab(hour=0, minute=30), 
+}
 }
 
 # Run the `tasks.add` task every minute.
@@ -275,3 +291,4 @@ CELERY_BEAT_SCHEDULE = {
 #         'task': 'tasks.add',
 #         'schedule': crontab(minute='*'),
 #     },
+
