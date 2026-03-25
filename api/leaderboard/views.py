@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 import requests
 from django.http import JsonResponse
 from knox.models import AuthToken
-from rest_framework import generics, mixins, status, response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, mixins, status, response, viewsets
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -29,7 +29,9 @@ from leaderboard.models import (
     openlakeContributor,
     AtcoderUser,
     Achievement,
-    UserNames
+    UserNames,
+    Organization,
+    OrganizationMember
 )
 from leaderboard.serializers import (
     CC_Serializer,
@@ -42,7 +44,9 @@ from leaderboard.serializers import (
     Task_Serializer,
     AtcoderUserSerializer,
     AchievementSerializer,
-    UserNamesSerializer
+    UserNamesSerializer,
+    OrganizationSerializer,
+    OrganizationMemberSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -326,25 +330,84 @@ class CodechefLeaderboard(
 ):
 
     def get_codechef_data(self, username):
-        url = f"https://codechef-api.vercel.app/handle/{username}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("status") == 200:
-                return {
-                    "rating": data.get("currentRating", 0),
-                    "highest_rating": data.get("highestRating", 0),
-                    "global_rank": data.get("globalRank", -1),
-                    "country_rank": data.get("countryRank", -1),
-                    "avatar": data.get("profile", ""),
-                    "last_updated": datetime.now().timestamp(),
-                }
+        url = f"https://www.codechef.com/users/{username}"
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                from bs4 import BeautifulSoup
+                import re
+                soup = BeautifulSoup(response.text, "html.parser")
+                
+                instance = {}
+                rating_div = soup.find("div", class_="rating-number")
+                if not rating_div:
+                    return None
+                    
+                instance["rating"] = int(rating_div.text)
+                container_highest_rating = soup.find("div", class_="rating-header")
+                ttg = soup.findAll("img", class_="profileImage")
+                instance["avatar"] = ttg[-1]["src"] if ttg else ""
+                instance["highest_rating"] = (
+                    container_highest_rating.find_next("small")
+                    .text.split()[-1]
+                    .rstrip(")")
+                )
+                container_ranks = soup.find("div", class_="rating-ranks")
+                ranks = container_ranks.find_all("a")
+                instance["global_rank"] = ranks[0].strong.text
+                instance["country_rank"] = ranks[1].strong.text
+                
+                # Scrape Heatmap Data
+                heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', response.text)
+                if heatmap_match:
+                    instance["calendar_data"] = heatmap_match.group(1)
+                else:
+                    instance["calendar_data"] = "[]"
+                    
+                return instance
+        except Exception as e:
+            logger.error(f"Error fetching CodeChef data for {username}: {e}")
+            return None
 
     queryset = codechefUser.objects.all()
     serializer_class = CC_Serializer
 
     def get(self, request):
+        username = request.query_params.get("username")
+        if username:
+            try:
+                user = codechefUser.objects.get(username=username)
+                if user.is_outdated:
+                    user_data = self.get_codechef_data(user.username)
+                    if user_data:
+                        user.rating = user_data["rating"]
+                        user.max_rating = user_data["highest_rating"]
+                        user.Global_rank = user_data["global_rank"]
+                        user.Country_rank = user_data["country_rank"]
+                        user.avatar = user_data["avatar"]
+                        user.calendar_data = user_data["calendar_data"]
+                        user.last_updated = datetime.now()
+                        user.save()
+                serializer = CC_Serializer(user)
+                return Response(serializer.data)
+            except codechefUser.DoesNotExist:
+                # If user not in DB, try to fetch it once then save
+                user_data = self.get_codechef_data(username)
+                if user_data:
+                    user = codechefUser.objects.create(
+                        username=username,
+                        rating=user_data["rating"],
+                        max_rating=user_data["highest_rating"],
+                        Global_rank=user_data["global_rank"],
+                        Country_rank=user_data["country_rank"],
+                        avatar=user_data["avatar"],
+                        calendar_data=user_data["calendar_data"],
+                        last_updated=datetime.now()
+                    )
+                    serializer = CC_Serializer(user)
+                    return Response(serializer.data)
+                return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
         cc_users = codechefUser.objects.all()
         # We rely on background tasks (update_db or Celery) for bulk updates.
         # However, we can update a few outdated users per request to keep it fresh.
@@ -356,6 +419,7 @@ class CodechefLeaderboard(
                 user.Global_rank = user_data["global_rank"]
                 user.Country_rank = user_data["country_rank"]
                 user.avatar = user_data["avatar"]
+                user.calendar_data = user_data["calendar_data"]
                 user.last_updated = datetime.now()
                 user.save()
 
@@ -699,6 +763,7 @@ class AtcoderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
     queryset = AtcoderUser.objects.all().order_by("-rating")
     serializer_class = AtcoderUserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = None
 
     def get(self, request):
         queryset = self.get_queryset()
@@ -837,3 +902,164 @@ class UserNamesList(APIView):
         usernames = UserNames.objects.filter(user=request.user)
         serializer = UserNamesSerializer(usernames, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrganizationViewSet(viewsets.ModelViewSet):
+    serializer_class = OrganizationSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    def get_queryset(self):
+        # User sees organizations they are members of
+        return Organization.objects.filter(memberships__user=self.request.user)
+
+    def perform_create(self, serializer):
+        # Admin is the current user
+        organization = serializer.save(admin=self.request.user)
+        # Add admin as the first member
+        OrganizationMember.objects.create(
+            organization=organization, user=self.request.user
+        )
+
+    @action(detail=False, methods=["post"])
+    def join(self, request):
+        join_code = request.data.get("join_code")
+        organization_id = request.data.get("organization_id")
+
+        if organization_id:
+            try:
+                organization = Organization.objects.get(id=organization_id)
+                if organization.is_private:
+                    return Response(
+                        {"error": "This is a private group. Join code is required."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except Organization.DoesNotExist:
+                return Response(
+                    {"error": "Organization not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+        elif join_code:
+            try:
+                organization = Organization.objects.get(join_code=join_code)
+            except Organization.DoesNotExist:
+                return Response(
+                    {"error": "Invalid join code"}, status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {"error": "Join code or Organization ID is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if already a member
+        if OrganizationMember.objects.filter(
+            organization=organization, user=request.user
+        ).exists():
+            return Response(
+                {"message": "You are already a member"}, status=status.HTTP_200_OK
+            )
+
+        OrganizationMember.objects.create(organization=organization, user=request.user)
+        return Response(
+            OrganizationSerializer(organization, context={'request': request}).data, 
+            status=status.HTTP_201_CREATED
+        )
+
+    @action(detail=False, methods=["get"])
+    def discover(self, request):
+        user_memberships = OrganizationMember.objects.filter(user=request.user).values_list('organization_id', flat=True)
+        public_orgs = Organization.objects.filter(is_private=False).exclude(id__in=user_memberships)
+        return Response(OrganizationSerializer(public_orgs, many=True, context={'request': request}).data)
+
+    @action(detail=True, methods=["get"])
+    def leaderboard(self, request, pk=None):
+        organization = self.get_object()
+        platform = request.query_params.get("platform", "codeforces")
+
+        members = organization.memberships.all().values_list("user", flat=True)
+
+        # We need to find the platform usernames for these members.
+        member_usernames = UserNames.objects.filter(user__id__in=members)
+
+        if platform == "codeforces":
+            handles = member_usernames.values_list("cf_uname", flat=True)
+            users = codeforcesUser.objects.filter(username__in=handles)
+            return Response(CF_Serializer(users, many=True).data)
+        elif platform == "codechef":
+            handles = member_usernames.values_list("cc_uname", flat=True)
+            users = codechefUser.objects.filter(username__in=handles)
+            return Response(CC_Serializer(users, many=True).data)
+        elif platform == "leetcode":
+            handles = member_usernames.values_list("lt_uname", flat=True)
+            users = LeetcodeUser.objects.filter(username__in=handles)
+            return Response(LT_Serializer(users, many=True).data)
+        elif platform == "atcoder":
+            handles = member_usernames.values_list("ac_uname", flat=True)
+            users = AtcoderUser.objects.filter(username__in=handles)
+            return Response(AtcoderUserSerializer(users, many=True).data)
+        elif platform == "github":
+            handles = member_usernames.values_list("gh_uname", flat=True)
+            users = githubUser.objects.filter(username__in=handles)
+            return Response(GH_Serializer(users, many=True).data)
+        elif platform == "openlake":
+            handles = member_usernames.values_list(
+                "gh_uname", flat=True
+            )  # Openlake uses GH usernames
+            users = openlakeContributor.objects.filter(username__in=handles)
+            return Response(OL_Serializer(users, many=True).data)
+        else:
+            return Response(
+                {"error": "Invalid platform"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=["post"])
+    def leave(self, request, pk=None):
+        organization = self.get_object()
+        if organization.admin == request.user:
+            # Transfer admin to another member if exists
+            next_member = organization.memberships.exclude(user=request.user).order_by('joined_at').first()
+            if next_member:
+                organization.admin = next_member.user
+                organization.save()
+                # Remove the old admin's membership
+                OrganizationMember.objects.filter(organization=organization, user=request.user).delete()
+                return Response({
+                    "message": f"Left group successfully. Admin power transferred to {next_member.user.username}",
+                    "new_admin": next_member.user.username
+                }, status=status.HTTP_200_OK)
+            else:
+                # No other members, delete group
+                organization.delete()
+                return Response({"message": "Group deleted as the last member (admin) left"}, status=status.HTTP_204_NO_CONTENT)
+        
+        membership = OrganizationMember.objects.filter(organization=organization, user=request.user)
+        if membership.exists():
+            membership.delete()
+            return Response({"message": "Left group successfully"}, status=status.HTTP_200_OK)
+        return Response({"error": "You are not a member of this group"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def remove_member(self, request, pk=None):
+        organization = self.get_object()
+        if organization.admin != request.user:
+            return Response({"error": "Only admins can remove members"}, status=status.HTTP_403_FORBIDDEN)
+        
+        user_id = request.data.get("user_id")
+        if not user_id:
+            return Response({"error": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if int(user_id) == request.user.id:
+            return Response({"error": "Admin cannot remove themselves. Use leave instead."}, status=status.HTTP_400_BAD_REQUEST)
+
+        membership = OrganizationMember.objects.filter(organization=organization, user_id=user_id)
+        if membership.exists():
+            membership.delete()
+            return Response({"message": "Member removed successfully"}, status=status.HTTP_200_OK)
+        return Response({"error": "User is not a member of this group"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=["get"])
+    def members(self, request, pk=None):
+        organization = self.get_object()
+        memberships = organization.memberships.all().select_related('user')
+        serializer = OrganizationMemberSerializer(memberships, many=True)
+        return Response(serializer.data)

@@ -26,6 +26,7 @@ import {
   Users,
   Award,
   BookOpen,
+  Building2,
 } from "lucide-react";
 
 import Github from "@/icons/github.svg?react";
@@ -59,6 +60,11 @@ const items = [
     title: "Contests",
     url: "/contests",
     icon: Calendar,
+  },
+  {
+    title: "Organizations",
+    url: "/organizations",
+    icon: Building2,
   },
   {
     title: "Achievements",
@@ -117,7 +123,7 @@ export const Navbar = () => {
             <SidebarMenu>
               {items.map((item, index) => {
                 const isActive = pathname === item.url;
-                const isBlogs = index === 7;
+                const isBlogs = index === 6;
                 return (
                   <SidebarMenuItem 
                     key={item.title} 

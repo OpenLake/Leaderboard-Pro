@@ -2,7 +2,10 @@ import { ArrowUp } from "lucide-react";
 
 const GoToTop = () => {
   const gotop = () => {
-    window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+    const appElement = document.querySelector(".App");
+    if (appElement) {
+      appElement.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+    }
   };
 
   return (

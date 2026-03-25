@@ -12,7 +12,9 @@ from leaderboard.models import (
     githubUser,
     openlakeContributor,
     AtcoderUser,
-    Achievement
+    Achievement,
+    Organization,
+    OrganizationMember
 )
 
 
@@ -173,3 +175,50 @@ class AchievementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Achievement
         fields = "__all__"
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    admin_username = serializers.ReadOnlyField(source="admin.username")
+    member_count = serializers.SerializerMethodField()
+    is_admin = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organization
+        fields = [
+            "id",
+            "name",
+            "description",
+            "admin",
+            "admin_username",
+            "is_private",
+            "join_code",
+            "created_at",
+            "member_count",
+            "is_admin",
+        ]
+        read_only_fields = ["admin", "join_code", "created_at"]
+
+    def get_member_count(self, obj):
+        return obj.memberships.count()
+
+    def get_is_admin(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return obj.admin == request.user
+        return False
+
+
+class OrganizationMemberSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source="user.username")
+    organization_name = serializers.ReadOnlyField(source="organization.name")
+
+    class Meta:
+        model = OrganizationMember
+        fields = [
+            "id",
+            "organization",
+            "organization_name",
+            "user",
+            "username",
+            "joined_at",
+        ]
