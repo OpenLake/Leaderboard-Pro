@@ -26,6 +26,15 @@ from .models import User
 
 from .analytics_views import UnifiedAnalyticsView
 
+from leaderboard.trends_views import (
+    leetcode_heatmap,
+    leetcode_linechart,
+    codeforces_heatmap,
+    codeforces_linechart,
+    unified_heatmap,
+    unified_linechart,
+)
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -213,7 +222,13 @@ urlpatterns = [
     ),
     
     path("admin/", admin.site.urls),
-    path("analytics/unified/", UnifiedAnalyticsView.as_view(), name="unified-analytics")
+    path("analytics/unified/", UnifiedAnalyticsView.as_view(), name="unified-analytics"),
+    path("trends/leetcode/heatmap/",     leetcode_heatmap,      name="lt-trend-heatmap"),
+    path("trends/leetcode/linechart/",   leetcode_linechart,    name="lt-trend-linechart"),
+    path("trends/codeforces/heatmap/",   codeforces_heatmap,    name="cf-trend-heatmap"),
+    path("trends/codeforces/linechart/", codeforces_linechart,  name="cf-trend-linechart"),
+    path("trends/unified/heatmap/",      unified_heatmap,       name="unified-trend-heatmap"),
+    path("trends/unified/linechart/",    unified_linechart,     name="unified-trend-linechart"),
 ]
 
 urlpatterns += router.urls

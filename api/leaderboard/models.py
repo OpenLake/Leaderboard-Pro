@@ -264,3 +264,31 @@ class OrganizationMember(models.Model):
 
     def __str__(self):
         return f"{self.user.username} in {self.organization.name}"
+# ── NEW: stores daily unified score snapshots per user ────────────────────────
+class UnifiedScoreHistory(models.Model):
+    """
+    Stores a daily snapshot of each user's unified score and
+    per-platform breakdown. Written by a Celery beat task every day.
+    Used by the Unified trend analysis heatmap and line chart.
+    """
+    username = models.CharField(max_length=64, db_index=True)
+    date = models.DateField(db_index=True)
+ 
+    # overall unified score (sum of all platform scores)
+    total_score = models.FloatField(default=0.0)
+ 
+    # per-platform normalized scores (0–1 each, same as analytics.py)
+    github_score = models.FloatField(default=0.0)
+    cf_score = models.FloatField(default=0.0)
+    cc_score = models.FloatField(default=0.0)
+    lt_score = models.FloatField(default=0.0)
+ 
+    created_at = models.DateTimeField(auto_now_add=True)
+ 
+    class Meta:
+        # one record per user per day
+        unique_together = ("username", "date")
+        ordering = ["date"]
+ 
+    def __str__(self):
+        return f"{self.username} | {self.date} | {self.total_score:.4f}"
