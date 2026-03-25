@@ -161,26 +161,16 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 # POSTGRES_HOST = "127.0.0.1"
 # POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": POSTGRES_ENGINE,
-#         "NAME": POSTGRES_NAME,
-#         "USER": POSTGRES_USER,
-#         "PASSWORD": POSTGRES_PASSWORD,
-#         "HOST": POSTGRES_HOST,
-#         "PORT": POSTGRES_PORT,
-#     }
-# }
-
-# print("DB HOST:", POSTGRES_HOST)
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": POSTGRES_ENGINE,
+        "NAME": POSTGRES_NAME,
+        "USER": POSTGRES_USER,
+        "PASSWORD": POSTGRES_PASSWORD,
+        "HOST": POSTGRES_HOST,
+        "PORT": POSTGRES_PORT,
     }
 }
-
 
 # DATABASES = {
 #     'default': {
