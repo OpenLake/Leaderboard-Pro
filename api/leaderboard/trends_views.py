@@ -19,7 +19,10 @@ from leaderboard.models import (
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def get_user_platforms(user):
-    return UserNames.objects.get(user=user)
+    user_names = UserNames.objects.filter(user=user).order_by('id').first()
+    if user_names is None:
+        raise UserNames.DoesNotExist("User profile not found")
+    return user_names
 
 
 def date_range(start_date, end_date):
@@ -59,7 +62,11 @@ def leetcode_heatmap(request):
             timeout=10,
         )
         resp.raise_for_status()
-        raw = resp.json().get("data", {}).get("matchedUser", {}).get("submissionCalendar", "{}")
+        data = resp.json().get("data", {})
+        matched = data.get("matchedUser")
+        if matched is None:
+            return Response({"error": "LeetCode user not found."}, status=404)
+        raw = matched.get("submissionCalendar", "{}")
         calendar = json.loads(raw)  # { "unix_ts": count }
 
         today = datetime.now(tz=timezone.utc).date()
@@ -113,33 +120,37 @@ def leetcode_linechart(request):
             "last_updated": lt_user.last_updated,
         }
 
-        # Also fetch recent accepted submissions for trend line
+        # Fetch submission calendar for full 180-day history
         query = """
-        query recentSubmissions($username: String!, $limit: Int!) {
-            recentAcSubmissionList(username: $username, limit: $limit) {
-                title
-                timestamp
+        query submissionCalendar($username: String!) {
+            matchedUser(username: $username) {
+                submissionCalendar
             }
         }
         """
         resp = requests.post(
             "https://leetcode.com/graphql",
-            json={"query": query, "variables": {"username": lt_username, "limit": 50}},
+            json={"query": query, "variables": {"username": lt_username}},
             headers={"Content-Type": "application/json"},
             timeout=10,
         )
         resp.raise_for_status()
-        submissions = resp.json().get("data", {}).get("recentAcSubmissionList", [])
+        data = resp.json().get("data", {})
+        matched = data.get("matchedUser")
+        if matched is None:
+            return Response({"error": "LeetCode user not found."}, status=404)
+        raw = matched.get("submissionCalendar", "{}")
+        calendar = json.loads(raw)  # { "unix_ts": count }
 
         today = datetime.now(tz=timezone.utc).date()
         cutoff = today - timedelta(days=180)
 
-        # Group by date — count of accepted submissions per day
+        # Group by date — count of accepted submissions per day from calendar
         daily_counts = defaultdict(int)
-        for sub in submissions:
-            d = datetime.utcfromtimestamp(int(sub["timestamp"])).date()
+        for ts_str, count in calendar.items():
+            d = datetime.utcfromtimestamp(int(ts_str)).date()
             if d >= cutoff:
-                daily_counts[d.isoformat()] += 1
+                daily_counts[d.isoformat()] = count
 
         timeline = [
             {"date": k, "count": v}
@@ -321,7 +332,7 @@ def unified_heatmap(request):
     try:
         usernames = get_user_platforms(request.user)
         # use whichever username is available as the key
-        username = usernames.gh_uname or usernames.cf_uname or usernames.lt_uname
+        username = usernames.gh_uname or usernames.cf_uname or usernames.cc_uname or usernames.lt_uname
         if not username:
             return Response({"error": "No platform username set."}, status=400)
 
@@ -371,7 +382,7 @@ def unified_linechart(request):
     """
     try:
         usernames = get_user_platforms(request.user)
-        username = usernames.gh_uname or usernames.cf_uname or usernames.lt_uname
+        username = usernames.gh_uname or usernames.cf_uname or usernames.cc_uname or usernames.lt_uname
         if not username:
             return Response({"error": "No platform username set."}, status=400)
 

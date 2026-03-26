@@ -7,6 +7,10 @@ from django.db import models
 from django.utils.timezone import now
 
 
+def get_current_timestamp():
+    return int(datetime.now().timestamp())
+
+
 class User(AbstractUser):
     uid = models.CharField(max_length=64, unique=True, null=True, blank=True)
 
@@ -51,7 +55,7 @@ class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
-    last_activity = models.BigIntegerField(default=get_default_cf_last_activity)
+    last_activity = models.BigIntegerField(default=get_current_timestamp)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
