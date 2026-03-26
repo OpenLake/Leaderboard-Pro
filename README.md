@@ -13,7 +13,9 @@ How do people become good at something ? By doing it regularly, right ? That's w
 - Leaderboard type 4 : Codeforces ranking
 - Leaderboard Type 5 : Leetcode ranking
 - Leaderboard type 6 : Leetcode contest ranking
+- Leaderboard type 7 : Atcoder rankings
 - Students can also view the rankings of the latest LeetCode contests, their institute rank and visualise contest performance through graph.
+- Students can also login and view their achievements based on previous accomplishments
 - Students will get notified(through email) whenever their rank is decreasing (because they aren't active)
 - Our metrics will promote consistent work instead of bulk work at once.
 - Tech Stack : React, Django, PostgreSQL, MongoDB (for Friend's Table)
@@ -31,6 +33,9 @@ How do people become good at something ? By doing it regularly, right ? That's w
     ```
     source <ENVIRONMENT_NAME>/bin/activate
     ```
+    cd api -> pip install -r requirements.txt
+
+## Running with 'make' (Simpler Installation)
 - Install `make`
   - For Ubuntu:
     ```
@@ -56,6 +61,29 @@ How do people become good at something ? By doing it regularly, right ? That's w
   make dev
   ```
 - Visit http://localhost:8000/ and http://localhost:3000/
+
+## Running with 'pnpm' (Latest & Recommended)
+
+- Install dependencies
+  ```bash
+  cd app && pnpm install
+  cd ../api && pip install -r requirements.txt
+  ```
+- Run development server (You'll need separate terminal windows or tabs for each of these)
+  ```bash
+  # In the app/ directory
+  pnpm dev
+  
+  # In the api/ directory
+  python manage.py makemigrations
+  python manage.py migrate
+  python manage.py createsuperuser
+  python manage.py runserver
+  
+  # In the api/ directory (Background Tasks)
+  celery -A leaderboard worker --loglevel=info
+  celery -A leaderboard beat -l info
+  ```
 
 ## 🐳 Running with Docker Compose (up to date as of now)
 

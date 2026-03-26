@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-
+from django.utils.timezone import now
 
 def get_current_timestamp():
     return int(datetime.now().timestamp())
@@ -44,6 +44,9 @@ class openlakeContributor(models.Model):
     class Meta:
         ordering = ["-contributions"]
 
+
+def get_default_cf_last_activity():
+    return int(now().timestamp())
 
 class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
@@ -118,6 +121,7 @@ class LeetcodeUser(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
     total_solved = models.PositiveIntegerField(default=0)
+    calendar_data = models.TextField(default="{}", blank=True)
 
     @property
     def is_outdated(self):
@@ -136,6 +140,11 @@ class UserNames(models.Model):
     cf_uname = models.CharField(max_length=64)
     gh_uname = models.CharField(max_length=64)
     lt_uname = models.CharField(max_length=64, default="")
+    ac_uname = models.CharField(max_length=64, default="")
+    bio = models.TextField(max_length=500, default="", blank=True)
+    organization = models.CharField(max_length=128, default="", blank=True)
+    occupation = models.CharField(max_length=128, default="", blank=True)
+    location = models.CharField(max_length=128, default="", blank=True)
 
 
 class UserTasks(models.Model):
@@ -159,6 +168,16 @@ class DiscussionPost(models.Model):
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
     comments = models.PositiveIntegerField(default=0)
+
+
+class PostVote(models.Model):
+    VOTE_CHOICES = [("like", "Like"), ("dislike", "Dislike")]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(DiscussionPost, on_delete=models.CASCADE, related_name="votes")
+    vote_type = models.CharField(max_length=7, choices=VOTE_CHOICES)
+
+    class Meta:
+        unique_together = ("user", "post")
 
 
 class ReplyPost(models.Model):
@@ -199,3 +218,35 @@ class UnifiedScoreHistory(models.Model):
  
     def __str__(self):
         return f"{self.username} | {self.date} | {self.total_score:.4f}"
+class AtcoderUser(models.Model):
+    username = models.CharField(max_length=64, unique=True)
+    rating = models.PositiveIntegerField(default=0)  # Algorithm Rating
+    highest_rating = models.PositiveIntegerField(default=0)
+    rank = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_outdated(self):
+        if datetime.now(tz=timezone.utc) - self.last_updated > timedelta(minutes=1):
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"{self.username} ({self.rating})"
+
+    class Meta:
+        ordering = ["-rating"]
+
+
+class Achievement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    slug = models.CharField(max_length=64)
+    tier = models.CharField(max_length=64)
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "slug", "tier")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.slug} ({self.tier})"

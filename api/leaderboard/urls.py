@@ -98,11 +98,31 @@ urlpatterns = [
         views.CodechefLeaderboard.as_view(),
         name="codechef-leaderboard",
     ),
+    path(
+        "atcoder/",
+        views.AtcoderViewSet.as_view(),
+        name="atcoder-leaderboard",
+    ),
     path("github/", views.GithubUserAPI.as_view(), name="github-leaderboard"),
     path(
         "openlake/",
         views.GithubOrganisationAPI.as_view(),
         name="openlake-leaderboard",
+    ),
+    path(
+        "achievements/",
+        views.AchievementManage.as_view(),
+        name="achievements",
+    ),
+    path(
+        "achievements/unlock/",
+        views.AchievementUnlock.as_view(),
+        name="achievement-unlock",
+    ),
+    path(
+        "usernames/",
+        views.UserNamesList.as_view(),
+        name="usernames-list",
     ),
     path(
         "codeforcesFA/",
@@ -180,10 +200,26 @@ urlpatterns = [
         name="openlakeFL",
     ),
     path(
+        "atcoderFA/",
+        friends.atcoderFriendAddition,
+        name="atcoderFA",
+    ),
+    path(
+        "atcoderFD/",
+        friends.atcoderFriendDeletion,
+        name="atcoderFD",
+    ),
+    path(
+        "atcoderFL/",
+        friends.atcoderFriendList,
+        name="atcoderFL",
+    ),
+    path(
         "userDetails/",
         users.getUserDetails,
         name="userDetails",
     ),
+    
     path("admin/", admin.site.urls),
     path("analytics/unified/", UnifiedAnalyticsView.as_view(), name="unified-analytics"),
     path("trends/leetcode/heatmap/",     leetcode_heatmap,      name="lt-trend-heatmap"),

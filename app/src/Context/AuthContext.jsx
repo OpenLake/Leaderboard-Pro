@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react"; // add useEffect
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,61 +15,110 @@ export const useAuth = () => {
 };
 const googleProvider = new GoogleAuthProvider();
 const BACKEND = import.meta.env.VITE_BACKEND;
+const parseStoredJSON = (key) => {
+  const rawValue = localStorage.getItem(key);
+  if (!rawValue) return null;
+  try {
+    return JSON.parse(rawValue);
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+};
+
+const readJsonSafely = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return null;
+  }
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
+
+const safeJwtDecode = (token) => {
+  if (!token) return null;
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
+  }
+};
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
   let [authTokens, setAuthTokens] = useState(
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null,
+    parseStoredJSON("authTokens"),
   );
   let [user, setUser] = useState(
-    authTokens ? jwtDecode(authTokens.access) : null,
+    authTokens ? safeJwtDecode(authTokens.access) : null,
   );
   const navigate = useNavigate();
- const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const isAuthenticated = Boolean(authTokens?.access);
   let [userNames, setUserNames] = useState(
-    localStorage.getItem("userNames")
-      ? JSON.parse(localStorage.getItem("userNames"))
-      : null,
+    parseStoredJSON("userNames"),
   );
-  let getUsernamesData = async (authToken) => {
-    let usernames_response = await fetch(BACKEND + "/userDetails/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + authToken.access,
-      },
-    });
-    let usernames_data = await usernames_response.json();
-    if (usernames_response.status === 200) {
-      localStorage.setItem("userNames", JSON.stringify(usernames_data));
+  useEffect(() => {
+    if (authTokens) {
+      setUser(safeJwtDecode(authTokens.access));
     } else {
-      console.log("ERROR!!!");
+      setUser(null);
     }
-    return usernames_data;
+    setLoading(false);
+  }, [authTokens]);
+
+
+  let getUsernamesData = async (authToken) => {
+    if (!authToken?.access) return null;
+    try {
+      let usernames_response = await fetch(BACKEND + "/userDetails/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + authToken.access,
+        },
+      });
+      let usernames_data = await readJsonSafely(usernames_response);
+      if (usernames_response.status === 200 && usernames_data) {
+        localStorage.setItem("userNames", JSON.stringify(usernames_data));
+        return usernames_data;
+      }
+      localStorage.removeItem("userNames");
+      return null;
+    } catch {
+      localStorage.removeItem("userNames");
+      return null;
+    }
   };
   let loginUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: form_data.username,
-        password: form_data.password,
-      }),
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setAuthTokens(data);
-      setUser(jwtDecode(data.access));
-      localStorage.setItem("authTokens", JSON.stringify(data));
-      let usernames_data = await getUsernamesData(data);
-      setUserNames(usernames_data);
-      navigate("/");
-    } else {
+    try {
+      let response = await fetch(BACKEND + "/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form_data.username,
+          password: form_data.password,
+        }),
+      });
+      let data = await readJsonSafely(response);
+      if (response.status === 200 && data?.access) {
+        setAuthTokens(data);
+        setUser(safeJwtDecode(data.access));
+        localStorage.setItem("authTokens", JSON.stringify(data));
+        let usernames_data = await getUsernamesData(data);
+        setUserNames(usernames_data);
+        navigate("/");
+      } else {
+        alert("ERROR!!!!");
+      }
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -84,46 +133,50 @@ export const AuthProvider = ({ children }) => {
     if (auth.currentUser) return signOut(auth);
   };
   let registerUser = async (form_data) => {
-    let response = await fetch(BACKEND + "/api/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        first_name: form_data.first_name,
-        email: form_data.email,
-        username: form_data.username,
-        password: form_data.password,
-        last_name: form_data.last_name,
-        cc_uname: form_data.cc_uname,
-        cf_uname: form_data.cf_uname,
-        gh_uname: form_data.gh_uname,
-        lt_uname: form_data.lt_uname,
-      }),
-    });
-    if (response.status === 200) {
-      let response = await fetch(BACKEND + "/api/token/", {
+    try {
+      let response = await fetch(BACKEND + "/api/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          first_name: form_data.first_name,
+          email: form_data.email,
           username: form_data.username,
           password: form_data.password,
+          last_name: form_data.last_name,
+          cc_uname: form_data.cc_uname,
+          cf_uname: form_data.cf_uname,
+          gh_uname: form_data.gh_uname,
+          lt_uname: form_data.lt_uname,
         }),
       });
-      let data = await response.json();
       if (response.status === 200) {
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        localStorage.setItem("authTokens", JSON.stringify(data));
-        navigate("/");
-        let usernames_data = await getUsernamesData(data);
-        setUserNames(usernames_data);
+        let tokenResponse = await fetch(BACKEND + "/api/token/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: form_data.username,
+            password: form_data.password,
+          }),
+        });
+        let data = await readJsonSafely(tokenResponse);
+        if (tokenResponse.status === 200 && data?.access) {
+          setAuthTokens(data);
+          setUser(safeJwtDecode(data.access));
+          localStorage.setItem("authTokens", JSON.stringify(data));
+          navigate("/");
+          let usernames_data = await getUsernamesData(data);
+          setUserNames(usernames_data);
+        } else {
+          alert("ERROR!!!!");
+        }
       } else {
         alert("ERROR!!!!");
       }
-    } else {
+    } catch {
       alert("ERROR!!!!");
     }
   };
@@ -140,6 +193,11 @@ export const AuthProvider = ({ children }) => {
         cf_uname: form_data.codeforces,
         gh_uname: form_data.github,
         lt_uname: form_data.leetcode,
+        ac_uname: form_data.atcoder,
+        bio: form_data.bio,
+        organization: form_data.organization,
+        occupation: form_data.occupation,
+        location: form_data.location,
       }),
     });
     if (response.status === 201) {
@@ -159,74 +217,98 @@ export const AuthProvider = ({ children }) => {
   const SignInWithGoogle = async () => {
     let response;
     try {
+      if (!auth) {
+        alert("Firebase is not configured. Check frontend env values.");
+        return false;
+      }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
+        const idToken = await response.user.getIdToken();
+        if (!idToken) {
+          alert("Google login failed: missing ID token.");
+          return false;
+        }
         let logresponse = await fetch(BACKEND + "/api/token/google/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            token: response.user.accessToken,
+            token: idToken,
           }),
         });
-        let data = await logresponse.json();
-        if (logresponse.status === 200) {
+        let data = await readJsonSafely(logresponse);
+        if (logresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
           let usernames_data = await getUsernamesData(token);
           setUserNames(usernames_data);
+          return true;
         } else {
-          alert(data.message);
+          alert(data?.message || "Google login failed.");
+          return false;
         }
       } else {
-        console.log("Please try logging in again");
+        return false;
       }
     } catch (error) {
       console.log(error);
-      console.log("Please try logging in again");
+      alert("Please try logging in again");
+      return false;
     }
-    return response;
   };
   const SignUpWithGoogle = async () => {
     let response;
     try {
+      if (!auth) {
+        alert("Firebase is not configured. Check frontend env values.");
+        return false;
+      }
       response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
+        const idToken = await response.user.getIdToken();
+        if (!idToken) {
+          alert("Google registration failed: missing ID token.");
+          return false;
+        }
         let regresponse = await fetch(BACKEND + "/api/register/google/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            token: response.user.accessToken,
+            token: idToken,
             username: response.user.email.split("@")[0],
           }),
         });
-        let data = await regresponse.json();
-        if (regresponse.status === 200) {
+        let data = await readJsonSafely(regresponse);
+        if (regresponse.status === 200 && data?.token?.access) {
           let token = data.token;
           setAuthTokens(token);
-          setUser(jwtDecode(token.access));
+          setUser(safeJwtDecode(token.access));
           localStorage.setItem("authTokens", JSON.stringify(token));
+          let usernames_data = await getUsernamesData(token);
+          setUserNames(usernames_data);
+          return true;
         } else {
           alert("Please Try registering again");
+          return false;
         }
-        console.log(response);
       } else {
-        alert("Please Try registering again");
+        return false;
       }
     } catch (error) {
       console.log(error);
       alert("Please Try registering again");
+      return false;
     }
-    return response;
   };
   let contextData = {
     user: user,
     authTokens: authTokens,
+    isAuthenticated, 
     loginUser: loginUser,
     registerUser: registerUser,
     logoutUser: logoutUser,
@@ -238,6 +320,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     userNames: userNames,
   };
+  
   // useEffect(() => {
 
   //     const token = async (username) => {

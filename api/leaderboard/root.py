@@ -16,6 +16,7 @@ def api_root(request, format=None):
             "github": reverse("github-leaderboard", request=request, format=format),
             "openlake": reverse("openlake-leaderboard", request=request, format=format),
             "leetcode": reverse("leetcode-leaderboard", request=request, format=format),
+            "atcoder": reverse("atcoder-leaderboard", request=request, format=format),
             "codeforces-friend-addition": reverse(
                 "codeforcesFA", request=request, format=format
             ),
@@ -58,6 +59,15 @@ def api_root(request, format=None):
             ),
             "openlake-friend-list": reverse(
                 "openlakeFL", request=request, format=format
+            ),
+            "atcoder-friend-addition": reverse(
+                "atcoderFA", request=request, format=format
+            ),
+            "atcoder-friend-deletion": reverse(
+                "atcoderFD", request=request, format=format
+            ),
+            "atcoder-friend-list": reverse(
+                "atcoderFL", request=request, format=format
             ),
             "user-details": reverse("userDetails", request=request, format=format),
             # urls from from router:

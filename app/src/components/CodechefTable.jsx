@@ -12,8 +12,35 @@ import {
 import { User } from "lucide-react";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
+
+const readJsonIfAvailable = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const fallbackText = await response.text();
+    return {
+      isJson: false,
+      data: null,
+      message: fallbackText || `Unexpected response (${response.status})`,
+    };
+  }
+
+  try {
+    const data = await response.json();
+    return { isJson: true, data, message: null };
+  } catch {
+    return { isJson: false, data: null, message: "Invalid JSON response" };
+  }
+};
+
 export function CCTable({ codechefUsers }) {
   const { open, isMobile } = useSidebar();
+  let accessToken = null;
+  try {
+    accessToken = JSON.parse(localStorage.getItem("authTokens"))?.access || null;
+  } catch {
+    accessToken = null;
+  }
+  const isAuthenticated = Boolean(accessToken);
   const [searchfield, setSearchfield] = useState("");
   const [filteredusers, setFilteredusers] = useState([]);
   const [todisplayusers, setTodisplayusers] = useState([]);
@@ -68,91 +95,129 @@ export function CCTable({ codechefUsers }) {
       accessorKey: "Country_rank",
       header: "Country Rank",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const username = row.getValue("username");
-        return (
-          <div className="flex justify-end">
-            {codecheffriends.includes(username) ? (
-              <Button
-                variant="outline"
-                onClick={() => dropfriend(username)}
-              >
-                Remove Friend
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => addfriend(username)}
-              >
-                Add Friend
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+    ...(isAuthenticated
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }) => {
+              const username = row.getValue("username");
+              return (
+                <div className="flex justify-end">
+                  {codecheffriends.includes(username) ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => dropfriend(username)}
+                    >
+                      Remove Friend
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => addfriend(username)}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
   const getccfriends = async () => {
-    const response = await fetch(BACKEND + "/codechefFL/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-    });
-
-    const newData = await response.json();
-    setCodecheffriends(newData);
+    if (!accessToken) {
+      setCodecheffriends([]);
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/codechefFL/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok || !parsed.isJson) {
+        console.error("Failed to fetch CodeChef friends:", parsed.message);
+        setCodecheffriends([]);
+        return;
+      }
+      const newData = parsed.data;
+      setCodecheffriends(Array.isArray(newData) ? newData : []);
+    } catch (error) {
+      console.error("Failed to fetch CodeChef friends:", error);
+      setCodecheffriends([]);
+    }
   };
 
   async function addfriend(e) {
-    const response = await fetch(BACKEND + "/codechefFA/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
-      console.log(response);
+    if (!accessToken) {
+      alert("Please login to add friends.");
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/codechefFA/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to add CodeChef friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setCodecheffriends((current) => [...current, e]);
+    } catch (error) {
+      console.error("Failed to add CodeChef friend:", error);
+      alert("ERROR!!!!");
     }
   }
   async function dropfriend(e) {
-    const response = await fetch(BACKEND + "/codechefFD/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer " +
-          JSON.parse(localStorage.getItem("authTokens")).access,
-      },
-      body: JSON.stringify({
-        friendName: e,
-      }),
-    });
-    if (response.status !== 200) {
-      alert("ERROR!!!!");
-    } else {
+    if (!accessToken) {
+      alert("Please login to remove friends.");
+      return;
+    }
+    try {
+      const response = await fetch(BACKEND + "/codechefFD/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+          friendName: e,
+        }),
+      });
+      const parsed = await readJsonIfAvailable(response);
+      if (!response.ok) {
+        console.error("Failed to remove CodeChef friend:", parsed.message);
+        alert("ERROR!!!!");
+        return;
+      }
       setCodecheffriends((current) =>
         current.filter((fruit) => fruit !== e),
       );
+    } catch (error) {
+      console.error("Failed to remove CodeChef friend:", error);
+      alert("ERROR!!!!");
     }
   }
   useEffect(() => {
-    getccfriends();
-  }, []);
+    if (isAuthenticated) {
+      getccfriends();
+    } else {
+      setCodecheffriends([]);
+      setCCshowfriends(false);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (ccshowfriends) {
@@ -190,15 +255,7 @@ export function CCTable({ codechefUsers }) {
     }
   }, [searchfield, todisplayusers]);
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full px-1.5 py-1">
       <div className="mb-2 flex flex-row justify-between">
         <Input
           placeholder="Search Codechef users..."
@@ -206,13 +263,19 @@ export function CCTable({ codechefUsers }) {
           onChange={(val) => setSearchfield(val.target.value)}
           type="search"
         />
-        <div>
-          Friends Only
-          <Switch
-            className="mx-1 align-middle"
-            onCheckedChange={(val) => setCCshowfriends(val)}
-          />
-        </div>
+        {isAuthenticated ? (
+          <div>
+            Friends Only
+            <Switch
+              className="mx-1 align-middle"
+              onCheckedChange={(val) => setCCshowfriends(val)}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            Login to use friend actions
+          </div>
+        )}
       </div>
       <DataTable
         data={filteredusers.sort((a, b) => (a.rating < b.rating ? 1 : -1))}
