@@ -142,6 +142,11 @@ export function UnifiedLeaderboard() {
             Authorization: token ? `Bearer ${token}` : "",
           },
         });
+        if (!res.ok) {
+          console.error("Failed to fetch friends:", res.status, res.statusText);
+          setFriends([]);
+          return;
+        }
         const data = await res.json();
         setFriends(Array.isArray(data) ? data : []);
       } catch {

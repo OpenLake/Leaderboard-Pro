@@ -147,19 +147,12 @@ WSGI_APPLICATION = "leaderboard.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-# POSTGRES_ENGINE = "django.db.backends.postgresql"
-# POSTGRES_NAME = "postgres"
-# POSTGRES_USER = str(os.getenv("POSTGRES_USER", "leaderboardpro"))
-# POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD", "leaderboardpro"))
-# # POSTGRES_HOST = str(os.getenv("POSTGRES_HOST", "127.0.0.1"))
-# POSTGRES_HOST = "127.0.0.1"
-# POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
+POSTGRES_ENGINE = "django.db.backends.postgresql"
+POSTGRES_NAME = "postgres"
+POSTGRES_USER = str(os.getenv("POSTGRES_USER", "leaderboardpro"))
+POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD", "leaderboardpro"))
+POSTGRES_HOST = str(os.getenv("POSTGRES_HOST", "db"))
+POSTGRES_PORT = str(os.getenv("POSTGRES_PORT", "5432"))
 
 DATABASES = {
     "default": {
@@ -240,7 +233,6 @@ RABBITMQ_DEFAULT_USER = str(os.getenv("RABBITMQ_DEFAULT_USER"))
 RABBITMQ_DEFAULT_PASSWORD = str(os.getenv("RABBITMQ_DEFAULT_PASSWORD"))
 RABBITMQ_DEFAULT_VHOST = str(os.getenv("RABBITMQ_DEFAULT_VHOST"))
 RABBITMQ_HOST = str(os.getenv("RABBITMQ_HOST"))
-POSTGRES_PORT = str(os.getenv("POSTGRES_PORT"))
 
 CELERY_BROKER_URL = f"amqp://{RABBITMQ_DEFAULT_PASSWORD}:{RABBITMQ_DEFAULT_USER}@{RABBITMQ_HOST}:5672/{RABBITMQ_DEFAULT_VHOST}"
 CELERY_RESULT_BACKEND = "django-db"
