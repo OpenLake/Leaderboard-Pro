@@ -150,8 +150,11 @@ def build_unified_ranking():
 
     rows = []
     for mapping in user_mappings:
+        # Use first available platform username, fall back to display_name
+        username = mapping.gh_uname or mapping.cf_uname or mapping.cc_uname or mapping.lt_uname or mapping.user.username
         row = {
             "user_id": mapping.user.id,
+            "username": username,  # unified identifier for UnifiedScoreHistory queries
             "display_name": mapping.user.username,  # app-level username
             "gh_uname": mapping.gh_uname,
             "cf_uname": mapping.cf_uname,
@@ -173,7 +176,7 @@ def build_unified_ranking():
     df = pd.DataFrame(rows)
 
     if df.empty:
-        return pd.DataFrame(columns=["user_id", "display_name", "gh_uname", "cf_uname", "cc_uname", "lt_uname", "github_score", "cf_score", "cc_score", "lt_score", "total_score", "rank"])
+        return pd.DataFrame(columns=["user_id", "username", "display_name", "gh_uname", "cf_uname", "cc_uname", "lt_uname", "github_score", "cf_score", "cc_score", "lt_score", "total_score", "rank"])
 
     df["rank"] = df["total_score"].rank(ascending=False, method="min")
 
