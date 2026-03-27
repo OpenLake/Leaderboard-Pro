@@ -271,7 +271,7 @@ function LeetCodeLineChart({ data, loading, error, onRetry, darkmode }) {
   if (error) return <ChartError message={error} onRetry={onRetry} />;
   if (!data) return null;
 
-  const { easy, medium, hard, total } = data.current_totals;
+const { easy = 0, medium = 0, hard = 0, total = 0 } = data.current_totals || {};
 
   // Difficulty breakdown bar chart
   const difficultyOptions = {
