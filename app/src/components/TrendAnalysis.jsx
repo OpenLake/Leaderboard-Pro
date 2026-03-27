@@ -570,7 +570,7 @@ function LeetCodeTab({ darkmode }) {
     }
   }, [token]);
 
-  useEffect(() => { loadHeatmap(); loadLine(); }, []);
+  useEffect(() => { loadHeatmap(); loadLine(); }, [loadHeatmap, loadLine]);
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -651,7 +651,7 @@ function CodeforcesTab({ darkmode }) {
     loadLine(r);
   };
 
-  useEffect(() => { loadHeatmap(); loadLine("all"); }, []);
+  useEffect(() => { loadHeatmap(); loadLine("all"); }, [loadHeatmap, loadLine]);
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -728,7 +728,7 @@ function UnifiedTab({ darkmode }) {
     }
   }, [token]);
 
-  useEffect(() => { loadHeatmap(); loadLine(); }, []);
+  useEffect(() => { loadHeatmap(); loadLine(); }, [loadHeatmap, loadLine]);
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
