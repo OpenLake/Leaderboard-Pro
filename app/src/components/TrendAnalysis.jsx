@@ -22,24 +22,15 @@ import { ChevronLeft, ChevronRight, TrendingUp, Activity, BarChart2 } from "luci
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
-// ── safe token getter ─────────────────────────────────────────────────────────
-const getToken = () => {
-  try {
-    return JSON.parse(localStorage.getItem("authTokens"))?.access ?? "";
-  } catch {
-    return "";
-  }
-};
-
 // ── fetch helper ──────────────────────────────────────────────────────────────
-const fetchTrend = async (url) => {
-  const token = getToken();
-  const res = await fetch(BACKEND + url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+const fetchTrend = async (url, token) => {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const res = await fetch(BACKEND + url, { headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 };
@@ -218,7 +209,7 @@ function MonthlyHeatmap({ data, type, loading, error, onRetry }) {
     <div className="space-y-3">
       {/* navigation header */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
+        <Button variant="ghost" size="icon" onClick={goToPrevMonth} aria-label="Previous month">
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <span className="text-sm font-semibold">{monthLabel}</span>
@@ -227,6 +218,7 @@ function MonthlyHeatmap({ data, type, loading, error, onRetry }) {
           size="icon"
           onClick={goToNextMonth}
           disabled={!canGoNext}
+          aria-label="Next month"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -281,7 +273,8 @@ function LeetCodeLineChart({ data, loading, error, onRetry, darkmode }) {
 
   const { easy, medium, hard, total } = data.current_totals;
 
-  const options = {
+  // Difficulty breakdown bar chart
+  const difficultyOptions = {
     chart: {
       type: "bar",
       toolbar: { show: false },
@@ -319,20 +312,71 @@ function LeetCodeLineChart({ data, loading, error, onRetry, darkmode }) {
     grid: { borderColor: darkmode ? "#374151" : "#e5e7eb" },
   };
 
-  const series = [{ name: "Solved", data: [easy, medium, hard] }];
+  const difficultySeries = [{ name: "Solved", data: [easy, medium, hard] }];
+
+  // Timeline line chart showing daily submissions
+  const timeline = data.timeline || [];
+  const timelineOptions = {
+    chart: {
+      type: "line",
+      toolbar: { show: false },
+      zoom: { enabled: false },
+      background: "transparent",
+      foreColor: darkmode ? "#e5e7eb" : "#374151",
+    },
+    theme: { mode: darkmode ? "dark" : "light" },
+    stroke: { curve: "smooth", width: 2 },
+    colors: ["#facc15"],
+    markers: { size: 3 },
+    dataLabels: { enabled: false },
+    xaxis: {
+      categories: timeline.map((t) => t.date),
+      tickAmount: 8,
+      labels: { rotate: -30, style: { fontSize: "10px" } },
+    },
+    yaxis: {
+      title: { text: "Submissions" },
+      labels: { formatter: (v) => Math.round(v) },
+    },
+    tooltip: {
+      y: { formatter: (val) => `${val} submission${val !== 1 ? "s" : ""}` },
+    },
+    grid: { borderColor: darkmode ? "#374151" : "#e5e7eb" },
+  };
+
+  const timelineSeries = [{ name: "Daily Submissions", data: timeline.map((t) => t.count) }];
 
   return (
-    <div>
-      <div className="mb-2 flex gap-4 text-sm">
-        <span className="text-green-500 font-medium">Easy: {easy}</span>
-        <span className="text-yellow-500 font-medium">Medium: {medium}</span>
-        <span className="text-red-500 font-medium">Hard: {hard}</span>
-        <span className="text-muted-foreground font-medium">Total: {total}</span>
+    <div className="space-y-4">
+      {/* Difficulty Breakdown */}
+      <div>
+        <div className="mb-2 flex gap-4 text-sm">
+          <span className="text-green-500 font-medium">Easy: {easy}</span>
+          <span className="text-yellow-500 font-medium">Medium: {medium}</span>
+          <span className="text-red-500 font-medium">Hard: {hard}</span>
+          <span className="text-muted-foreground font-medium">Total: {total}</span>
+        </div>
+        <Chart options={difficultyOptions} series={difficultySeries} type="bar" height={260} />
       </div>
-      <Chart options={options} series={series} type="bar" height={260} />
+
+      {/* Submission Trend */}
+      {timeline.length > 0 && (
+        <div>
+          <p className="mb-2 text-sm text-muted-foreground">Submission Activity (Last 6 months)</p>
+          <Chart options={timelineOptions} series={timelineSeries} type="line" height={260} />
+        </div>
+      )}
     </div>
   );
 }
+
+// ── escape HTML for safe tooltip rendering ────────────────────────────────────
+const escapeHtml = (str) => {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+};
 
 // ── Codeforces line chart ─────────────────────────────────────────────────────
 function CodeforcesLineChart({ data, loading, error, onRetry, darkmode, range, onRangeChange }) {
@@ -381,10 +425,10 @@ function CodeforcesLineChart({ data, loading, error, onRetry, darkmode, range, o
         const color = change >= 0 ? "#4ade80" : "#f87171";
         return `
           <div style="padding:8px;font-size:12px;background:#1f2937;color:#f9fafb;border-radius:6px">
-            <div style="font-weight:600">${h.contest ?? ""}</div>
+            <div style="font-weight:600">${escapeHtml(h.contest ?? "")}</div>
             <div>Rating: <b>${h.rating}</b></div>
             <div>Change: <b style="color:${color}">${change >= 0 ? "+" : ""}${change}</b></div>
-            <div style="color:#9ca3af">${h.date}</div>
+            <div style="color:#9ca3af">${escapeHtml(h.date)}</div>
           </div>`;
       },
     },
@@ -491,6 +535,8 @@ function UnifiedLineChart({ data, loading, error, onRetry, darkmode }) {
 
 // ── LeetCode tab ──────────────────────────────────────────────────────────────
 function LeetCodeTab({ darkmode }) {
+  const { authTokens } = useAuth();
+  const token = authTokens?.access;
   const [heatmapData, setHeatmapData] = useState(null);
   const [lineData, setLineData] = useState(null);
   const [heatmapLoading, setHeatmapLoading] = useState(true);
@@ -502,27 +548,27 @@ function LeetCodeTab({ darkmode }) {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/leetcode/heatmap/");
+      const data = await fetchTrend("/trends/leetcode/heatmap/", token);
       setHeatmapData(data);
     } catch (e) {
       setHeatmapError("Failed to load LeetCode heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const loadLine = useCallback(async () => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend("/trends/leetcode/linechart/");
+      const data = await fetchTrend("/trends/leetcode/linechart/", token);
       setLineData(data);
     } catch (e) {
       setLineError("Failed to load LeetCode chart.");
     } finally {
       setLineLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { loadHeatmap(); loadLine(); }, []);
 
@@ -564,6 +610,8 @@ function LeetCodeTab({ darkmode }) {
 
 // ── Codeforces tab ────────────────────────────────────────────────────────────
 function CodeforcesTab({ darkmode }) {
+  const { authTokens } = useAuth();
+  const token = authTokens?.access;
   const [heatmapData, setHeatmapData] = useState(null);
   const [lineData, setLineData] = useState(null);
   const [heatmapLoading, setHeatmapLoading] = useState(true);
@@ -576,27 +624,27 @@ function CodeforcesTab({ darkmode }) {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/codeforces/heatmap/");
+      const data = await fetchTrend("/trends/codeforces/heatmap/", token);
       setHeatmapData(data);
     } catch (e) {
       setHeatmapError("Failed to load Codeforces heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const loadLine = useCallback(async (r = range) => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend(`/trends/codeforces/linechart/?range=${r}`);
+      const data = await fetchTrend(`/trends/codeforces/linechart/?range=${r}`, token);
       setLineData(data);
     } catch (e) {
       setLineError("Failed to load Codeforces rating history.");
     } finally {
       setLineLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const handleRangeChange = (r) => {
     setRange(r);
@@ -645,6 +693,8 @@ function CodeforcesTab({ darkmode }) {
 
 // ── Unified tab ───────────────────────────────────────────────────────────────
 function UnifiedTab({ darkmode }) {
+  const { authTokens } = useAuth();
+  const token = authTokens?.access;
   const [heatmapData, setHeatmapData] = useState(null);
   const [lineData, setLineData] = useState(null);
   const [heatmapLoading, setHeatmapLoading] = useState(true);
@@ -656,27 +706,27 @@ function UnifiedTab({ darkmode }) {
     setHeatmapLoading(true);
     setHeatmapError(null);
     try {
-      const data = await fetchTrend("/trends/unified/heatmap/");
+      const data = await fetchTrend("/trends/unified/heatmap/", token);
       setHeatmapData(data);
     } catch (e) {
       setHeatmapError("Failed to load unified heatmap.");
     } finally {
       setHeatmapLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const loadLine = useCallback(async () => {
     setLineLoading(true);
     setLineError(null);
     try {
-      const data = await fetchTrend("/trends/unified/linechart/");
+      const data = await fetchTrend("/trends/unified/linechart/", token);
       setLineData(data);
     } catch (e) {
       setLineError("Failed to load unified score chart.");
     } finally {
       setLineLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { loadHeatmap(); loadLine(); }, []);
 

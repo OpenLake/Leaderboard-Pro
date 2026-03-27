@@ -266,7 +266,7 @@ CELERY_BEAT_SCHEDULE = {
     "unified_score_snapshot_task": {
         "task": "leaderboard.celery.unified_score_snapshot",
         "schedule": crontab(hour=0, minute=30), 
-}
+    },
 }
 
 # Run the `tasks.add` task every minute.
