@@ -26,6 +26,7 @@ import {
   Users,
   Award,
   BookOpen,
+  Building2,
 } from "lucide-react";
 
 import Github from "@/icons/github.svg?react";
@@ -59,6 +60,11 @@ const items = [
     title: "Contests",
     url: "/contests",
     icon: Calendar,
+  },
+  {
+    title: "Organizations",
+    url: "/organizations",
+    icon: Building2,
   },
   {
     title: "Achievements",

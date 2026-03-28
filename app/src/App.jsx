@@ -30,6 +30,8 @@ import ContestCalendar from "./components/ContestCalendar";
 import Blogs from "./components/Blogs.jsx";
 import Achievements from "./components/Achievements.jsx";
 import Friends from "./components/Friends.jsx";
+import Organizations from "./components/Organizations";
+import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -116,11 +118,7 @@ function App() {
                 <Route
                   exact
                   path="/atcoder"
-                  element={
-                    <PrivateRoute>
-                      <AtcoderTable atcoderUsers={atcoderUsers} />
-                    </PrivateRoute>
-                  }
+                  element={<AtcoderTable atcoderUsers={atcoderUsers} />}
                 />
                 <Route
                   exact
@@ -214,6 +212,20 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Friends />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/organizations"
+                  element={<Organizations />}
+                />
+                <Route
+                  exact
+                  path="/organizations/:id"
+                  element={
+                    <PrivateRoute>
+                      <OrganizationLeaderboard />
                     </PrivateRoute>
                   }
                 />

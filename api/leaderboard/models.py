@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
@@ -48,6 +49,7 @@ class openlakeContributor(models.Model):
 def get_default_cf_last_activity():
     return int(now().timestamp())
 
+
 class codeforcesUser(models.Model):
     username = models.CharField(max_length=64, unique=True)
     max_rating = models.PositiveIntegerField(default=0)
@@ -77,6 +79,7 @@ class codechefUser(models.Model):
     rating = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
     avatar = models.CharField(max_length=256, default="")
+    calendar_data = models.TextField(default="[]", blank=True)
 
     @property
     def is_outdated(self):
@@ -173,7 +176,9 @@ class DiscussionPost(models.Model):
 class PostVote(models.Model):
     VOTE_CHOICES = [("like", "Like"), ("dislike", "Dislike")]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(DiscussionPost, on_delete=models.CASCADE, related_name="votes")
+    post = models.ForeignKey(
+        DiscussionPost, on_delete=models.CASCADE, related_name="votes"
+    )
     vote_type = models.CharField(max_length=7, choices=VOTE_CHOICES)
 
     class Meta:
@@ -250,3 +255,42 @@ class Achievement(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.slug} ({self.tier})"
+
+
+class Organization(models.Model):
+    name = models.CharField(max_length=128)
+    description = models.TextField(null=True, blank=True)
+    admin = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="administered_organizations"
+    )
+    is_private = models.BooleanField(default=True)
+    join_code = models.CharField(max_length=10, unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.is_private and not self.join_code :
+            self.join_code = uuid.uuid4().hex[:10].upper()
+            while Organization.objects.filter(join_code=self.join_code).exists():
+                self.join_code = uuid.uuid4().hex[:10].upper()
+        elif not self.is_private:
+            self.join_code = None
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class OrganizationMember(models.Model):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="memberships"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="organization_memberships"
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("organization", "user")
+
+    def __str__(self):
+        return f"{self.user.username} in {self.organization.name}"
