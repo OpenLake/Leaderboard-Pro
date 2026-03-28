@@ -24,6 +24,9 @@ const BACKEND = import.meta.env.VITE_BACKEND;
 
 // ── fetch helper ──────────────────────────────────────────────────────────────
 const fetchTrend = async (url, token) => {
+  if (!BACKEND) {
+    throw new Error("Backend URL is not configured.");
+  }
   const headers = {
     "Content-Type": "application/json",
   };
@@ -394,8 +397,6 @@ function CodeforcesLineChart({ data, loading, error, onRetry, darkmode, range, o
     })
   );
   const ratings = data.history.map((h) => h.rating);
-  const changes = data.history.map((h) => h.rating_change ?? 0);
-
   const options = {
     chart: {
       type: "line",
@@ -490,6 +491,17 @@ function UnifiedLineChart({ data, loading, error, onRetry, darkmode }) {
   );
 
   const categories = data.linechart.map((d) => d.date);
+  const allSeriesValues = data.linechart.flatMap((d) => [
+    d.total_score ?? 0,
+    d.github_score ?? 0,
+    d.cf_score ?? 0,
+    d.cc_score ?? 0,
+    d.lt_score ?? 0,
+  ]);
+  const yAxisMax = Math.max(
+    1,
+    Math.ceil((Math.max(...allSeriesValues, 0) + 0.05) * 10) / 10,
+  );
 
   const options = {
     chart: {
@@ -510,10 +522,10 @@ function UnifiedLineChart({ data, loading, error, onRetry, darkmode }) {
       labels: { rotate: -30, style: { fontSize: "10px" } },
     },
     yaxis: {
-      title: { text: "Score (0–1)" },
+      title: { text: "Score" },
       labels: { formatter: (v) => v.toFixed(2) },
       min: 0,
-      max: 1,
+      max: yAxisMax,
     },
     tooltip: {
       y: { formatter: (v) => v.toFixed(4) },
@@ -550,7 +562,7 @@ function LeetCodeTab({ darkmode }) {
     try {
       const data = await fetchTrend("/trends/leetcode/heatmap/", token);
       setHeatmapData(data);
-    } catch (e) {
+    } catch {
       setHeatmapError("Failed to load LeetCode heatmap.");
     } finally {
       setHeatmapLoading(false);
@@ -563,7 +575,7 @@ function LeetCodeTab({ darkmode }) {
     try {
       const data = await fetchTrend("/trends/leetcode/linechart/", token);
       setLineData(data);
-    } catch (e) {
+    } catch {
       setLineError("Failed to load LeetCode chart.");
     } finally {
       setLineLoading(false);
@@ -626,7 +638,7 @@ function CodeforcesTab({ darkmode }) {
     try {
       const data = await fetchTrend("/trends/codeforces/heatmap/", token);
       setHeatmapData(data);
-    } catch (e) {
+    } catch {
       setHeatmapError("Failed to load Codeforces heatmap.");
     } finally {
       setHeatmapLoading(false);
@@ -639,7 +651,7 @@ function CodeforcesTab({ darkmode }) {
     try {
       const data = await fetchTrend(`/trends/codeforces/linechart/?range=${r}`, token);
       setLineData(data);
-    } catch (e) {
+    } catch {
       setLineError("Failed to load Codeforces rating history.");
     } finally {
       setLineLoading(false);
@@ -708,7 +720,7 @@ function UnifiedTab({ darkmode }) {
     try {
       const data = await fetchTrend("/trends/unified/heatmap/", token);
       setHeatmapData(data);
-    } catch (e) {
+    } catch {
       setHeatmapError("Failed to load unified heatmap.");
     } finally {
       setHeatmapLoading(false);
@@ -721,7 +733,7 @@ function UnifiedTab({ darkmode }) {
     try {
       const data = await fetchTrend("/trends/unified/linechart/", token);
       setLineData(data);
-    } catch (e) {
+    } catch {
       setLineError("Failed to load unified score chart.");
     } finally {
       setLineLoading(false);

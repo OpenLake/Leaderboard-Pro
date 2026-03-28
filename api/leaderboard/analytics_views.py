@@ -1,8 +1,12 @@
+import logging
+
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
 from .analytics import build_unified_ranking
+
+logger = logging.getLogger(__name__)
 
 
 class UnifiedAnalyticsView(APIView):
@@ -11,9 +15,10 @@ class UnifiedAnalyticsView(APIView):
     def get(self, request):
         try:
             df = build_unified_ranking()
-        except Exception as exc:
+        except Exception:
+            logger.exception("Unified ranking generation failed")
             return Response(
-                {"detail": "Failed to load unified rankings.", "error": str(exc)},
+                {"detail": "Failed to load unified rankings."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 

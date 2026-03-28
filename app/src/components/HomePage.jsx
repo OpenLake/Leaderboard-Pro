@@ -1,6 +1,5 @@
 import { UnifiedLeaderboard } from "@/components/UnifiedLeaderboard";
 import { TrendAnalysis } from "@/components/TrendAnalysis";
-import { useSidebar } from "@/components/ui/sidebar";
 import {
   Card,
   CardContent,
@@ -31,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 
 import Chart from "react-apexcharts";
 
-var rank = 0;
+var rank = null;
 
 function Cards({ usernames }) {
   const navigate = useNavigate();
@@ -112,7 +111,7 @@ function Cards({ usernames }) {
     {
       title: "Overall Rank",
       icon: Trophy,
-      info: `#${rank ?? "N/A"}`,
+      info: rank != null ? `#${rank}` : "N/A",
       suffix: "Among all users",
       hasHeatmap: false,
     },
@@ -322,7 +321,7 @@ function TabsView() {
 }
 
 const HomePage = () => {
-  const { userNames } = useAuth();
+  const { userNames, isAuthenticated } = useAuth();
   const greeting = userNames?.username
     ? `Welcome back, ${userNames.username}`
     : "Welcome to Leaderboard Pro";
@@ -330,7 +329,7 @@ const HomePage = () => {
     <div className="text-foreground flex flex-col gap-5 px-10 pb-10">
       <div className="text-3xl font-semibold">{greeting}</div>
       <Cards usernames={userNames} />
-      <TabsView />
+      {isAuthenticated && <TabsView />}
     </div>
   );
 };
