@@ -176,6 +176,9 @@ function App() {
                         githubUsers={githubUser}
                         openlakeUsers={openlakeContributor}
                       />
+                    </PrivateRoute>
+                  }
+                />
                 <Route
                   exact
                   path="/contests"
@@ -205,6 +208,8 @@ function App() {
                   }
                 />
                 {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
+                <Route
+                  exact
                   path="/friends"
                   element={
                     <PrivateRoute>
