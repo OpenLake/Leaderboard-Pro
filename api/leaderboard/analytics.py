@@ -24,15 +24,22 @@ def safe_normalize(series):
 
     return (series - series.min()) / (series.max() - series.min())
 
+
+def numeric_series(df, column_name, default=0):
+    if column_name not in df.columns:
+        return pd.Series(default, index=df.index, dtype="float64")
+
+    return pd.to_numeric(df[column_name], errors="coerce").fillna(default)
+
 def github_score(df):
     if df.empty:
         return pd.DataFrame(columns=["username", "github_score"])
 
     df = df.fillna(0)
 
-    df["repo_norm"] = safe_normalize(df["repositories"])
-    df["stars_norm"] = safe_normalize(df["stars"])
-    df["contrib_norm"] = safe_normalize(df["contributions"])
+    df["repo_norm"] = safe_normalize(numeric_series(df, "repositories"))
+    df["stars_norm"] = safe_normalize(numeric_series(df, "stars"))
+    df["contrib_norm"] = safe_normalize(numeric_series(df, "contributions"))
 
     df["github_score"] = (
         0.3 * df["repo_norm"] +
@@ -50,7 +57,7 @@ def leetcode_score(df):
 
     # Ranking: lower is better → invert
     if "ranking" in df.columns:
-        ranking = df["ranking"].replace(0, pd.NA).astype("float")
+        ranking = numeric_series(df, "ranking").replace(0, pd.NA)
         df["ranking_inv"] = ranking.max() - ranking
         df["ranking_norm"] = safe_normalize(df["ranking_inv"].fillna(0))
     else:
@@ -58,13 +65,13 @@ def leetcode_score(df):
 
     # Problem difficulty weighted
     df["difficulty_score"] = (
-        df.get("easy_solved", 0) * 1 +
-        df.get("medium_solved", 0) * 2 +
-        df.get("hard_solved", 0) * 3
+        numeric_series(df, "easy_solved") * 1 +
+        numeric_series(df, "medium_solved") * 2 +
+        numeric_series(df, "hard_solved") * 3
     )
 
     df["difficulty_norm"] = safe_normalize(df["difficulty_score"])
-    df["total_norm"] = safe_normalize(df.get("total_solved", 0))
+    df["total_norm"] = safe_normalize(numeric_series(df, "total_solved"))
 
     df["lt_score"] = (
         0.4 * df["difficulty_norm"] +
@@ -80,14 +87,17 @@ def codeforces_score(df):
 
     df = df.fillna(0)
 
-    df["rating_norm"] = safe_normalize(df.get("rating", 0))
-    df["max_rating_norm"] = safe_normalize(df.get("max_rating", 0))
-    df["solved_norm"] = safe_normalize(df.get("total_solved", 0))
+    rating = numeric_series(df, "rating")
+    max_rating = numeric_series(df, "max_rating")
+    total_solved = numeric_series(df, "total_solved")
+    total_submissions = numeric_series(df, "total_submissions", default=1).replace(0, 1)
+
+    df["rating_norm"] = safe_normalize(rating)
+    df["max_rating_norm"] = safe_normalize(max_rating)
+    df["solved_norm"] = safe_normalize(total_solved)
 
     # Submission efficiency
-    df["efficiency"] = df.get("total_solved", 0) / (
-        df.get("total_submissions", 1).replace(0, 1)
-    )
+    df["efficiency"] = total_solved / total_submissions
     df["efficiency_norm"] = safe_normalize(df["efficiency"])
 
     df["cf_score"] = (
@@ -105,13 +115,12 @@ def codechef_score(df):
 
     df = df.fillna(0)
 
-    df["rating_norm"] = safe_normalize(df.get("rating", 0))
-    df["max_rating_norm"] = safe_normalize(df.get("max_rating", 0))
+    df["rating_norm"] = safe_normalize(numeric_series(df, "rating"))
+    df["max_rating_norm"] = safe_normalize(numeric_series(df, "max_rating"))
 
     # Global rank inversion (lower better)
     if "Global_rank" in df.columns:
-        global_rank = pd.to_numeric(df["Global_rank"], errors="coerce")
-        global_rank = global_rank.replace(0, pd.NA).astype("float")
+        global_rank = numeric_series(df, "Global_rank").replace(0, pd.NA)
         df["rank_inv"] = global_rank.max() - global_rank
         df["rank_norm"] = safe_normalize(df["rank_inv"].fillna(0))
     else:
