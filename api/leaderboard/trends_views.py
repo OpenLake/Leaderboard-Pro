@@ -1,5 +1,6 @@
 import json
 import requests
+import logging
 from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 
@@ -15,6 +16,7 @@ from leaderboard.models import (
     UnifiedScoreHistory,
 )
 
+logger = logging.getLogger(__name__)
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -88,8 +90,9 @@ def leetcode_heatmap(request):
 
     except UserNames.DoesNotExist:
         return Response({"error": "User profile not found."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("LeetCode heatmap generation failed")
+        return Response({"error": "Failed to load LeetCode heatmap."}, status=500)
 
 
 # ── LeetCode Line Chart ───────────────────────────────────────────────────────
@@ -168,8 +171,9 @@ def leetcode_linechart(request):
         return Response({"error": "User profile not found."}, status=404)
     except LeetcodeUser.DoesNotExist:
         return Response({"error": "LeetCode user not found in DB."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("LeetCode line chart generation failed")
+        return Response({"error": "Failed to load LeetCode chart."}, status=500)
 
 
 # ── Codeforces Heatmap ────────────────────────────────────────────────────────
@@ -226,8 +230,9 @@ def codeforces_heatmap(request):
 
     except UserNames.DoesNotExist:
         return Response({"error": "User profile not found."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("Codeforces heatmap generation failed")
+        return Response({"error": "Failed to load Codeforces heatmap."}, status=500)
 
 
 # ── Codeforces Line Chart ─────────────────────────────────────────────────────
@@ -314,8 +319,9 @@ def codeforces_linechart(request):
         return Response({"error": "User profile not found."}, status=404)
     except codeforcesUser.DoesNotExist:
         return Response({"error": "Codeforces user not found."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("Codeforces line chart generation failed")
+        return Response({"error": "Failed to load Codeforces chart."}, status=500)
 
 
 # ── Unified Heatmap ───────────────────────────────────────────────────────────
@@ -366,8 +372,9 @@ def unified_heatmap(request):
 
     except UserNames.DoesNotExist:
         return Response({"error": "User profile not found."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("Unified heatmap generation failed")
+        return Response({"error": "Failed to load unified heatmap."}, status=500)
 
 
 # ── Unified Line Chart ────────────────────────────────────────────────────────
@@ -409,5 +416,6 @@ def unified_linechart(request):
 
     except UserNames.DoesNotExist:
         return Response({"error": "User profile not found."}, status=404)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("Unified line chart generation failed")
+        return Response({"error": "Failed to load unified chart."}, status=500)

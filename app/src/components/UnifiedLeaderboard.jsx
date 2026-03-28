@@ -107,6 +107,9 @@ export function UnifiedLeaderboard() {
       setLoading(true);
       setError(null);
       try {
+        if (!BACKEND) {
+          throw new Error("Backend URL is not configured.");
+        }
         const token = getToken();
         const res = await fetch(BACKEND + "/analytics/unified/", {
           method: "GET",
@@ -134,6 +137,10 @@ export function UnifiedLeaderboard() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
+        if (!BACKEND) {
+          setFriends([]);
+          return;
+        }
         const token = getToken();
         const res = await fetch(BACKEND + "/githubFL/", {
           method: "GET",
@@ -160,7 +167,14 @@ export function UnifiedLeaderboard() {
   useEffect(() => {
     setDisplayUsers(
       showFriends
-        ? allUsers.filter((u) => friends.includes(u.username))
+        ? allUsers.filter((u) => {
+            const candidates = [u.gh_uname, u.username]
+              .filter(Boolean)
+              .map((value) => value.toLowerCase());
+            return friends.some((friend) =>
+              candidates.includes(String(friend).toLowerCase()),
+            );
+          })
         : allUsers,
     );
   }, [showFriends, friends, allUsers]);
