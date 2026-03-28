@@ -223,16 +223,25 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                <Route
-                  exact
-                  path="/analytics"
-                  element={
-                    <PrivateRoute>
-                      <TrendAnalysis />
-                    </PrivateRoute>
-                  }
-                />
+                  <Route
+                    exact
+                    path="/analytics"
+                    element={
+                      <PrivateRoute>
+                        <TrendAnalysis />
+                      </PrivateRoute>
+                    }
+                  />
                   {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
+                  <Route
+                    exact
+                    path="/friends"
+                    element={
+                      <PrivateRoute>
+                        <Friends />
+                      </PrivateRoute>
+                    }
+                  />
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>
                 <GoToTop />
