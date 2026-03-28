@@ -262,6 +262,14 @@ def registerUser(request):
 def loginGoogleUser(request):
     try:
         token = request.data.get("token", "")
+        if not default_app:
+            return Response(
+                {
+                    "status": 500,
+                    "message": "Firebase admin is not configured on the backend",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         verified = verify_id_token(token, default_app)
 
         uid = verified.get("uid")
@@ -303,6 +311,14 @@ def registerGoogleUser(request):
         logger.debug(f"Request data: {request.data}")
 
         token = request.data.get("token", "")
+        if not default_app:
+            return Response(
+                {
+                    "status": 500,
+                    "message": "Firebase admin is not configured on the backend",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         verified = verify_id_token(token, default_app)
         name = verified["name"].split(" ")
         first_name = name[0]
