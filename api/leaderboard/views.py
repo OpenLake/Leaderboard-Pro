@@ -55,7 +55,7 @@ from django.http import JsonResponse
 MAX_DATE_TIMESTAMP = datetime.now().timestamp()
 
 import requests
-from django.db import connection
+from django.db import connection, transaction
 from django.db.utils import OperationalError
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
@@ -937,6 +937,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         # User sees organizations they are members of
         return Organization.objects.filter(memberships__user=self.request.user)
 
+    @transaction.atomic
     def perform_create(self, serializer):
         # Admin is the current user
         organization = serializer.save(admin=self.request.user)

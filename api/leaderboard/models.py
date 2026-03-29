@@ -275,6 +275,7 @@ class UnifiedScoreHistory(models.Model):
     per-platform breakdown. Written by a Celery beat task every day.
     Used by the Unified trend analysis heatmap and line chart.
     """
+    user_id = models.IntegerField(db_index=True, default=0)
     username = models.CharField(max_length=64, db_index=True)
     date = models.DateField(db_index=True)
  
@@ -291,7 +292,7 @@ class UnifiedScoreHistory(models.Model):
  
     class Meta:
         # one record per user per day
-        unique_together = ("username", "date")
+        unique_together = ("user_id", "date")
         ordering = ["date"]
  
     def __str__(self):

@@ -52,14 +52,14 @@ const items = [
     icon: ChartColumn,
   },
   {
-    title: "Friends",
-    url: "/friends",
-    icon: Users,
-  },
-  {
     title: "Contests",
     url: "/contests",
     icon: Calendar,
+  },
+  {
+    title: "Friends",
+    url: "/friends",
+    icon: Users,
   },
   {
     title: "Organizations",
@@ -123,13 +123,13 @@ export const Navbar = () => {
             <SidebarMenu>
               {items.map((item, index) => {
                 const isActive = pathname === item.url;
-                const isBlogs = index === 7;
+                const isOrg = index === 4;
                 return (
                   <SidebarMenuItem 
                     key={item.title} 
                     className={cn(
                       "relative",
-                      isBlogs && "mt-8" // Add distance before Blogs
+                      isOrg && "mt-8" // Add distance before Blogs
                     )}
                   >
                     {isActive && (

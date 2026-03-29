@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   return (
-    <div className="text-foreground bg-accent flex h-8 justify-center">
+    <div className="text-foreground bg-accent flex h-8 justify-center mt-8">
       <span>Copyright ©</span>
       <Button variant="link" className="h-fit px-2 py-0.5" asChild>
         <a href="https://github.com/OpenLake/Leaderboard-Pro/">
