@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("leaderboard", "0006_atcoderuser_alter_codeforcesuser_last_activity"),
+        ("leaderboard", "0002_alter_codeforcesuser_last_activity_and_more"),
     ]
 
     operations = [
