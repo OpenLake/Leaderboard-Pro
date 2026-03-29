@@ -33,10 +33,6 @@ import OrganizationLeaderboard from "./components/OrganizationLeaderboard";
 
 import { UnifiedLeaderboard } from "./components/UnifiedLeaderboard";
 import { TrendAnalysis } from "@/components/TrendAnalysis";
-import PublicRoute from "./Context/PublicRoute";
-import ContestCalendar from "./components/ContestCalendar";
-import Blogs from "./components/Blogs.jsx";
-import Achievements from "./components/Achievements.jsx";
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const fetchListSafely = async (endpoint, setData) => {
@@ -82,9 +78,9 @@ function App() {
         <AuthProvider>
           <SidebarProvider defaultOpen={false}>
             <Navbar />
-            <SidebarInset>
-              <div className="App bg-background">
-                <NavMenu />
+            <SidebarInset className="flex flex-col min-h-screen bg-background">
+              <NavMenu />
+              <main className="flex-1 px-4 lg:px-8 overflow-y-auto">
                 <Routes>
 
                   <Route exact path="/register" element={<PublicRoute><Register /></PublicRoute>} />
@@ -207,7 +203,6 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                  {/* ADD YOUR NEW ROUTE HERE */}
                   <Route
                     exact
                     path="/leaderboards"
@@ -232,21 +227,11 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                  {/* <Route exact path="/leetcoderankingccps" element={<PrivateRoute><LeetcodeRankingsCCPS darkmode={darkmode} /></PrivateRoute>} /> */}
-                  <Route
-                    exact
-                    path="/friends"
-                    element={
-                      <PrivateRoute>
-                        <Friends />
-                      </PrivateRoute>
-                    }
-                  />
                   <Route exact path="/*" element={<HomePage />} />
                 </Routes>
-                <GoToTop />
-                <Footer />
-              </div>
+              </main>
+              <GoToTop />
+              <Footer />
             </SidebarInset>
           </SidebarProvider>
         </AuthProvider>
