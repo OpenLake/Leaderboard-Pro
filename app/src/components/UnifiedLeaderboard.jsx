@@ -230,7 +230,7 @@ export function UnifiedLeaderboard() {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            30% repos · 40% stars · 30% contributions
+            stars · followers
           </TooltipContent>
         </Tooltip>
       ),
@@ -248,7 +248,7 @@ export function UnifiedLeaderboard() {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            40% rating · 20% max rating · 20% solved · 20% efficiency
+            rating only
           </TooltipContent>
         </Tooltip>
       ),
@@ -266,7 +266,7 @@ export function UnifiedLeaderboard() {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            50% rating · 30% max rating · 20% global rank
+            rating only
           </TooltipContent>
         </Tooltip>
       ),
@@ -284,7 +284,7 @@ export function UnifiedLeaderboard() {
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            40% difficulty-weighted · 30% total solved · 30% ranking
+            weighted solved counts only
           </TooltipContent>
         </Tooltip>
       ),
@@ -305,15 +305,7 @@ export function UnifiedLeaderboard() {
 
   // ── render ──────────────────────────────────────────────────────────────────
   return (
-    <div
-      className="h-full px-1.5 py-1"
-      style={{
-        width:
-          open && !isMobile
-            ? "calc(100vw - var(--sidebar-width))"
-            : "100vw",
-      }}
-    >
+    <div className="h-full w-full px-1.5 py-1">
       {/* page header */}
       <div className="mb-4 flex flex-col gap-1">
         <h2 className="text-xl font-bold">Unified Leaderboard</h2>

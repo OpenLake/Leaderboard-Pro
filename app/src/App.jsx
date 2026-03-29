@@ -78,7 +78,7 @@ function App() {
         <AuthProvider>
           <SidebarProvider defaultOpen={false}>
             <Navbar />
-            <SidebarInset className="flex flex-col min-h-screen bg-background">
+            <SidebarInset className="App flex flex-col min-h-screen bg-background">
               <NavMenu />
               <main className="flex-1 px-4 lg:px-8 overflow-y-auto">
                 <Routes>

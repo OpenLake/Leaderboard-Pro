@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("leaderboard", "0002_alter_codeforcesuser_last_activity_and_more"),
+        ("leaderboard", "0019_codechefuser_calendar_data"),
         ("leaderboard", "0022_alter_organization_join_code"),
     ]
 
