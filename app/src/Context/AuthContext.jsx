@@ -215,13 +215,12 @@ export const AuthProvider = ({ children }) => {
     navigate("/register");
   };
   const SignInWithGoogle = async () => {
-    let response;
     try {
       if (!auth) {
         alert("Firebase is not configured. Check frontend env values.");
         return false;
       }
-      response = await signInWithPopup(auth, googleProvider);
+      const response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         const idToken = await response.user.getIdToken();
         if (!idToken) {
@@ -254,19 +253,18 @@ export const AuthProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.log(error);
+      console.error("Google login failed:", error);
       alert("Please try logging in again");
       return false;
     }
   };
   const SignUpWithGoogle = async () => {
-    let response;
     try {
       if (!auth) {
         alert("Firebase is not configured. Check frontend env values.");
         return false;
       }
-      response = await signInWithPopup(auth, googleProvider);
+      const response = await signInWithPopup(auth, googleProvider);
       if (response && !(response["status"] === 400)) {
         const idToken = await response.user.getIdToken();
         if (!idToken) {
@@ -293,15 +291,15 @@ export const AuthProvider = ({ children }) => {
           setUserNames(usernames_data);
           return true;
         } else {
-          alert("Please Try registering again");
+          alert("Please try registering again");
           return false;
         }
       } else {
         return false;
       }
     } catch (error) {
-      console.log(error);
-      alert("Please Try registering again");
+      console.error("Google signup failed:", error);
+      alert("Please try registering again");
       return false;
     }
   };
