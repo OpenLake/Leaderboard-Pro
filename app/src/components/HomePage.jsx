@@ -1,5 +1,6 @@
 import { UnifiedLeaderboard } from "@/components/UnifiedLeaderboard";
 import { TrendAnalysis } from "@/components/TrendAnalysis";
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   Card,
   CardContent,

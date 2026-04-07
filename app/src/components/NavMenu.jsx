@@ -42,7 +42,7 @@ export function NavMenu() {
   );
   const displayName = userNames?.username || user?.username || "Guest";
   return (
-    <NavigationMenu className="m-1 max-w-full border-b pb-3 block overflow-hidden">
+    <NavigationMenu className="m-1 max-w-full border-b pb-3 block overflow-hidden flex-none">
       <div className="flex w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left Section: Logo and Search */}
         <div className="flex items-center gap-4 flex-1">

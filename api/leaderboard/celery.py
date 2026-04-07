@@ -434,13 +434,14 @@ def unified_score_snapshot(self):
         if df.empty:
             return
         for _, row in df.iterrows():
-            username = row.get("username")
-            if not username:
+            user_id = row.get("user_id")
+            if not user_id:
                 continue
             UnifiedScoreHistory.objects.update_or_create(
-                username=username,
+                user_id=user_id,
                 date=today,
                 defaults={
+                    "username": row.get("username"),
                     "total_score": float(row.get("total_score", 0)),
                     "github_score": float(row.get("github_score", 0)),
                     "cf_score": float(row.get("cf_score", 0)),
