@@ -290,23 +290,22 @@ class CodeforcesLeaderboard(
     def get_codeforces_data(self, username):
         url = f"https://codeforces.com/api/user.info?handles={username}"
         try:
-                response = requests.get(url, timeout=10)
-                response.raise_for_status()
-            except requests.RequestException as e:
-                print(f"Request failed: {e}")
-                return None
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            logger.error(f"Request failed: {e}")
+            return None
 
-            data = response.json()
-            if data.get("status") == "OK" and data.get("result"):
-                user_data = data["result"][0]
-                return {
-                    "rating": user_data.get("rating", 0),
-                    "max_rating": user_data.get("maxRating", 0),
-                    "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
-                    "avatar": user_data.get("titlePhoto", ""),
-                }
-
-            return None  # Explicit fallback
+        data = response.json()
+        if data.get("status") == "OK" and data.get("result"):
+            user_data = data["result"][0]
+            return {
+                "rating": user_data.get("rating", 0),
+                "max_rating": user_data.get("maxRating", 0),
+                "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
+                "avatar": user_data.get("titlePhoto", ""),
+            }
+        return None  # Explicit fallback
 
 
         class CodeforcesUserViewSet(viewsets.ModelViewSet):  # or wherever these belong
