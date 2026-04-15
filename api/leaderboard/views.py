@@ -76,17 +76,20 @@ class GithubUserAPI(
 
     def fetch_github_contributions(self, username):
         url = f"https://github-contributions-api.deno.dev/{username}.json"
-        response = requests.get(url)
-        if response.status_code == 200:
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
             data = response.json()
             return data.get("totalContributions", 0)
-        return 0
+        except requests.exceptions.RequestException:
+            return 0
 
     def fetch_github_data(self, username):
         url = f"https://api.github.com/users/{username}"
-        response = requests.get(url)
 
-        if response.status_code == 200:
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
             data = response.json()
             return {
                 "avatar": data.get("avatar_url", ""),
@@ -95,14 +98,17 @@ class GithubUserAPI(
                 "contributions": self.fetch_github_contributions(username),
                 "last_updated": datetime.now().timestamp(),
             }
-        return None
+        except requests.exceptions.RequestException:
+            return None
 
     def fetch_starred_repos(self, username):
         url = f"https://api.github.com/users/{username}/starred"
-        response = requests.get(url)
-        if response.status_code == 200:
-            return len(response.json())  # Count starred repos
-        return 0
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return len(response.json())
+        except requests.exceptions.RequestException:
+            return 0
 
     def get(self, request):
         gh_users = githubUser.objects.all()
@@ -257,12 +263,12 @@ class CodeforcesLeaderboard(
             }
         """
         url = f"https://codeforces.com/api/user.status?handle={username}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
             data = response.json()
             if data.get("status") == "OK":
-                total_submissions = len(data["result"])  # Count all submissions
+                total_submissions = len(data["result"])
                 solved_problems = set()
 
                 for submission in data["result"]:
@@ -273,31 +279,39 @@ class CodeforcesLeaderboard(
                 return {
                     "total_solved": len(
                         solved_problems
-                    ),  # Count unique problems solved
+                    ),
                     "total_submissions": total_submissions,
                 }
+        except requests.exceptions.RequestException:
+            return {"total_solved": 0, "total_submissions": 0}
 
         return {"total_solved": 0, "total_submissions": 0}
 
     def get_codeforces_data(self, username):
         url = f"https://codeforces.com/api/user.info?handles={username}"
-        response = requests.get(url)
+        try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                print(f"Request failed: {e}")
+                return None
 
-        if response.status_code == 200:
             data = response.json()
             if data.get("status") == "OK" and data.get("result"):
                 user_data = data["result"][0]
                 return {
                     "rating": user_data.get("rating", 0),
                     "max_rating": user_data.get("maxRating", 0),
-                    "last_activity": user_data.get(
-                        "lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP
-                    ),
+                    "last_activity": user_data.get("lastOnlineTimeSeconds", MAX_DATE_TIMESTAMP),
                     "avatar": user_data.get("titlePhoto", ""),
                 }
 
-    queryset = codeforcesUser.objects.all()
-    serializer_class = CF_Serializer
+            return None  # Explicit fallback
+
+
+        class CodeforcesUserViewSet(viewsets.ModelViewSet):  # or wherever these belong
+            queryset = codeforcesUser.objects.all()
+            serializer_class = CF_Serializer
 
     def get(self, request):
         cf_users = codeforcesUser.objects.all()
@@ -333,51 +347,60 @@ class CodechefLeaderboard(
         url = f"https://www.codechef.com/users/{username}"
         try:
             response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                from bs4 import BeautifulSoup
-                import re
-                soup = BeautifulSoup(response.text, "html.parser")
-                
-                instance = {}
-                rating_div = soup.find("div", class_="rating-number")
-                if not rating_div:
-                    if "user not found" in response.text.lower():
-                        return "NOT_FOUND"
-                    logger.error(f"CodeChef parsing error for {username}: rating_div not found")
-                    return "TRANSIENT_ERROR"
-                    
-                instance["rating"] = int(rating_div.text)
-                container_highest_rating = soup.find("div", class_="rating-header")
-                ttg = soup.findAll("img", class_="profileImage")
-                instance["avatar"] = ttg[-1]["src"] if ttg else ""
-                
-                try:
-                    instance["highest_rating"] = (
-                        container_highest_rating.find_next("small")
-                        .text.split()[-1]
-                        .rstrip(")")
-                    )
-                    container_ranks = soup.find("div", class_="rating-ranks")
-                    ranks = container_ranks.find_all("a")
-                    instance["global_rank"] = ranks[0].strong.text
-                    instance["country_rank"] = ranks[1].strong.text
-                except Exception as e:
-                    logger.error(f"CodeChef parsing error for {username} (ranks/highest): {e}")
-                    return "TRANSIENT_ERROR"
-                
-                # Scrape Heatmap Data
-                heatmap_match = re.search(r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);', response.text, re.DOTALL)
-                if heatmap_match:
-                    instance["calendar_data"] = heatmap_match.group(1)
-                else:
-                    instance["calendar_data"] = "[]"
-                    
-                return instance
-            elif response.status_code == 404:
+
+            if response.status_code == 404:
                 return "NOT_FOUND"
-            else:
+
+            if response.status_code != 200:
                 logger.error(f"CodeChef server error for {username}: Status {response.status_code}")
                 return "TRANSIENT_ERROR"
+
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            rating_div = soup.find("div", class_="rating-number")
+            if not rating_div:
+                if "user not found" in response.text.lower():
+                    return "NOT_FOUND"
+                logger.error(f"CodeChef parsing error for {username}: rating_div not found")
+                return "TRANSIENT_ERROR"
+
+            try:
+                rating = int(rating_div.text.strip())
+            except ValueError:
+                logger.error(f"CodeChef invalid rating value for {username}: '{rating_div.text}'")
+                return "TRANSIENT_ERROR"
+
+            ttg = soup.find_all("img", class_="profileImage")
+            avatar = ttg[0]["src"] if ttg else ""
+
+            try:
+                rating_header = soup.find("div", class_="rating-header")
+                highest_rating = int(
+                    rating_header.find_next("small").text.split()[-1].rstrip(")")
+                )
+                container_ranks = soup.find("div", class_="rating-ranks")
+                ranks = container_ranks.find_all("a")
+                global_rank = ranks[0].strong.text
+                country_rank = ranks[1].strong.text
+            except Exception as e:
+                logger.error(f"CodeChef parsing error for {username} (ranks/highest): {e}")
+                return "TRANSIENT_ERROR"
+
+            heatmap_match = re.search(
+                r'var userDailySubmissionsStats\s*=\s*(\[.*?\]);',
+                response.text,
+                re.DOTALL
+            )
+
+            return {
+                "rating": rating,
+                "highest_rating": highest_rating,
+                "avatar": avatar,
+                "global_rank": global_rank,
+                "country_rank": country_rank,
+                "calendar_data": heatmap_match.group(1) if heatmap_match else "[]",
+            }
+
         except requests.exceptions.Timeout:
             logger.error(f"CodeChef timeout for {username}")
             return "TRANSIENT_ERROR"
@@ -461,9 +484,16 @@ class LeetcodeLeaderboard(
 
     def get_leetcode_data(self, username):
         url = f"https://alfa-leetcode-api.onrender.com/userProfile/{username}"
-        response = requests.get(url)
+        try:
+            response = requests.get(url, timeout=10)
 
-        if response.status_code == 200:
+            if response.status_code == 404:
+                return "NOT_FOUND"
+
+            if response.status_code != 200:
+                logger.error(f"LeetCode server error for {username}: Status {response.status_code}")
+                return "TRANSIENT_ERROR"
+
             data = response.json()
             return {
                 "ranking": data.get("ranking", 0),
@@ -474,6 +504,13 @@ class LeetcodeLeaderboard(
                 "last_updated": datetime.now().timestamp(),
                 "total_solved": data.get("totalSolved", 0),
             }
+
+        except requests.exceptions.Timeout:
+            logger.error(f"LeetCode timeout for {username}")
+            return "TRANSIENT_ERROR"
+        except Exception as e:
+            logger.error(f"Error fetching LeetCode data for {username}: {e}")
+            return "TRANSIENT_ERROR"
 
     queryset = LeetcodeUser.objects.all()
     serializer_class = LT_Serializer
