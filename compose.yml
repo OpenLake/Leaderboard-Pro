@@ -52,7 +52,7 @@ services:
         - action: rebuild
           path: ./docker/backend.Dockerfile
         - action: rebuild
-          path: ./app/requirements.txt
+          path: ./api/requirements.txt
 
     depends_on:
       - db
